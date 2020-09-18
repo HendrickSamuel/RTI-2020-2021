@@ -9,8 +9,14 @@
 #include <errno.h>
 #include "Sockets.h"
 
+
+#define PORT 5000
+
 int main(int argc, char *argv[])
 {
-    printf("coucou\n");
+    int hSocket;
+    struct hostent;
+
+
     return 0;
 }
