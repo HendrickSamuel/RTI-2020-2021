@@ -16,8 +16,22 @@
 
 int socketCreate(void)
 {
+    int handler;
 
+    handler = socket(AF_INET, SOCK_STREAM, 0);
+    //if(debug)
+    //{
+        if(handler == -1)
+        {
+            printf("Erreur de creation de la socket %d\n", errno);
+        }
+        else
+        {
+            printf("Creation de la socket OK\n");
+        }  
+    //}
 
+    return handler;
 }
 
 

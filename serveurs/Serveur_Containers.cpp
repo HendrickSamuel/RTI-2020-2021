@@ -5,3 +5,8 @@
 /*Date de la dernière mise à jour : 19/09/2020             */
 /***********************************************************/
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include "Sockets.h"
+

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
+#include <errno.h>
 
 int socketCreate(void);
 
