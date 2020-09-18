@@ -9,14 +9,26 @@
 #ifndef SOCKETS_H
 #define SOCKETS_H
 
-#include <stdio.h>
+#define PORT 5000
+
+#include <arpa/inet.h>
+
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
 #include <errno.h>
+
+#include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
+
+int getAdressByName(sockaddr_in *adresse,const char* hostName);
 
 int socketCreate(void);
 
-int socketBind(int handler, sockaddr_in adresse);
+int socketBind(int handler, const char* hostName);
 
 int socketClose(int handler);
 
