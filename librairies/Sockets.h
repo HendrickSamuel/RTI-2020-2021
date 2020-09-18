@@ -6,3 +6,31 @@
 /***********************************************************/
 
 
+#ifndef SOCKETS_H
+#define SOCKETS_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+
+int socketCreate(void);
+
+int socketBind(int handler, sockaddr_in adresse);
+
+int socketClose(int handler);
+
+int socketShutdown(int handler, int sensFermeture);
+
+int socketListen(int handler, int maxConnexion);
+
+int socketAccept(int handler, sockaddr_in adresse);
+
+int socketConnect(int handler, sockaddr_in adresse);
+
+int socketSend(int handler, const void *message, int taille);
+
+int socketRecieveStruct(int handler, void *message, int taille);
+
+int socketRecieveString(int handler, void *message, int taille);
+
+#endif //SOCKETS_H
