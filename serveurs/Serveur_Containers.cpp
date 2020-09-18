@@ -5,3 +5,9 @@
 /*Date de la dernière mise à jour : 19/09/2020             */
 /***********************************************************/
 
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
+    printf("coucou\n");
+    return 0;
+}
