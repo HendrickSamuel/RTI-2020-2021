@@ -19,8 +19,6 @@
 
 #include "Sockets.h"
 
-#define PORT 5000
-
 int main(int argc, char *argv[])
 {
     int hSocketClient;
@@ -31,20 +29,14 @@ int main(int argc, char *argv[])
 
     hSocketClient = socketCreate();
 
-    if ( (infosHost = gethostbyname("localhost"))==0)
-    {
-        printf("Erreur d'acquisition d'infos sur le host distant %d\n", errno); exit(1);
-    }
-    else 
-        printf("Acquisition infos host distant OK\n");
-    
-    memcpy(&adresseIP, infosHost->h_addr, infosHost->h_length);
-    printf("Adresse IP = %s\n",inet_ntoa(adresseIP)); 
+    memset(&adresseSocket, 0, sizeof(struct sockaddr_in)); // préparation de la zone mémoire
 
-    memset(&adresseSocket, 0, sizeof(struct sockaddr_in));
-    adresseSocket.sin_family = AF_INET; /* Domaine */
-    adresseSocket.sin_port = htons(PORT); /* conversion port au format réseau */
-    memcpy(&adresseSocket.sin_addr, infosHost->h_addr,infosHost->h_length); 
+    if(getAdressByName(&adresseSocket,"localhost") == 0)
+    {
+        // probleme de recup d'adresse
+    }
+    adresseSocket.sin_family = AF_INET;
+    adresseSocket.sin_port = htons(PORT); 
 
     if (( ret = connect(hSocketClient, (struct sockaddr *)&adresseSocket, sizeof(struct sockaddr_in)))== -1)
     {
