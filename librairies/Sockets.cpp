@@ -31,40 +31,35 @@ void Sockets::Create()
             throw BaseException("impossible de creer un socket");        
 }
 
-void Sockets::Bind()
+void Sockets::Close()
 {
-    int result;
-    struct sockaddr_in adresseSocket;
-    
-    adresseSocket = this->getAdressByName("localhost");
-    this->adresseSocket = adresseSocket;
-    adresseSocket.sin_family = AF_INET;
-    adresseSocket.sin_port = htons(PORT);
-    printf("Adresse IP = %s\n",inet_ntoa(adresseSocket.sin_addr)); 
+    close(this->hSocket);
+}
 
-    //TODO: verifier que this->hSocket est set (valide)
-    if (bind(this->hSocket, (struct sockaddr *)&adresseSocket, sizeof(struct sockaddr_in)) == -1)
+void Sockets::ReceiveStruct(void* structure, int taille)
+{
+    Warning("taille que l'on attend: %d\n", taille);
+    int tailleMessageRecu = 0;
+    int nbreBytesLus = 0;
+    int nbreBytesRecus = 0;
+    do 
     {
-        throw BaseException("Erreur de bind");
+        if((nbreBytesRecus = recv(this->hSocket,((char*)structure)+tailleMessageRecu, taille-tailleMessageRecu,0)) == -1)
+        {
+            Affiche("Error","Tout le message n'a pas su etre lu: %d", errno);
+        }
+        else
+        {
+            if(nbreBytesRecus == 0)
+                throw BaseException("Le client est parti");
+            tailleMessageRecu += nbreBytesRecus;
+            Affiche("INFO","Taille message recu = %d et taille attendue %d \n",tailleMessageRecu, taille);
+        }
     }
-    else 
-        printf("<OK> Bind adresse et port socket OK\n");
-}
+    while(nbreBytesRecus!=0 && nbreBytesRecus!=-1 && tailleMessageRecu!= taille);
 
-void Sockets::Listen(int maxConn)
-{
-    //TODO: verifier handler ? 
-    listen(this->hSocket, maxConn);
-}
-
-Sockets Sockets::Accept()
-{
-    struct sockaddr_in adresse;
-    int hSocketService;
-    unsigned int tailleSockaddr_in = sizeof(struct sockaddr_in);
-    hSocketService = accept(this->hSocket,(struct sockaddr*)&adresse, &tailleSockaddr_in);
-
-    return Sockets(hSocketService, adresse);
+    //Affiche("test","Tout le message à été lu \n");
+    printf("Tout le message à été lu \n");
 }
 
 sockaddr_in Sockets::getAdressByName(const char* hostName)

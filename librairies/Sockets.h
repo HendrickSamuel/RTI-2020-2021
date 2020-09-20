@@ -18,8 +18,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <unistd.h>
 
 #include "BaseException.h"
+#include "Trace.h"
 
 #define PORT 5000
 
@@ -39,9 +41,9 @@ class Sockets
         Sockets(const Sockets& old);
 
         void Create();
-        void Bind();
-        void Listen(int maxConn);
-        Sockets Accept();
+        void Close();
+        void ReceiveStruct(void* structure, int taille);
+        
         sockaddr_in getAdressByName(const char* hostName);
 
         int gethSocket();
@@ -49,8 +51,7 @@ class Sockets
 
         bool esLibre();
         void setLibre(bool libre);
-        //en commun des sockets create - getadresse - send - receive - send - close - shutdown
-
+        //en commun des sockets create - getadresse - send - receive - close - shutdown
 };
 
 #endif

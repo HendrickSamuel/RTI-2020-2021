@@ -4,9 +4,11 @@
 /*Labo : R.T.I.                                            */
 /*Date de la dernière mise à jour : 19/09/2020             */
 /***********************************************************/
-#include "Sockets.h"
+#include "SocketsServeur.h"
 #include "Trace.h"
 #include "BaseException.h"
+#include "CMMP.h"
+
 #include <iostream>
 #include <unistd.h> 
 
@@ -21,20 +23,20 @@ pthread_mutex_t mutexIndiceCourant;
 pthread_cond_t condIndiceCourant;
 int indiceCourant = -1;
 pthread_t threads[NB_MAX_CONNECTIONS];
-Sockets sockets[NB_MAX_CONNECTIONS];
+SocketsServeur sockets[NB_MAX_CONNECTIONS];
 
 void* fctThread(void *param);
 
 using namespace std;
 int main(int argc, char *argv[])
 {
-    Sockets socketEcoute;
-    Sockets socketService;
+    SocketsServeur socketEcoute;
+    SocketsServeur socketService;
     int i;
     int j;
     int ret;
 
-    Affiche("Démarrage du thread principale: \n pid: %d \n tid: %u \n\n", getpid(), pthread_self());
+    Affiche("1","Démarrage du thread principale: \n pid: %d \n tid: %u \n\n", getpid(), pthread_self());
     pthread_mutex_init(&mutexIndiceCourant, NULL);
     pthread_cond_init(&condIndiceCourant, NULL);
 
@@ -58,7 +60,7 @@ int main(int argc, char *argv[])
     for(i = 0; i < NB_MAX_CONNECTIONS; i++)
     {
         ret = pthread_create(&threads[i], NULL, fctThread, (void*)&i);
-        Affiche("Démarrage du thread secondaire %d\n", i);
+        Affiche("TEST","Démarrage du thread secondaire %d\n",i);
         ret = pthread_detach(threads[i]);
     }
 
@@ -68,7 +70,7 @@ int main(int argc, char *argv[])
 
         socketService = socketEcoute.Accept();  
 
-        Affiche("Recherche d'une socket libre\n");
+        Affiche("","Recherche d'une socket libre\n");
 
         for(j = 0; j < NB_MAX_CONNECTIONS && sockets[j].esLibre() != true; j++); //j'aime pas
 
@@ -90,18 +92,19 @@ int main(int argc, char *argv[])
     } while (true);
     
     close(socketEcoute.gethSocket());
-    Affiche("Fermeture de la socket d'ecoute et du serveur");   
+    Affiche("","Fermeture de la socket d'ecoute et du serveur");   
     
     return 0;
 }
 
 void * fctThread(void * param)
 {
+    struct protocole proto;
     int* identite = (int*)malloc(sizeof(int));
     *identite = *((int *)param);
     //int vr = (int)(param);
-    Affiche("Thread n° %d demarre a la position %d \n", pthread_self(), *identite);
-    Sockets hSocketService;
+    Affiche("thread","Thread n° %d demarre a la position %d \n", pthread_self(), *identite);
+    SocketsServeur hSocketService;
     bool finDialogue = false;
     int indiceClientTraite;
 
@@ -117,12 +120,23 @@ void * fctThread(void * param)
 
         hSocketService = sockets[indiceClientTraite];
         pthread_mutex_unlock(&mutexIndiceCourant);
-        Affiche("\033[1;36m<TASK>\033[0m Thread n° %d s'occupe du socket %d \n", pthread_self(), indiceClientTraite);
+        Affiche("test","\033[1;36m<TASK>\033[0m Thread n° %d s'occupe du socket %d \n", pthread_self(), indiceClientTraite);
 
         finDialogue = false;
         do
         {
-            /* code */
+            try
+            {
+                hSocketService.ReceiveStruct(&proto, sizeof(struct protocole));
+                cout << "Message reçu: " << proto.commande << endl;
+            }
+            catch(BaseException e)
+            {
+                finDialogue = true;
+                std::cerr << e.getMessage() << '\n';
+            }
+            hSocketService.Close();
+            
         } while (!finDialogue);
 
         pthread_mutex_lock(&mutexIndiceCourant);

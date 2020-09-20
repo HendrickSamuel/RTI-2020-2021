@@ -7,10 +7,12 @@
 #include "Sockets.h"
 #include "BaseException.h"
 #include <iostream>
+#include "CMMP.h"
 
 using namespace std;
 int main(int argc, char *argv[])
 {
+    struct protocole proto;
     Sockets socket;
     struct sockaddr_in adresse;
     int ret;
@@ -50,6 +52,33 @@ int main(int argc, char *argv[])
             printf("Connect socket OK\n");
 
         getchar();
+
+        proto.commande = LOGIN;
+
+        if(send(socket.gethSocket(), (void*)&proto, sizeof(struct protocole),0) == -1)
+        {
+            Error("ERREUR");
+        }
+        else
+        {
+            Affiche("OK","OK");
+        }
+        getchar();
+
+        proto.commande = LOGOUT;
+
+        if(send(socket.gethSocket(), (void*)&proto, sizeof(struct protocole),0) == -1)
+        {
+            Error("ERREUR");
+        }
+        else
+        {
+            Affiche("OK","OK");
+        }
+        getchar();
+
+        socket.Close();
+        
     }
     catch(BaseException& e)
     {
