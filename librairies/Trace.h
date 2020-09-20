@@ -33,7 +33,7 @@ using namespace std;
 
 void Affiche_hidden(const char* couleur, const char* entete ,const char* ficher, int ligne, const char *pMessage, ...);
 #define Affiche(message, ...) Affiche_hidden(BLEU,message,__FILE__,__LINE__,__VA_ARGS__)
-#define Warning(...) Affiche_hidden(JAUNE,"WARNING",__FILE__,__LINE__,__VA_ARGS__)
-#define Error(...) Affiche_hidden(ROUGE,"ERROR",__FILE__,__LINE__,__VA_ARGS__)
+#define Warning(message,...) Affiche_hidden(JAUNE,message,__FILE__,__LINE__,__VA_ARGS__)
+#define Error(message,...) Affiche_hidden(ROUGE,message,__FILE__,__LINE__,__VA_ARGS__)
 
 #endif

@@ -53,6 +53,8 @@ sockaddr_in Sockets::getAdressByName(const char* hostName)
 {
     struct sockaddr_in adresse;
     struct hostent *infosHost;
+
+    //TODO: peut etre memset à 0 ? 
     if((infosHost = gethostbyname(hostName)) == 0)
     {
         printf("<Erreur> acquisition d'informations sur le host: %d\n", errno);

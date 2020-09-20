@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     }
     catch(BaseException& e)
     {
-        Error(e.getMessage());
+        Error("Error","%s\n",e.getMessage());
         return 1;
     }
 
