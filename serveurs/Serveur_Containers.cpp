@@ -135,14 +135,14 @@ void * fctThread(void * param)
                 finDialogue = true;
                 std::cerr << e.getMessage() << '\n';
             }
-            hSocketService.Close();
             
         } while (!finDialogue);
+
+        hSocketService.Close();
 
         pthread_mutex_lock(&mutexIndiceCourant);
         sockets[indiceClientTraite].setLibre(true);
         pthread_mutex_unlock(&mutexIndiceCourant);
-
     }
     close(hSocketService.gethSocket());
     return identite;

@@ -22,7 +22,7 @@ void SocketsServeur::Bind()
     int result;
     struct sockaddr_in adresseSocket;
     
-    adresseSocket = this->getAdressByName("localhost");
+    adresseSocket = this->getAdressByName("192.168.23.131");
     this->adresseSocket = adresseSocket;
     adresseSocket.sin_family = AF_INET;
     adresseSocket.sin_port = htons(PORT);

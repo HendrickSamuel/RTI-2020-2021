@@ -44,6 +44,7 @@ void Sockets::ReceiveStruct(void* structure, int taille)
     int nbreBytesRecus = 0;
     do 
     {
+        Affiche("SOCKET","numero: %d", this->hSocket);
         if((nbreBytesRecus = recv(this->hSocket,((char*)structure)+tailleMessageRecu, taille-tailleMessageRecu,0)) == -1)
         {
             Affiche("Error","Tout le message n'a pas su etre lu: %d\n", errno);

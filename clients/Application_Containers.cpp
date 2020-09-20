@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
         getchar();
         socket.Create();
         
-        adresse = socket.getAdressByName("localhost");
+        adresse = socket.getAdressByName("192.168.23.131");
         adresse.sin_family = AF_INET;
         adresse.sin_port = htons(PORT);
         printf("Adresse IP = %s\n",inet_ntoa(adresse.sin_addr));
