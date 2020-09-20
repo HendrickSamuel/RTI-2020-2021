@@ -46,12 +46,15 @@ void Sockets::ReceiveStruct(void* structure, int taille)
     {
         if((nbreBytesRecus = recv(this->hSocket,((char*)structure)+tailleMessageRecu, taille-tailleMessageRecu,0)) == -1)
         {
-            Affiche("Error","Tout le message n'a pas su etre lu: %d", errno);
+            Affiche("Error","Tout le message n'a pas su etre lu: %d\n", errno);
         }
         else
         {
             if(nbreBytesRecus == 0)
+            {
                 throw BaseException("Le client est parti");
+                Affiche("INFO","CLIENT PARTI");
+            }
             tailleMessageRecu += nbreBytesRecus;
             Affiche("INFO","Taille message recu = %d et taille attendue %d \n",tailleMessageRecu, taille);
         }
@@ -60,6 +63,7 @@ void Sockets::ReceiveStruct(void* structure, int taille)
 
     //Affiche("test","Tout le message à été lu \n");
     printf("Tout le message à été lu \n");
+    getchar();
 }
 
 sockaddr_in Sockets::getAdressByName(const char* hostName)
