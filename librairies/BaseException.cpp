@@ -12,6 +12,7 @@ BaseException::BaseException(const char* chaineget)
 	message = NULL;
 	setMessage(chaineget);
 }
+
 BaseException::BaseException(const BaseException& old)
 {
 	message = NULL;

@@ -4,7 +4,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef CPP
+#include <typeinfo>
+#include <iostream>
+using namespace std;
+#else
+#endif
+
+#ifdef SUN
 #include <sys/varargs.h>
+#endif
+
+#ifdef LINUX
+#include <stdarg.h>
+#endif
 
 #define ROUGE "\033[0;31m"
 #define JAUNE "\033[0;33m"

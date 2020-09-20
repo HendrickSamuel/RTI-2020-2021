@@ -4,8 +4,8 @@ SERVEURS = ./serveurs
 CLIENT = ./clients
 
 INCL = -I $(LIBRAIRIE)
-GPP = g++ -m64 -Wall -lnsl -lsocket $(INCL) #-D DEV -D DEVPLUS
-LIBRAIRIE_O = Sockets.o BaseException.o #Trace.o
+GPP = g++ -m64 -Wall -lnsl -lsocket -lpthread $(INCL) -D CPP -D SUN #-D DEV -D DEVPLUS
+LIBRAIRIE_O = Sockets.o BaseException.o Trace.o
 
 SERVERCONTAINERS_OBJS = $(LIBRAIRIE_O)
 CLIENTCONTAINERS_OBJS = $(LIBRAIRIE_O)

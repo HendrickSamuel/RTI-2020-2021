@@ -61,13 +61,13 @@ int socketBind(int handler, const char* hostName)
 
     memset(&adresseSocket, 0, sizeof(struct sockaddr_in)); // préparation de la zone mémoire
 
-    if( getAdressByName(&adresseSocket,hostName) == 0)
+    if( getAdressByName(&adresseSocket,hostNa   me) == 0)
     {
         // probleme de recup d'adresse
     }
 
     adresseSocket.sin_family = AF_INET;
-    adresseSocket.sin_port = htons(PORT); 
+    adresseSocket.sin_port = htons(PORT);
 
     printf("Adresse IP = %s\n",inet_ntoa(adresseSocket.sin_addr)); 
 

@@ -4,49 +4,57 @@
 /*Labo : R.T.I.                                            */
 /*Date de la dernière mise à jour : 19/09/2020             */
 /***********************************************************/
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-
-#include <errno.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-
 #include "Sockets.h"
+#include "BaseException.h"
+#include <iostream>
 
+using namespace std;
 int main(int argc, char *argv[])
 {
-    int hSocketClient;
-    struct hostent *infosHost;
-    struct in_addr adresseIP;
-    struct sockaddr_in adresseSocket;
+    Sockets socket;
+    struct sockaddr_in adresse;
     int ret;
-
-    hSocketClient = socketCreate();
-
-    memset(&adresseSocket, 0, sizeof(struct sockaddr_in)); // préparation de la zone mémoire
-
-    if(getAdressByName(&adresseSocket,"localhost") == 0)
+    
+    try
     {
-        // probleme de recup d'adresse
-    }
-    adresseSocket.sin_family = AF_INET;
-    adresseSocket.sin_port = htons(PORT); 
+        getchar();
+        socket.Create();
+        
+        adresse = socket.getAdressByName("localhost");
+        adresse.sin_family = AF_INET;
+        adresse.sin_port = htons(PORT);
+        printf("Adresse IP = %s\n",inet_ntoa(adresse.sin_addr));
 
-    if (( ret = connect(hSocketClient, (struct sockaddr *)&adresseSocket, sizeof(struct sockaddr_in)))== -1)
+
+        if (( ret = connect(socket.gethSocket(), (struct sockaddr *)&adresse, sizeof(struct sockaddr_in)))== -1)
+        {
+            printf("Erreur sur connect de la socket %d\n", errno);
+            switch(errno)
+            {
+                case EBADF : printf("EBADF - hSocketEcouten'existe pas\n"); break;
+                case ENOTSOCK :
+                    printf("ENOTSOCK - hSocketEcouteidentifie un fichier\n");break;
+                case EAFNOSUPPORT :
+                    printf("EAFNOTSUPPORT - adresse ne correspond pas famille\n");break;
+                case EISCONN : printf("EISCONN - socket deja connectee\n");break;
+                case ECONNREFUSED :
+                    printf("ECONNREFUSED - connexion refusee par le serveur\n"); break;
+                case ETIMEDOUT : printf("ETIMEDOUT - time out sur connexion \n"); break;
+                case ENETUNREACH : printf("ENETUNREACH - cible hors d'atteinte\n");break;
+                case EINTR : printf("EINTR - interruption par signal\n");break;
+                default : printf("Erreur inconnue ?\n");
+            }
+            //close(hSocketClient); exit(1);
+        }
+        else 
+            printf("Connect socket OK\n");
+
+        getchar();
+    }
+    catch(BaseException& e)
     {
-        printf("Erreur sur connect de la socket %d\n", errno);
-        close(hSocketClient); exit(1);
+        cerr << e.getMessage() << '\n';
     }
-    else 
-        printf("Connect socket OK\n");
-
-    getchar();
 
     return 0;
 }
