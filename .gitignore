@@ -74,3 +74,4 @@ dkms.conf
 *.tar.gz
 *.rar
 
+vscode/

@@ -5,33 +5,53 @@
 /*Date de la dernière mise à jour : 19/09/2020             */
 /***********************************************************/
 
-
 #ifndef SOCKETS_H
 #define SOCKETS_H
+#include <iostream>
+
+#include <arpa/inet.h>
+
+#include <errno.h>
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
+#include <string.h>
+#include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
 
-int socketCreate(void);
+#include "BaseException.h"
+#include "Trace.h"
 
-int socketBind(int handler, sockaddr_in adresse);
+#define PORT 5000
 
-int socketClose(int handler);
+#define EOC "END_OF_CONNEXION"
+#define DOC "DENY_OF_CONNEXION"
 
-int socketShutdown(int handler, int sensFermeture);
+using namespace std;
+class Sockets
+{
+    protected: 
+        int hSocket;
+        struct sockaddr_in adresseSocket;
+        bool _libre;
+    public: 
+        Sockets();
+        Sockets(int hSocket, sockaddr_in adresse);
+        Sockets(const Sockets& old);
 
-int socketListen(int handler, int maxConnexion);
+        void Create();
+        void Close();
+        void ReceiveStruct(void* structure, int taille);
+        
+        sockaddr_in getAdressByName(const char* hostName);
 
-int socketAccept(int handler, sockaddr_in adresse);
+        int gethSocket();
+        sockaddr_in getAdresse();
 
-int socketConnect(int handler, sockaddr_in adresse);
+        bool esLibre();
+        void setLibre(bool libre);
+        //en commun des sockets create - getadresse - send - receive - close - shutdown
+};
 
-int socketSend(int handler, const void *message, int taille);
-
-int socketRecieveStruct(int handler, void *message, int taille);
-
-int socketRecieveString(int handler, void *message, int taille);
-
-#endif //SOCKETS_H
+#endif

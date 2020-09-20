@@ -4,18 +4,27 @@
 /*Labo : R.T.I.                                            */
 /*Date de la dernière mise à jour : 19/09/2020             */
 /***********************************************************/
-#include "SocketsServeur.h"
-#include "Trace.h"
-#include "BaseException.h"
-#include "CMMP.h"
 
-#include <iostream>
-#include <unistd.h> 
+#include <arpa/inet.h>
 
-#include <stdio.h>     
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+#include <errno.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
 
 #include <pthread.h>
+
+#include "Sockets.h"
+#include "Trace.h"
+
+#include <stdbool.h>
+
 
 #define NB_MAX_CONNECTIONS 3
 
@@ -23,88 +32,95 @@ pthread_mutex_t mutexIndiceCourant;
 pthread_cond_t condIndiceCourant;
 int indiceCourant = -1;
 pthread_t threads[NB_MAX_CONNECTIONS];
-SocketsServeur sockets[NB_MAX_CONNECTIONS];
+int sockets[NB_MAX_CONNECTIONS];
 
 void* fctThread(void *param);
 
-using namespace std;
 int main(int argc, char *argv[])
 {
-    SocketsServeur socketEcoute;
-    SocketsServeur socketService;
+    int hSocketEcoute;
+    int hSocketService;
+    struct sockaddr_in adresseSocket;
     int i;
     int j;
     int ret;
 
-    Affiche("1","Démarrage du thread principale: \n pid: %d \n tid: %u \n\n", getpid(), pthread_self());
+    /* ---- INITIALISATION DES THREADS ---- */
+    printf("\033[1;32m<DEMARRAGE>\033[0m Démarrage du thread principale: \n %d.%u \n", getpid(), pthread_self());
     pthread_mutex_init(&mutexIndiceCourant, NULL);
     pthread_cond_init(&condIndiceCourant, NULL);
 
     for(i = 0; i < NB_MAX_CONNECTIONS; i++)
-        sockets[i].setLibre(true);
-
-    try
+        sockets[i] = -1;
+    
+    hSocketEcoute = socketCreate();
+    if ( socketBind(hSocketEcoute, "localhost") == -1)
     {
-        socketEcoute.Create();
-        socketEcoute.Bind();
+        Error("could not bind socket: %d \n", errno);
+        exit(-1);
     }
-    catch(BaseException& e)
-    {
-        Error(e.getMessage());
-        return 1;
-    }
-
+    
+    Affiche("Attente apres create et bind \n");
     getchar();
 
     /* ---- DEMARRAGE DES THREADS ---- */
     for(i = 0; i < NB_MAX_CONNECTIONS; i++)
     {
         ret = pthread_create(&threads[i], NULL, fctThread, (void*)&i);
-        Affiche("TEST","Démarrage du thread secondaire %d\n",i);
+        Affiche("Démarrage du thread secondaire %d\n", i);
         ret = pthread_detach(threads[i]);
     }
 
+
     do
     {
-        socketEcoute.Listen(SOMAXCONN);
+        socketListen(hSocketEcoute, SOMAXCONN);
 
-        socketService = socketEcoute.Accept();  
+        hSocketService = socketAccept(hSocketEcoute,&adresseSocket);
+        if(hSocketService == -1)
+        {
+            Error("Erreur sur le accept de la socket %d\n", errno);
+            exit(1);
+        }
+        else
+        {
+            Affiche("Connecté avec IP = %s\n",inet_ntoa(adresseSocket.sin_addr));
+        }   
 
-        Affiche("","Recherche d'une socket libre\n");
+        Affiche("Recherche d'une socket libre\n");
 
-        for(j = 0; j < NB_MAX_CONNECTIONS && sockets[j].esLibre() != true; j++); //j'aime pas
+        for(j = 0; j < NB_MAX_CONNECTIONS && sockets[j] != -1; j++); //j'aime pas
 
         if(j == NB_MAX_CONNECTIONS)
         {
-            printf("Plus de connexion disponible\n");
+            Error("Plus de connexion disponible\n");
             //TODO: SEND message
         }
         else
         {
-            printf("Connexion sur la socket %d\n", j);
+            Affiche("Connexion sur la socket %d\n", j);
             pthread_mutex_lock(&mutexIndiceCourant);
-            sockets[j] = socketService;
+            sockets[j] = hSocketService;
             indiceCourant = j;
             pthread_mutex_unlock(&mutexIndiceCourant);
             pthread_cond_signal(&condIndiceCourant);
         }
         
     } while (true);
-    
-    close(socketEcoute.gethSocket());
-    Affiche("","Fermeture de la socket d'ecoute et du serveur");   
+
+    close(hSocketEcoute);
+    Affiche("Fermeture de la socket d'ecoute et du serveur");   
     
     return 0;
 }
 
 void * fctThread(void * param)
 {
-    struct protocole proto;
     int* identite = (int*)malloc(sizeof(int));
     *identite = *((int *)param);
     //int vr = (int)(param);
-    Affiche("thread","Thread n° %d demarre a la position %d \n", pthread_self(), *identite);
-    SocketsServeur hSocketService;
+    Affiche("Thread n° %d demarre a la position %d \n", pthread_self(), *identite);
+    int hSocketService;
     bool finDialogue = false;
     int indiceClientTraite;
 
@@ -120,30 +136,19 @@ void * fctThread(void * param)
 
         hSocketService = sockets[indiceClientTraite];
         pthread_mutex_unlock(&mutexIndiceCourant);
-        Affiche("test","\033[1;36m<TASK>\033[0m Thread n° %d s'occupe du socket %d \n", pthread_self(), indiceClientTraite);
+        printf("\033[1;36m<TASK>\033[0m Thread n° %d s'occupe du socket %d \n", pthread_self(), indiceClientTraite);
 
         finDialogue = false;
         do
         {
-            try
-            {
-                hSocketService.ReceiveStruct(&proto, sizeof(struct protocole));
-                cout << "Message reçu: " << proto.commande << endl;
-            }
-            catch(BaseException e)
-            {
-                finDialogue = true;
-                std::cerr << e.getMessage() << '\n';
-            }
-            hSocketService.Close();
-            
+            /* code */
         } while (!finDialogue);
 
         pthread_mutex_lock(&mutexIndiceCourant);
-        sockets[indiceClientTraite].setLibre(true);
+        sockets[indiceClientTraite] = -1;
         pthread_mutex_unlock(&mutexIndiceCourant);
 
     }
-    close(hSocketService.gethSocket());
+    close(hSocketService);
     return identite;
 }
