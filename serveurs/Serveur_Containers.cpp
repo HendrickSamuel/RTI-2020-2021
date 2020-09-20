@@ -4,37 +4,36 @@
 /*Labo : R.T.I.                                            */
 /*Date de la dernière mise à jour : 19/09/2020             */
 /***********************************************************/
-#include "SocketsServeur.h"
-#include "Trace.h"
-#include "BaseException.h"
-#include "CMMP.h"
 
+#include "CMMP.h"
+#include "Trace.h"
+#include <stdio.h>     
 #include <iostream>
 #include <unistd.h> 
-
-#include <stdio.h>     
 #include <stdlib.h>
-
 #include <pthread.h>
+#include "BaseException.h"
+#include "SocketsServeur.h"
 
 #define NB_MAX_CONNECTIONS 3
 
-pthread_mutex_t mutexIndiceCourant;
-pthread_cond_t condIndiceCourant;
 int indiceCourant = -1;
+pthread_cond_t condIndiceCourant;
+pthread_mutex_t mutexIndiceCourant;
 pthread_t threads[NB_MAX_CONNECTIONS];
 SocketsServeur sockets[NB_MAX_CONNECTIONS];
 
 void* fctThread(void *param);
 
 using namespace std;
+
 int main(int argc, char *argv[])
 {
-    SocketsServeur socketEcoute;
-    SocketsServeur socketService;
     int i;
     int j;
     int ret;
+    SocketsServeur socketEcoute;
+    SocketsServeur socketService;
 
     Affiche("1","Démarrage du thread principale: \n pid: %d \n tid: %u \n\n", getpid(), pthread_self());
     pthread_mutex_init(&mutexIndiceCourant, NULL);
@@ -103,7 +102,9 @@ void * fctThread(void * param)
     int* identite = (int*)malloc(sizeof(int));
     *identite = *((int *)param);
     //int vr = (int)(param);
+
     Affiche("thread","Thread n° %d demarre a la position %d \n", pthread_self(), *identite);
+    
     SocketsServeur hSocketService;
     bool finDialogue = false;
     int indiceClientTraite;

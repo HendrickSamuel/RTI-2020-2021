@@ -38,4 +38,4 @@ class BaseException
 };
 
 
-#endif
+#endif //BASEEXEPTION_H

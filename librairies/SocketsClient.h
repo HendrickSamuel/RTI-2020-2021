@@ -29,4 +29,4 @@ class SocketsClient : public SocketsServeur
 
 };
 
-#endif
+#endif //SOCKETSCLIENT_H

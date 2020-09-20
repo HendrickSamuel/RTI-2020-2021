@@ -34,4 +34,4 @@ class SocketsServeur : public Sockets
         SocketsServeur Accept();
 };
 
-#endif
+#endif //SOCKETSSERVEUR_H

@@ -8,17 +8,17 @@
 #ifndef SOCKETS_H
 #define SOCKETS_H
 
-#include <iostream>
-#include <arpa/inet.h>
+#include "Trace.h"
 #include <errno.h>
 #include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netdb.h>
+#include <iostream>
+#include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 #include "BaseException.h"
-#include "Trace.h"
 
 
 #define PORT 5000
@@ -31,8 +31,8 @@ class Sockets
 {
     protected: 
         int hSocket;
-        struct sockaddr_in adresseSocket;
         bool _libre;
+        struct sockaddr_in adresseSocket;
 
     public:
         //constructeurs
@@ -45,21 +45,21 @@ class Sockets
         //operators
 
         //getters
-        sockaddr_in getAdressByName(const char* hostName);
+        bool esLibre();
         int gethSocket();
         sockaddr_in getAdresse();
-        bool esLibre();
+        sockaddr_in getAdressByName(const char* hostName);
 
         //setters
         void setLibre(bool libre);
 
         //méthodes
-        void Create();
         void Close();
+        void Create();
         void ReceiveStruct(void* structure, int taille);
 
 
         //en commun des sockets create - getadresse - send - receive - close - shutdown
 };
 
-#endif
+#endif //SOCKETS_H

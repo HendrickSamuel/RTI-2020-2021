@@ -49,6 +49,21 @@ Sockets::Sockets(int hSocket, sockaddr_in adresse)
 /*                              */
 /********************************/
 
+bool Sockets::esLibre()
+{
+    return this->_libre;
+}
+
+int Sockets::gethSocket()
+{
+    return this->hSocket;
+}
+
+sockaddr_in Sockets::getAdresse()
+{
+    return this->adresseSocket;
+}
+
 sockaddr_in Sockets::getAdressByName(const char* hostName)
 {
     struct sockaddr_in adresse;
@@ -64,23 +79,6 @@ sockaddr_in Sockets::getAdressByName(const char* hostName)
     memcpy(&adresse.sin_addr, infosHost->h_addr, infosHost->h_length);
 
     return adresse;
-}
-
-
-int Sockets::gethSocket()
-{
-    return this->hSocket;
-}
-
-
-sockaddr_in Sockets::getAdresse()
-{
-    return this->adresseSocket;
-}
-
-bool Sockets::esLibre()
-{
-    return this->_libre;
 }
 
 
@@ -102,16 +100,16 @@ void Sockets::setLibre(bool libre)
 /*                              */
 /********************************/
 
+void Sockets::Close()
+{
+    close(this->hSocket);
+}
+
 void Sockets::Create()
 {
     this->hSocket = socket(AF_INET, SOCK_STREAM, 0);
         if(this->hSocket == -1)
             throw BaseException("impossible de creer un socket");        
-}
-
-void Sockets::Close()
-{
-    close(this->hSocket);
 }
 
 void Sockets::ReceiveStruct(void* structure, int taille)

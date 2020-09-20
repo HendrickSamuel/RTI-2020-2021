@@ -17,15 +17,15 @@
 #include <iostream>
 using namespace std;
 #else
-#endif
+#endif //CPP
 
 #ifdef SUN
 #include <sys/varargs.h>
-#endif
+#endif //SUN
 
 #ifdef LINUX
 #include <stdarg.h>
-#endif
+#endif //LINUX
 
 #define ROUGE "\033[0;31m"
 #define JAUNE "\033[0;33m"
@@ -36,4 +36,4 @@ void Affiche_hidden(const char* couleur, const char* entete ,const char* ficher,
 #define Warning(...) Affiche_hidden(JAUNE,"WARNING",__FILE__,__LINE__,__VA_ARGS__)
 #define Error(...) Affiche_hidden(ROUGE,"ERROR",__FILE__,__LINE__,__VA_ARGS__)
 
-#endif
+#endif //TRACE_H
