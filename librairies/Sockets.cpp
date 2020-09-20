@@ -7,6 +7,12 @@
 
 #include "Sockets.h"
 
+/********************************/
+/*                              */
+/*         Constructeurs        */
+/*                              */
+/********************************/
+
 Sockets::Sockets()
 {
     //this->Create();
@@ -23,6 +29,78 @@ Sockets::Sockets(int hSocket, sockaddr_in adresse)
     this->hSocket = hSocket;
     this->adresseSocket = adresseSocket;
 }
+
+
+/********************************/
+/*                              */
+/*          Destructeurs        */
+/*                              */
+/********************************/
+
+/********************************/
+/*                              */
+/*           Operators          */
+/*                              */
+/********************************/
+
+/********************************/
+/*                              */
+/*            Getters           */
+/*                              */
+/********************************/
+
+sockaddr_in Sockets::getAdressByName(const char* hostName)
+{
+    struct sockaddr_in adresse;
+    struct hostent *infosHost;
+    if((infosHost = gethostbyname(hostName)) == 0)
+    {
+        printf("<Erreur> acquisition d'informations sur le host: %d\n", errno);
+        throw BaseException("<Erreur> acquisition d'informations sur le host ");
+    }
+    else
+        printf("<OK> acquisition d'informations sur le host\n");
+    
+    memcpy(&adresse.sin_addr, infosHost->h_addr, infosHost->h_length);
+
+    return adresse;
+}
+
+
+int Sockets::gethSocket()
+{
+    return this->hSocket;
+}
+
+
+sockaddr_in Sockets::getAdresse()
+{
+    return this->adresseSocket;
+}
+
+bool Sockets::esLibre()
+{
+    return this->_libre;
+}
+
+
+/********************************/
+/*                              */
+/*            Setters           */
+/*                              */
+/********************************/
+
+void Sockets::setLibre(bool libre)
+{
+    this->_libre = libre;
+}
+
+
+/********************************/
+/*                              */
+/*            Methodes          */
+/*                              */
+/********************************/
 
 void Sockets::Create()
 {
@@ -65,44 +143,4 @@ void Sockets::ReceiveStruct(void* structure, int taille)
     //Affiche("test","Tout le message à été lu \n");
     printf("Tout le message à été lu \n");
     getchar();
-}
-
-sockaddr_in Sockets::getAdressByName(const char* hostName)
-{
-    struct sockaddr_in adresse;
-    struct hostent *infosHost;
-    if((infosHost = gethostbyname(hostName)) == 0)
-    {
-        printf("<Erreur> acquisition d'informations sur le host: %d\n", errno);
-        throw BaseException("<Erreur> acquisition d'informations sur le host ");
-    }
-    else
-        printf("<OK> acquisition d'informations sur le host\n");
-    
-    memcpy(&adresse.sin_addr, infosHost->h_addr, infosHost->h_length);
-
-    return adresse;
-}
-
-
-int Sockets::gethSocket()
-{
-    return this->hSocket;
-}
-
-
-sockaddr_in Sockets::getAdresse()
-{
-    return this->adresseSocket;
-}
-
-bool Sockets::esLibre()
-{
-    return this->_libre;
-}
-
-
-void Sockets::setLibre(bool libre)
-{
-    this->_libre = libre;
 }

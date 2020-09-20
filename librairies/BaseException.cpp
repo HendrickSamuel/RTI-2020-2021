@@ -1,6 +1,17 @@
+/***********************************************************/
+/*Auteurs : HENDRICK Samuel et DELAVAL Kevin               */
+/*Groupe : 2302                                            */
+/*Labo : R.T.I.                                            */
+/*Date de la dernière mise à jour : 19/09/2020             */
+/***********************************************************/
+
 #include "BaseException.h"
 
-/*---------------------------------Constructeurs -----------------------------------*/
+/********************************/
+/*                              */
+/*         Constructeurs        */
+/*                              */
+/********************************/
 
 BaseException::BaseException()
 {
@@ -19,12 +30,42 @@ BaseException::BaseException(const BaseException& old)
 	setMessage(old.getMessage());
 }
 
+
+/********************************/
+/*                              */
+/*          Destructeurs        */
+/*                              */
+/********************************/
+
 BaseException::~BaseException()
 {
 	if(message)
 		delete message;
 }
-/*---------------------------------Setteurs -----------------------------------*/
+
+/********************************/
+/*                              */
+/*           Operators          */
+/*                              */
+/********************************/
+
+/********************************/
+/*                              */
+/*            Getters           */
+/*                              */
+/********************************/
+
+const char* BaseException::getMessage() const
+{
+	return message;
+}
+
+
+/********************************/
+/*                              */
+/*            Setters           */
+/*                              */
+/********************************/
 
 void BaseException::setMessage(const char* chaineget)
 {
@@ -43,9 +84,9 @@ void BaseException::setMessage(const char* chaineget)
 	}
 } 
 
-/*---------------------------------Getteurs -----------------------------------*/
 
-const char* BaseException::getMessage() const
-{
-	return message;
-}
+/********************************/
+/*                              */
+/*            Methodes          */
+/*                              */
+/********************************/
