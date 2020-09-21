@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
 
     try
     {
-        socketEcoute.Create();
-        socketEcoute.Bind();
+        socketEcoute.create();
+        socketEcoute.bind();
     }
     catch(BaseException& e)
     {
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
     do
     {
-        socketEcoute.Listen(SOMAXCONN);
+        socketEcoute.listen(SOMAXCONN);
 
         socketService = socketEcoute.Accept();  
 
