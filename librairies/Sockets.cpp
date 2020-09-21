@@ -51,7 +51,7 @@ Sockets::Sockets(int hSocket, sockaddr_in adresse)
 
 bool Sockets::esLibre()
 {
-    return this->_libre;
+    return this->libre;
 }
 
 int Sockets::gethSocket()
@@ -92,7 +92,7 @@ sockaddr_in Sockets::getAdressByName(const char* hostName)
 
 void Sockets::setLibre(bool libre)
 {
-    this->_libre = libre;
+    this->libre = libre;
 }
 
 
@@ -116,7 +116,7 @@ void Sockets::create()
 
 void Sockets::receiveStruct(void* structure, int taille)
 {
-    Warning("taille que l'on attend: %d\n", taille);
+    Warning("taille","taille que l'on attend: %d\n", taille);
     int tailleMessageRecu = 0;
     int nbreBytesLus = 0;
     int nbreBytesRecus = 0;

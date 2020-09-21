@@ -21,7 +21,6 @@
 #include "BaseException.h"
 
 
-#define PORT 5000
 #define EOC "END_OF_CONNEXION"
 #define DOC "DENY_OF_CONNEXION"
 
@@ -30,8 +29,9 @@ using namespace std;
 class Sockets
 {
     protected: 
+        int port;
         int hSocket;
-        bool _libre;
+        bool libre;
         struct sockaddr_in adresseSocket;
 
     public:

@@ -7,6 +7,7 @@
 
 #include "CMMP.h"
 #include "Trace.h"
+#include "Configurator.h"
 #include <stdio.h>     
 #include <iostream>
 #include <unistd.h> 
@@ -34,6 +35,28 @@ int main(int argc, char *argv[])
     int ret;
     SocketsServeur socketEcoute;
     SocketsServeur socketService;
+    char *portTmp;
+    int port;
+    char *adresse;
+
+    /* lecture des parametres sur fichier */
+    try
+    {
+        portTmp = Configurator::getProperty("test.conf","PORT");
+        adresse = Configurator::getProperty("test.conf","HOSTNAME");
+        if(portTmp == null || adresse == null)
+        {
+            exit(0);
+        }
+        
+        port = atoi(portTmp);
+    }
+    catch(BaseException e)
+    {
+        std::cerr << e.getMessage() << '\n';
+        exit(0);
+    }
+    
 
     Affiche("1","Démarrage du thread principale: \n pid: %d \n tid: %u \n\n", getpid(), pthread_self());
     pthread_mutex_init(&mutexIndiceCourant, NULL);
@@ -45,7 +68,7 @@ int main(int argc, char *argv[])
     try
     {
         socketEcoute.create();
-        socketEcoute.bind();
+        socketEcoute.bind(adresse, port);
     }
     catch(BaseException& e)
     {

@@ -5,20 +5,21 @@
 /*Date de la dernière mise à jour : 19/09/2020             */
 /***********************************************************/
 
-#ifndef SOCKETSSERVEUR_H
-#define SOCKETSSERVEUR_H
+#ifndef CONFIGURATOR_H
+#define CONFIGURATOR_H
 
-#include "Sockets.h"
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+#include "BaseException.h"
 
-class SocketsServeur : public Sockets
-{
+using namespace std;
+class Configurator{
+
     private:
 
     public:
         //constructeurs
-        SocketsServeur();
-        SocketsServeur(int hSocket, sockaddr_in adresse);
-        SocketsServeur(const SocketsServeur& old);
 
         //destructeurs
 
@@ -29,9 +30,8 @@ class SocketsServeur : public Sockets
         //setters
 
         //méthodes
-        void bind(const char* host, int port);
-        void listen(int maxConn);
-        SocketsServeur accept();
+        static char* getProperty(const char* fileName, const char* property);
+
 };
 
-#endif //SOCKETSSERVEUR_H
+#endif
