@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
         getchar();
         socket.Create();
         
-        adresse = socket.getAdressByName("192.168.23.131");
+        adresse = socket.getAdressByName("localhost");
         adresse.sin_family = AF_INET;
-        adresse.sin_port = htons(PORT);
+        adresse.sin_port = htons(50000);
         printf("Adresse IP = %s\n",inet_ntoa(adresse.sin_addr));
 
 
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 
         if(send(socket.gethSocket(), (void*)&proto, sizeof(struct protocole),0) == -1)
         {
-            Error("ERREUR");
+            Error("1","ERREUR");
         }
         else
         {
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
         if(send(socket.gethSocket(), (void*)&proto, sizeof(struct protocole),0) == -1)
         {
-            Error("ERREUR");
+            Error("1","ERREUR");
         }
         else
         {

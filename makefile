@@ -5,7 +5,7 @@ CLIENT = ./clients
 
 INCL = -I $(LIBRAIRIE)/
 GPP = g++ -m64 -Wall -lnsl -lsocket -lpthread $(INCL) -D CPP -D SUN #-D DEV -D DEVPLUS
-LIBRAIRIE_O = Sockets.o SocketsClient.o SocketsServeur.o BaseException.o Trace.o
+LIBRAIRIE_O = Sockets.o SocketsServeur.o BaseException.o Trace.o Configurator.o
 
 SERVERCONTAINERS_OBJS = $(LIBRAIRIE_O)
 CLIENTCONTAINERS_OBJS = $(LIBRAIRIE_O)
@@ -39,3 +39,7 @@ Trace.o: $(LIBRAIRIE)/Trace.cpp $(LIBRAIRIE)/Trace.h
 BaseException.o: $(LIBRAIRIE)/BaseException.cpp $(LIBRAIRIE)/BaseException.h
 	echo creation de BaseException.o;
 	$(GPP) -c $(LIBRAIRIE)/BaseException.cpp -o BaseException.o;
+
+Configurator.o: $(LIBRAIRIE)/Configurator.cpp $(LIBRAIRIE)/Configurator.h
+	echo creation de Configurator.o;
+	$(GPP) -c $(LIBRAIRIE)/Configurator.cpp -o Configurator.o;
