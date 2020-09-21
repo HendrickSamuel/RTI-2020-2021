@@ -54,10 +54,12 @@ class Sockets
         void setLibre(bool libre);
 
         //méthodes
-        void Close();
-        void Create();
-        void ReceiveStruct(void* structure, int taille);
+        void close();
+        void create();
+        void receiveStruct(void* structure, int taille);
 
+        /*  methode init qui serai virtuelle pure et  qui servirai a la connexion pour rendre la classe 
+            abstraite cette classe permetrai la connection, qui est differente entre le client et le serveur */
 
         //en commun des sockets create - getadresse - send - receive - close - shutdown
 };

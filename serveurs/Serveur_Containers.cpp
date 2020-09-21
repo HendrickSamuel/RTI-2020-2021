@@ -35,18 +35,21 @@ int main(int argc, char *argv[])
     int ret;
     SocketsServeur socketEcoute;
     SocketsServeur socketService;
-    char *port;
-    int test;
+    char *portTmp;
+    int port;
     char *adresse;
 
+    /* lecture des parametres sur fichier */
     try
     {
-        port = Configurator::getProperty("test.conf","PORT");
-        cout << "ici" << endl;
+        portTmp = Configurator::getProperty("test.conf","PORT");
         adresse = Configurator::getProperty("test.conf","HOSTNAME");
-
-        test = atoi(port);
-        cout << "test: " << test << endl;
+        if(portTmp == null || adresse == null)
+        {
+            exit(0);
+        }
+        
+        port = atoi(portTmp);
     }
     catch(BaseException e)
     {
@@ -64,8 +67,8 @@ int main(int argc, char *argv[])
 
     try
     {
-        socketEcoute.Create();
-        socketEcoute.Bind(adresse, test);
+        socketEcoute.create();
+        socketEcoute.bind(adresse, port);
     }
     catch(BaseException& e)
     {
@@ -85,7 +88,7 @@ int main(int argc, char *argv[])
 
     do
     {
-        socketEcoute.Listen(SOMAXCONN);
+        socketEcoute.listen(SOMAXCONN);
 
         socketService = socketEcoute.Accept();  
 

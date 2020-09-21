@@ -15,7 +15,7 @@
 
 Sockets::Sockets()
 {
-    //this->Create();
+    //this->create();
 }
 
 Sockets::Sockets(const Sockets& old)
@@ -102,19 +102,19 @@ void Sockets::setLibre(bool libre)
 /*                              */
 /********************************/
 
-void Sockets::Close()
+void Sockets::close()
 {
     close(this->hSocket);
 }
 
-void Sockets::Create()
+void Sockets::create()
 {
     this->hSocket = socket(AF_INET, SOCK_STREAM, 0);
         if(this->hSocket == -1)
             throw BaseException("impossible de creer un socket");        
 }
 
-void Sockets::ReceiveStruct(void* structure, int taille)
+void Sockets::receiveStruct(void* structure, int taille)
 {
     Warning("taille","taille que l'on attend: %d\n", taille);
     int tailleMessageRecu = 0;

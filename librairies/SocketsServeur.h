@@ -29,9 +29,9 @@ class SocketsServeur : public Sockets
         //setters
 
         //méthodes
-        void Bind(const char* host, int port);
-        void Listen(int maxConn);
-        SocketsServeur Accept();
+        void bind(const char* host, int port);
+        void listen(int maxConn);
+        SocketsServeur accept();
 };
 
 #endif //SOCKETSSERVEUR_H

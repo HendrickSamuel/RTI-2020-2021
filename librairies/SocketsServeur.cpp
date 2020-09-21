@@ -17,7 +17,7 @@ SocketsServeur::SocketsServeur(int hSocket, sockaddr_in adresse)
     this->adresseSocket = adresseSocket;
 }
 
-void SocketsServeur::Bind(const char* host, int port)
+void SocketsServeur::bind(const char* host, int port)
 {
     int result;
     struct sockaddr_in adresseSocket;
@@ -39,13 +39,13 @@ void SocketsServeur::Bind(const char* host, int port)
         printf("<OK> Bind adresse et port socket OK\n");
 }
 
-void SocketsServeur::Listen(int maxConn)
+void SocketsServeur::listen(int maxConn)
 {
     //TODO: verifier handler ? 
     listen(this->hSocket, maxConn);
 }
 
-SocketsServeur SocketsServeur::Accept()
+SocketsServeur SocketsServeur::accept()
 {
     struct sockaddr_in adresse;
     int hSocketService;
