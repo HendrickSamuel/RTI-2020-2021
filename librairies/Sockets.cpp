@@ -114,6 +114,16 @@ void Sockets::create()
             throw BaseException("impossible de creer un socket");        
 }
 
+void Sockets::send()
+{
+
+}
+
+void Sockets::recieve()
+{
+
+}
+
 void Sockets::receiveStruct(void* structure, int taille)
 {
     Warning("taille","taille que l'on attend: %d\n", taille);

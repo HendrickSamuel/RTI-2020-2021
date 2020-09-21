@@ -1,4 +1,17 @@
+/***********************************************************/
+/*Auteurs : HENDRICK Samuel et DELAVAL Kevin               */
+/*Groupe : 2302                                            */
+/*Labo : R.T.I.                                            */
+/*Date de la dernière mise à jour : 19/09/2020             */
+/***********************************************************/
+
 #include "SocketsServeur.h"
+
+/********************************/
+/*                              */
+/*         Constructeurs        */
+/*                              */
+/********************************/
 
 SocketsServeur::SocketsServeur()
 {
@@ -17,10 +30,46 @@ SocketsServeur::SocketsServeur(int hSocket, sockaddr_in adresse)
     this->adresseSocket = adresseSocket;
 }
 
+/********************************/
+/*                              */
+/*          Destructeurs        */
+/*                              */
+/********************************/
+
+/********************************/
+/*                              */
+/*           Operators          */
+/*                              */
+/********************************/
+
+/********************************/
+/*                              */
+/*            Getters           */
+/*                              */
+/********************************/
+
+/********************************/
+/*                              */
+/*            Setters           */
+/*                              */
+/********************************/
+
+/********************************/
+/*                              */
+/*            Methodes          */
+/*                              */
+/********************************/
+
+void SocketsServeur::init(const char* host, int port)
+{
+        this->create();
+        this->bind(host, port);
+}
+
 void SocketsServeur::bind(const char* host, int port)
 {
-    int result;
-    struct sockaddr_in adresseSocket;
+    int result; //FIXME: utile ??
+    struct sockaddr_in adresseSocket; //FIXME: redondant ?? avec socket
     
     adresseSocket = this->getAdressByName(host);
     adresseSocket.sin_family = AF_INET;

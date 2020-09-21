@@ -16,6 +16,9 @@ class SocketsClient : public SocketsServeur
         
     public:
         //constructeurs
+        SocketsClient();
+        SocketsClient(int hSocket, sockaddr_in adresse);
+        SocketsClient(const SocketsClient& old);
 
         //destructeurs
 
@@ -26,6 +29,8 @@ class SocketsClient : public SocketsServeur
         //setters
 
         //méthodes
+        void connect(const char* host);
+        void init(const char* host, int port);
 
 };
 

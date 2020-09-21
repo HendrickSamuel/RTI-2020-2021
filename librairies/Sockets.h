@@ -56,10 +56,10 @@ class Sockets
         //méthodes
         void close();
         void create();
+        void send();
+        void recieve();
         void receiveStruct(void* structure, int taille);
-
-        /*  methode init qui serai virtuelle pure et  qui servirai a la connexion pour rendre la classe 
-            abstraite cette classe permetrai la connection, qui est differente entre le client et le serveur */
+        virtual void init(const char* host, int port) = 0;
 
         //en commun des sockets create - getadresse - send - receive - close - shutdown
 };

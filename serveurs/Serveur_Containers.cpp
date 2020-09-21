@@ -67,8 +67,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        socketEcoute.create();
-        socketEcoute.bind(adresse, port);
+        socketEcoute.init(adresse, port);
     }
     catch(BaseException& e)
     {
