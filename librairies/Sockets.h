@@ -57,7 +57,7 @@ class Sockets
         void closeSocket();
         void create();
         void send();
-        void recieveString();
+        void recieveString(char* message, int taille);
         void receiveStruct(void* structure, int taille); 
         virtual void init(const char* host, int port) = 0;
 

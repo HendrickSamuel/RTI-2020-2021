@@ -119,9 +119,36 @@ void Sockets::send()
 
 }
 
-void Sockets::recieveString()
+void Sockets::recieveString(char* message, int taille)
 {
+    char buff[taille];
+    int tailleMessageRecu = 0;
+    bool fin = false;
+    int nbrBytesRecus = 0;
 
+    memset(buf,0,sizeof(buff));
+    do
+    {
+        if((nbrBytesRecus = recv(this->hSocket, buff, taille, 0)) == -1)
+        {
+            Affiche("Error","Tout le message n'a pas su etre lu: %d\n", errno);
+            //TODO: fermer socket ou qqch ? 
+        }
+        else
+        {
+            //TODO: verifier si le buffer contient les chars de fin de chaine
+            if(nbrBytesRecus == 0)
+            {
+                throw BaseException("Le client est parti");
+            }
+            memcpy((char*)message+tailleMessageRecu,buff,nbrBytesRecus);
+            tailleMessageRecu+=nbrBytesRecus;
+        }
+        
+    } while (nbrBytesRecus!=0 && nbrBytesRecus!=-1 && !fin);
+    
+    message[tailleMessageRecu-2]=0; // \0 ?
+    memcpy(message, buff, sizeof(buff)); //mettre dans message le contenu de buff
 }
 
 void Sockets::receiveStruct(void* structure, int taille)
@@ -136,13 +163,13 @@ void Sockets::receiveStruct(void* structure, int taille)
         if((nbreBytesRecus = recv(this->hSocket,((char*)structure)+tailleMessageRecu, taille-tailleMessageRecu,0)) == -1)
         {
             Affiche("Error","Tout le message n'a pas su etre lu: %d\n", errno);
+            //TODO: fermer socket ou qqch ?
         }
         else
         {
             if(nbreBytesRecus == 0)
             {
                 throw BaseException("Le client est parti");
-                Affiche("INFO","CLIENT PARTI");
             }
             tailleMessageRecu += nbreBytesRecus;
             Affiche("INFO","Taille message recu = %d et taille attendue %d \n",tailleMessageRecu, taille);
