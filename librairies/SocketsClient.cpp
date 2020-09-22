@@ -62,7 +62,7 @@ SocketsClient::SocketsClient(const SocketsClient& old)
 
 void SocketsClient::init(const char* host, int port)
 {
-    this->create();
+    this->createSocket();
     this->connect(host, port);
 }
 

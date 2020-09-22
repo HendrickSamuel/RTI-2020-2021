@@ -7,29 +7,38 @@
 
 #include "CMMP.h"
 #include <iostream>
-#include "Sockets.h"
+#include "SocketsClient.h"
 #include "BaseException.h"
+#include "Configurator.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
     int ret;
-    Sockets  socket;
+    SocketsClient  socket;
     struct protocole proto;
-    struct sockaddr_in adresse;
-    
+
+    char *portTmp;
+    int port;
+    char *adresse;
+
+    /* lecture des parametres sur fichier */
     try
     {
-        getchar();
-        socket.Create();
+        portTmp = Configurator::getProperty("test.conf","PORT");
+        adresse = Configurator::getProperty("test.conf","HOSTNAME");
+        if(portTmp == NULL || adresse == NULL)
+        {
+            exit(0);
+        }
         
-        adresse = socket.getAdressByName("localhost");
-        adresse.sin_family = AF_INET;
-        adresse.sin_port = htons(50000);
-        printf("Adresse IP = %s\n",inet_ntoa(adresse.sin_addr));
+        port = atoi(portTmp);
+        socket.init(adresse, port);
 
+        //printf("Adresse IP = %s\n",inet_ntoa(adresse.sin_addr));
 
+/*
         if (( ret = connect(socket.gethSocket(), (struct sockaddr *)&adresse, sizeof(struct sockaddr_in)))== -1)
         {
             printf("Erreur sur connect de la socket %d\n", errno);
@@ -101,8 +110,8 @@ int main(int argc, char *argv[])
         }
         getchar();
 
-        socket.Close();
-        
+        socket.closeSocket();
+    */    
     }
     catch(BaseException& e)
     {

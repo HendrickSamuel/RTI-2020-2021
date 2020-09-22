@@ -54,11 +54,11 @@ class Sockets
         void setLibre(bool libre);
 
         //méthodes
-        void close();
+        void closeSocket();
         void create();
         void send();
-        void recieve();
-        void receiveStruct(void* structure, int taille);
+        void recieveString();
+        void receiveStruct(void* structure, int taille); 
         virtual void init(const char* host, int port) = 0;
 
         //en commun des sockets create - getadresse - send - receive - close - shutdown

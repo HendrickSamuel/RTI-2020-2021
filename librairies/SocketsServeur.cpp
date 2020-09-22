@@ -63,10 +63,10 @@ SocketsServeur::SocketsServeur(int hSocket, sockaddr_in adresse)
 void SocketsServeur::init(const char* host, int port)
 {
         this->create();
-        this->bind(host, port);
+        this->bindSocket(host, port);
 }
 
-void SocketsServeur::bind(const char* host, int port)
+void SocketsServeur::bindSocket(const char* host, int port)
 {
     int result; //FIXME: utile ??
     struct sockaddr_in adresseSocket; //FIXME: redondant ?? avec socket
@@ -88,13 +88,13 @@ void SocketsServeur::bind(const char* host, int port)
         printf("<OK> Bind adresse et port socket OK\n");
 }
 
-void SocketsServeur::listen(int maxConn)
+void SocketsServeur::listenSocket(int maxConn)
 {
     //TODO: verifier handler ? 
     listen(this->hSocket, maxConn);
 }
 
-SocketsServeur SocketsServeur::accept()
+SocketsServeur SocketsServeur::acceptSocket()
 {
     struct sockaddr_in adresse;
     int hSocketService;

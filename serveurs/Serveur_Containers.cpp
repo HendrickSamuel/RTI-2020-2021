@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     {
         portTmp = Configurator::getProperty("test.conf","PORT");
         adresse = Configurator::getProperty("test.conf","HOSTNAME");
-        if(portTmp == null || adresse == null)
+        if(portTmp == NULL || adresse == NULL)
         {
             exit(0);
         }
@@ -87,9 +87,9 @@ int main(int argc, char *argv[])
 
     do
     {
-        socketEcoute.listen(SOMAXCONN);
+        socketEcoute.listenSocket(SOMAXCONN);
 
-        socketService = socketEcoute.Accept();  
+        socketService = socketEcoute.acceptSocket();  
 
         Affiche("","Recherche d'une socket libre\n");
 
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
         
     } while (true);
     
-    close(socketEcoute.gethSocket());
+    socketEcoute.closeSocket();
     Affiche("","Fermeture de la socket d'ecoute et du serveur");   
     
     return 0;
@@ -150,7 +150,7 @@ void * fctThread(void * param)
         {
             try
             {
-                hSocketService.ReceiveStruct(&proto, sizeof(struct protocole));
+                hSocketService.receiveStruct(&proto, sizeof(struct protocole));
                 cout << "Message reçu: " << proto.commande << endl;
             }
             catch(BaseException e)
@@ -161,12 +161,12 @@ void * fctThread(void * param)
             
         } while (!finDialogue);
 
-        hSocketService.Close();
+        hSocketService.closeSocket();
 
         pthread_mutex_lock(&mutexIndiceCourant);
         sockets[indiceClientTraite].setLibre(true);
         pthread_mutex_unlock(&mutexIndiceCourant);
     }
-    close(hSocketService.gethSocket());
+    hSocketService.closeSocket();
     return identite;
 }

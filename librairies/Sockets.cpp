@@ -102,7 +102,7 @@ void Sockets::setLibre(bool libre)
 /*                              */
 /********************************/
 
-void Sockets::close()
+void Sockets::closeSocket()
 {
     close(this->hSocket);
 }
@@ -119,7 +119,7 @@ void Sockets::send()
 
 }
 
-void Sockets::recieve()
+void Sockets::recieveString()
 {
 
 }
