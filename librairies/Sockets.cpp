@@ -114,13 +114,21 @@ void Sockets::createSocket()
             throw BaseException("impossible de creer un socket");        
 }
 
-void Sockets::sendString(char* message, int taille)
+void Sockets::sendString(char* message)
 {
 
 }
 
-void Sockets::sendStruct(protocole* structure, int taille)
+void Sockets::sendStruct(protocole* structure)
 {
+
+	if(send(gethSocket(), (void*)&structure, sizeof(struct protocole),0) == -1)
+    {
+        printf("<Erreur> Le message n'a pas pu etre envoye: %d\n", errno);
+        throw BaseException("<Erreur> Le message n'a pas pu etre envoye ");      
+    }	
+    else
+    	printf("<OK> Le message a bien été envoye\n");
 
 }
 
