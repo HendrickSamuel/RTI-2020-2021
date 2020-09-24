@@ -57,10 +57,10 @@ class Sockets
         //méthodes
         void closeSocket();
         void createSocket();
-        void sendString(char* message);
-        void sendStruct(protocole* structure);
+        void sendString(char* message, int taille);
+        void sendStruct(void* structure, int taille);
         void recieveString(char* message, int taille);
-        void receiveStruct(protocole* structure, int taille); 
+        void receiveStruct(void* structure, int taille); 
         virtual void initSocket(const char* host, int port) = 0;
 
         //en commun des sockets create - getadresse - send - receive - close - shutdown

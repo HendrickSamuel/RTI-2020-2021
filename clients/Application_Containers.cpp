@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
     SocketsClient  socket;
     struct protocole proto;
 
+    memset(&proto, 0, sizeof(struct protocole));
+
     char *portTmp;
     int port;
     char *adresse;
@@ -46,15 +48,15 @@ int main(int argc, char *argv[])
         strcpy(proto.donnees.login.nom, "Test");
         strcpy(proto.donnees.login.pwd, "1234");
         
-        socket.sendStruct(&proto);
+        socket.sendStruct((void*)&proto, sizeof(proto));
 
         getchar();
 
         proto.type = Logout;
         strcpy(proto.donnees.logout.nom, "Test");
-        strcpy(proto.donnees.logout.pwd, "1234");        
-        
-        socket.sendStruct(&proto);
+        strcpy(proto.donnees.logout.pwd, "1234");
+
+        socket.sendStruct((void*)&proto, sizeof(proto));
 
         getchar();
 

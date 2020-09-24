@@ -152,6 +152,7 @@ void * fctThread(void * param)
             {
                 hSocketService.receiveStruct(&proto, sizeof(struct protocole));
                 cout << "Message reçu: " << proto.type << endl;
+                cout << "message :" << proto.donnees.login.nom << endl;
             }
             catch(BaseException e)
             {

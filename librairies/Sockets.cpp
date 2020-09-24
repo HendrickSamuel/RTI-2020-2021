@@ -114,15 +114,15 @@ void Sockets::createSocket()
             throw BaseException("impossible de creer un socket");        
 }
 
-void Sockets::sendString(char* message)
+void Sockets::sendString(char* message, int taille)
 {
 
 }
 
-void Sockets::sendStruct(protocole* structure)
+void Sockets::sendStruct(void* structure, int taille)
 {
 
-	if(send(gethSocket(), (void*)&structure, sizeof(struct protocole),0) == -1)
+	if(send(gethSocket(), structure, taille,0) == -1)
     {
         printf("<Erreur> Le message n'a pas pu etre envoye: %d\n", errno);
         throw BaseException("<Erreur> Le message n'a pas pu etre envoye ");      
@@ -164,7 +164,7 @@ void Sockets::recieveString(char* message, int taille)
     memcpy(message, buff, sizeof(buff)); //mettre dans message le contenu de buff
 }
 
-void Sockets::receiveStruct(protocole* structure, int taille)
+void Sockets::receiveStruct(void* structure, int taille)
 {
     Warning("taille","taille que l'on attend: %d\n", taille);
     int tailleMessageRecu = 0;
@@ -192,5 +192,4 @@ void Sockets::receiveStruct(protocole* structure, int taille)
 
     //Affiche("test","Tout le message à été lu \n");
     printf("Tout le message à été lu \n");
-    getchar();
 }

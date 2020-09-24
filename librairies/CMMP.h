@@ -94,7 +94,6 @@ struct protocole
     	struct outputDone	outputDone;
     	struct logout		logout;
     }donnees;
-
 };
 
 #endif //CMMP_H
