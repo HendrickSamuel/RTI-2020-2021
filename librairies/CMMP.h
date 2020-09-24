@@ -80,10 +80,19 @@ struct logout
 };
 
 
+/*structure reponse*/
+struct reponse
+{
+	enum typeRequete type;
+    bool succes;
+    char message[MAXSTRING];
+};
+
+
 /*structure protocole avec un enum et une union*/
 struct protocole
 {
-    enum	typeRequete type;
+    enum typeRequete type;
     union
     {
     	struct login		login;
@@ -93,6 +102,7 @@ struct protocole
     	struct outputOne	outputOne;
     	struct outputDone	outputDone;
     	struct logout		logout;
+		struct reponse		reponse;
     }donnees;
 };
 
