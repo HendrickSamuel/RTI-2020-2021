@@ -60,9 +60,9 @@ SocketsServeur::SocketsServeur(int hSocket, sockaddr_in adresse)
 /*                              */
 /********************************/
 
-void SocketsServeur::init(const char* host, int port)
+void SocketsServeur::initSocket(const char* host, int port)
 {
-        this->create();
+        this->createSocket();
         this->bindSocket(host, port);
 }
 

@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        socketEcoute.init(adresse, port);
+        socketEcoute.initSocket(adresse, port);
     }
     catch(BaseException& e)
     {
@@ -151,7 +151,7 @@ void * fctThread(void * param)
             try
             {
                 hSocketService.receiveStruct(&proto, sizeof(struct protocole));
-                cout << "Message reçu: " << proto.commande << endl;
+                cout << "Message reçu: " << proto.type << endl;
             }
             catch(BaseException e)
             {

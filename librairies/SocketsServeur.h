@@ -31,7 +31,7 @@ class SocketsServeur : public Sockets
         //méthodes
         SocketsServeur acceptSocket();
         void listenSocket(int maxConn);
-        void init(const char* host, int port);
+        void initSocket(const char* host, int port);
         void bindSocket(const char* host, int port);
 };
 

@@ -107,14 +107,19 @@ void Sockets::closeSocket()
     close(this->hSocket);
 }
 
-void Sockets::create()
+void Sockets::createSocket()
 {
     this->hSocket = socket(AF_INET, SOCK_STREAM, 0);
         if(this->hSocket == -1)
             throw BaseException("impossible de creer un socket");        
 }
 
-void Sockets::send()
+void Sockets::sendString(char* message, int taille)
+{
+
+}
+
+void Sockets::sendStruct(protocole* structure, int taille)
 {
 
 }
@@ -126,7 +131,7 @@ void Sockets::recieveString(char* message, int taille)
     bool fin = false;
     int nbrBytesRecus = 0;
 
-    memset(buf,0,sizeof(buff));
+    memset(buff,0,sizeof(buff));
     do
     {
         if((nbrBytesRecus = recv(this->hSocket, buff, taille, 0)) == -1)
@@ -151,7 +156,7 @@ void Sockets::recieveString(char* message, int taille)
     memcpy(message, buff, sizeof(buff)); //mettre dans message le contenu de buff
 }
 
-void Sockets::receiveStruct(void* structure, int taille)
+void Sockets::receiveStruct(protocole* structure, int taille)
 {
     Warning("taille","taille que l'on attend: %d\n", taille);
     int tailleMessageRecu = 0;

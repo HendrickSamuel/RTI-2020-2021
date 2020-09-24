@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "system_error": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "ios": "cpp"
     }
 }

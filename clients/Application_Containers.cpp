@@ -34,9 +34,10 @@ int main(int argc, char *argv[])
         }
         
         port = atoi(portTmp);
-        socket.init(adresse, port);
+        socket.initSocket(adresse, port);
+        
+        getchar();
 
-        //printf("Adresse IP = %s\n",inet_ntoa(adresse.sin_addr));
 
 /*
         if (( ret = connect(socket.gethSocket(), (struct sockaddr *)&adresse, sizeof(struct sockaddr_in)))== -1)

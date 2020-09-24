@@ -1,16 +1,19 @@
 .SILENT:
+
+PROGRAM = Application_Containers Serveur_Containers
+
 LIBRAIRIE = ./librairies
 SERVEURS = ./serveurs
 CLIENT = ./clients
 
 INCL = -I $(LIBRAIRIE)/
 GPP = g++ -m64 -Wall -lnsl -lsocket -lpthread $(INCL) -D CPP -D SUN #-D DEV -D DEVPLUS
-LIBRAIRIE_O = Sockets.o SocketsServeur.o BaseException.o Trace.o Configurator.o
+LIBRAIRIE_O = Sockets.o SocketsServeur.o SocketsClient.o BaseException.o Trace.o Configurator.o
 
 SERVERCONTAINERS_OBJS = $(LIBRAIRIE_O)
 CLIENTCONTAINERS_OBJS = $(LIBRAIRIE_O)
 
-ALL: Serveur_Containers Application_Containers
+all: $(PROGRAM)
 
 Serveur_Containers: $(SERVERCONTAINERS_OBJS) $(SERVEURS)/Serveur_Containers.cpp
 	echo creation du Serveur_Containers;

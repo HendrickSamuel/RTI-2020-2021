@@ -10,7 +10,7 @@
 
 #include "Sockets.h"
 
-class SocketsClient : public SocketsServeur
+class SocketsClient : public Sockets
 {
     private:
         
@@ -29,8 +29,8 @@ class SocketsClient : public SocketsServeur
         //setters
 
         //méthodes
-        void connect(const char* host);
-        void init(const char* host, int port);
+        void connectSocket(const char* host, int port);
+        void initSocket(const char* host, int port);
 
 };
 

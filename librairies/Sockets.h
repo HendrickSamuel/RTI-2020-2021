@@ -8,6 +8,7 @@
 #ifndef SOCKETS_H
 #define SOCKETS_H
 
+#include "CMMP.h"
 #include "Trace.h"
 #include <errno.h>
 #include <stdio.h>
@@ -55,11 +56,12 @@ class Sockets
 
         //méthodes
         void closeSocket();
-        void create();
-        void send();
+        void createSocket();
+        void sendString(char* message, int taille);
+        void sendStruct(protocole* structure, int taille);
         void recieveString(char* message, int taille);
-        void receiveStruct(void* structure, int taille); 
-        virtual void init(const char* host, int port) = 0;
+        void receiveStruct(protocole* structure, int taille); 
+        virtual void initSocket(const char* host, int port) = 0;
 
         //en commun des sockets create - getadresse - send - receive - close - shutdown
 };
