@@ -31,6 +31,7 @@ class Configurator{
 
         //méthodes
         static char* getProperty(const char* fileName, const char* property);
+        static void EffEcran(void);
 
 };
 

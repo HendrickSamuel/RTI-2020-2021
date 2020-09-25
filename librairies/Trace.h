@@ -36,4 +36,6 @@ void Affiche_hidden(const char* couleur, const char* entete ,const char* ficher,
 #define Warning(message,...) Affiche_hidden(JAUNE,message,__FILE__,__LINE__,__VA_ARGS__)
 #define Error(message,...) Affiche_hidden(ROUGE,message,__FILE__,__LINE__,__VA_ARGS__)
 
+void EffEcran(void);
+
 #endif //TRACE_H

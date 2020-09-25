@@ -21,3 +21,12 @@ void Affiche_hidden(const char* couleur, const char* entete ,const char* ficher,
     #endif
     return ;
 }
+
+void EffEcran(void)
+{
+#ifdef CPP
+cout << "\033[2J" ;
+#else
+printf("\033[2J");
+#endif
+}
