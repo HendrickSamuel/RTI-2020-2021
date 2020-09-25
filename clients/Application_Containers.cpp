@@ -229,6 +229,9 @@ int main(int argc, char *argv[])
                     }
                     break;
             } 
+
+            cout << "\tAppuyez sur une touche" << endl;
+            cin >> choix;
         }
     }
     
@@ -251,7 +254,7 @@ void afficheEntete()
 	cout << "********************************************************************************************************" << endl;
 	cout << "******* Application Containers *************************************************************************" << endl;
 	cout << "********************************************************************************************************" << endl;
-	cout << endl << endl;
+	cout << endl;
 }
 
 
@@ -263,6 +266,6 @@ void afficheMenu()
     cout << "4. Output Ready" << endl;
     cout << "5. Output One" << endl;
     cout << "6. Output Done" << endl;
-    cout << "7. Logout" << endl;
+    cout << "7. Logout" << endl << endl;
     cout << "Faites votre choix : ";  
 }

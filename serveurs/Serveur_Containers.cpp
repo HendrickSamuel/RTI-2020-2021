@@ -166,21 +166,17 @@ void * fctThread(void * param)
                 switch(proto.type)
                 {
                     case 1:
+                        if(Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
                         {
-                            //TODO:recherche dans fichier .csv
-                            if(true)
-                            {
-                                proto.donnees.reponse.succes = true;
-                                connect = true;
-                            }
-                            else
-                            {
-                                proto.donnees.reponse.succes = false;
-                                strcpy(proto.donnees.reponse.message, "Login ou mot de passe incorrect");
-                            }
-                            
+                            proto.donnees.reponse.succes = true;
+                            connect = true;
                         }
-                        break;
+                        else
+                        {
+                            proto.donnees.reponse.succes = false;
+                            strcpy(proto.donnees.reponse.message, "Login ou mot de passe incorrect");
+                        }
+                    break;
 
                     case 2:
                         {
@@ -213,10 +209,17 @@ void * fctThread(void * param)
                         break;
 
                     case 7:
+                        if(Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
                         {
-
+                            proto.donnees.reponse.succes = true;
+                            connect = false;
                             finDialogue = true;
                         }
+                        else
+                        {
+                            proto.donnees.reponse.succes = false;
+                            strcpy(proto.donnees.reponse.message, "Logout ou mot de passe incorrect");
+                        }  
                         break;
                 }
             }

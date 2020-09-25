@@ -46,3 +46,35 @@ char* Configurator::getProperty(const char* fileName, const char* property)
     fb.close();
     return NULL;
 }
+
+
+bool Configurator::getLog(const char* filename, char* name, char* pwd)
+{
+	char *pNom, *pMdp;
+	char Tampon[255];
+
+	
+	std::string Tampon1; //variable string pour le getline()
+	
+	ifstream fichier(filename, ios::in); //ouverture du fichier
+		
+	while(fichier >> Tampon1)  //avoir les ligne de valeur
+	{
+		strcpy(Tampon, Tampon1.c_str()); //Copie de string dans char
+		pNom = strtok(Tampon, ";");
+
+        if(strcmp(name, pNom) == 0)
+        {
+            pMdp = strtok (NULL, "\0");
+
+            if(strcmp(pwd, pMdp) == 0)
+            {
+                fichier.close(); 
+                return true;     
+            }
+        }
+	}
+
+	fichier.close(); 
+    return false;   
+}

@@ -10,12 +10,13 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <string.h>
 #include <fstream>
 #include "BaseException.h"
 
 using namespace std;
-class Configurator{
-
+class Configurator
+{
     private:
 
     public:
@@ -31,8 +32,7 @@ class Configurator{
 
         //méthodes
         static char* getProperty(const char* fileName, const char* property);
-        static void EffEcran(void);
-
+        static bool getLog(const char* filename, char* name, char* pwd);
 };
 
 #endif
