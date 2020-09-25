@@ -16,13 +16,12 @@
 using namespace std;
 
 void afficheEntete();
-void afficheMenu1();
-void afficheMenu2();
+void afficheMenu();
 
 int main(int argc, char *argv[])
 {
     int port, choix;
-    bool connecte = true;
+    bool run = true;
     char *portTmp, *adresse;
     SocketsClient  socket;
     struct protocole proto;
@@ -50,87 +49,188 @@ int main(int argc, char *argv[])
         cerr << e.getMessage() << '\n';
     }
 
-    do
+    while(run)
     {
         EffEcran();
         afficheEntete();
-        afficheMenu1();
-
+        afficheMenu();
         cin >> choix;
 
-        if(choix == 1)
+        /*switch du choix client*/
+        switch(choix)
         {
-            connecte = true;
-        }
+            case 1:
+                {
+                    char nom[MAXSTRING];
+                    char pwd[MAXSTRING];
 
-        while(connecte)
-        {
-            char nom[MAXSTRING];
-            char pwd[MAXSTRING];
-
-            EffEcran();
-            afficheEntete();
-            afficheMenu2();
-            cin >> choix;
-
-            switch(choix)
-			{
-				case 1:
-					cout << "\tEntrer votre nom : " << endl;
+                    cout << "\tEntrer votre nom : ";
                     cin >> nom;
-                    cout << "\tEntrer votre mot de passe : " << endl;
+                    cout << "\tEntrer votre mot de passe : ";
                     cin >> pwd;
 
                     proto.type = Login;
                     strcpy(proto.donnees.login.nom, nom);
                     strcpy(proto.donnees.login.pwd, pwd);
-					break;
+                }
+                break;
 
-                case 2:
-					
-					break;
+            case 2:
+                {
+                    proto.type = InputTruck;
+                }
+                break;
 
-                case 3:
-					
-					break;
+            case 3:
+                {
+                    proto.type = InputDone;
+                }
+                break;
 
-                case 4:
-					
-					break;
+            case 4:
+                {
+                    proto.type = OutputReady;
+                }
+                break;
 
-                case 5:
-					
-					break;
+            case 5:
+                {
+                    proto.type = OutputOne;
+                }
+                break;
 
-                case 6:
-					cout << "\tEntrer votre nom : " << endl;
+            case 6:
+                {
+                    proto.type = OutputDone;
+                }
+                break;
+
+            case 7:
+                {
+                    char nom[MAXSTRING];
+                    char pwd[MAXSTRING];
+
+                    cout << "\tEntrer votre nom : ";
                     cin >> nom;
-                    cout << "\tEntrer votre mot de passe : " << endl;
+                    cout << "\tEntrer votre mot de passe : ";
                     cin >> pwd;
+
 
                     proto.type = Logout;
                     strcpy(proto.donnees.login.nom, nom);
                     strcpy(proto.donnees.login.pwd, pwd);	
-					break;
+                }
+                break;
 
-                default:
+            default:
+                cout << "\tChoix incorrecte !!!" << endl;
+                break;
+        }
 
-                    break;
-            }
-
+        if(choix >= 1 && choix <= 7)
+        {
             try
             {
-                socket.sendStruct((void*)&proto, sizeof(proto));
+                socket.sendStruct((void*)&proto, sizeof(struct protocole));
+
+                socket.receiveStruct((void*)&proto, sizeof(struct protocole));
+
             }
             catch(BaseException& e)
             {
-                cerr << e.getMessage() << '\n';
+                std::cerr << e.getMessage() << '\n';
             }
-            cout << "Appuyez sur une touche" << endl;
-            getchar();
-        }
 
-    }while (1);
+            /*switch de la réponse du serveur*/
+            switch(proto.type)
+            {
+                case 1:
+                    /*si connexion acceptée*/
+                    if(proto.donnees.reponse.succes)
+                    {
+                        cout << "Connexion reussie" << endl;
+                    }
+                    else
+                    {
+                        cout << "Connexion echouee : " << proto.donnees.reponse.message << endl;
+                    }                       
+                    break;
+
+                case 2:
+                    /*si InputTruck OK*/
+                    if(proto.donnees.reponse.succes)
+                    {
+                        cout << "InputTruck OK : " << proto.donnees.reponse.message << endl;
+                    }
+                    else
+                    {
+                        cout << "InputTruck NOK : " << proto.donnees.reponse.message << endl;
+                    }    
+                    break;
+
+                case 3:
+                    /*si InputDone OK*/
+                    if(proto.donnees.reponse.succes)
+                    {
+                        cout << "InputDone OK : " << proto.donnees.reponse.message << endl;
+                    }
+                    else
+                    {
+                        cout << "InputDone NOK : " << proto.donnees.reponse.message << endl;
+                    }    
+                    break;
+
+                case 4:
+                    /*si OutputReady OK*/
+                    if(proto.donnees.reponse.succes)
+                    {
+                        cout << "OutputReady OK : " << proto.donnees.reponse.message << endl;
+                    }
+                    else
+                    {
+                        cout << "OutputReady NOK : " << proto.donnees.reponse.message << endl;
+                    }   
+                    break;
+
+                case 5:
+                    /*si OutputOne OK*/
+                    if(proto.donnees.reponse.succes)
+                    {
+                        cout << "OutputOne OK : " << proto.donnees.reponse.message << endl;
+                    }
+                    else
+                    {
+                        cout << "OutputOne NOK : " << proto.donnees.reponse.message << endl;
+                    }   
+                    break;
+
+                case 6:
+                    /*si OutputDone OK*/
+                    if(proto.donnees.reponse.succes)
+                    {
+                        cout << "OutputDone OK : " << proto.donnees.reponse.message << endl;
+                    }
+                    else
+                    {
+                        cout << "OutputDone NOK : " << proto.donnees.reponse.message << endl;
+                    }   
+                    break;
+
+                case 7:
+                    /*si déconnexion acceptée*/
+                    if(proto.donnees.reponse.succes)
+                    {
+                        cout << "Deconnexion reussie :" << proto.donnees.reponse.message << endl;
+                        run = false;
+                    }
+                    else
+                    {
+                        cout << "Deconnexion echouee :" << proto.donnees.reponse.message << endl;
+                    }
+                    break;
+            } 
+        }
+    }
     
 
     try
@@ -139,7 +239,7 @@ int main(int argc, char *argv[])
     }
     catch(BaseException& e)
     {
-        cerr << e.getMessage() << '\n';
+        std::cerr << e.getMessage() << '\n';
     }
 
     return 0;
@@ -155,21 +255,14 @@ void afficheEntete()
 }
 
 
-void afficheMenu1()
+void afficheMenu()
 {
-    cout << "1. Connexion" << endl;
-    cout << "2. Quitter" << endl;
-    cout << "Faites votre choix : ";
-}
-
-
-void afficheMenu2()
-{
-    cout << "1. Input Truck" << endl;
-    cout << "2. Input Done" << endl;
-    cout << "3. Output Ready" << endl;
-    cout << "4. Output One" << endl;
-    cout << "5. Output Done" << endl;
-    cout << "6. Logout" << endl;
+    cout << "1. Login" << endl;
+    cout << "2. Input Truck" << endl;
+    cout << "3. Input Done" << endl;
+    cout << "4. Output Ready" << endl;
+    cout << "5. Output One" << endl;
+    cout << "6. Output Done" << endl;
+    cout << "7. Logout" << endl;
     cout << "Faites votre choix : ";  
 }

@@ -129,6 +129,7 @@ void * fctThread(void * param)
     
     SocketsServeur hSocketService;
     bool finDialogue = false;
+    bool connect = false;
     int indiceClientTraite;
 
     while(true)
@@ -151,15 +152,92 @@ void * fctThread(void * param)
             try
             {
                 hSocketService.receiveStruct(&proto, sizeof(struct protocole));
-                cout << "Message reçu: " << proto.type << endl;
-                cout << "message :" << proto.donnees.login.nom << endl;
             }
             catch(BaseException e)
             {
                 finDialogue = true;
+                connect = false;
                 std::cerr << e.getMessage() << '\n';
             }
+
+            /*condition pour voir si le login à deja été effectué*/
+            if(connect == true || proto.type == 1)
+            {
+                switch(proto.type)
+                {
+                    case 1:
+                        {
+                            //TODO:recherche dans fichier .csv
+                            if(true)
+                            {
+                                proto.donnees.reponse.succes = true;
+                                connect = true;
+                            }
+                            else
+                            {
+                                proto.donnees.reponse.succes = false;
+                                strcpy(proto.donnees.reponse.message, "Login ou mot de passe incorrect");
+                            }
+                            
+                        }
+                        break;
+
+                    case 2:
+                        {
+        
+                        }
+                        break;
+
+                    case 3:
+                        {
+        
+                        }
+                        break;
+
+                    case 4:
+                        {
+        
+                        }
+                        break;
+
+                    case 5:
+                        {
+        
+                        }
+                        break;
+
+                    case 6:
+                        {
+        
+                        }
+                        break;
+
+                    case 7:
+                        {
+
+                            finDialogue = true;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                proto.donnees.reponse.type = Login;
+                proto.donnees.reponse.succes = false;
+                strcpy(proto.donnees.reponse.message, "Vous devez etre connecte pour cette action");
+            }
             
+
+
+            try
+            {
+                hSocketService.sendStruct((void*)&proto, sizeof(struct protocole));
+            }
+            catch(BaseException e)
+            {
+                std::cerr << e.getMessage() << '\n';
+            }
+
         } while (!finDialogue);
 
         hSocketService.closeSocket();
