@@ -15,6 +15,8 @@
 #include <pthread.h>
 #include "BaseException.h"
 #include "SocketsServeur.h"
+#include "ParcAcces.h"
+#include "StructParc.h"
 
 #define NB_MAX_CONNECTIONS 3
 
@@ -32,7 +34,6 @@ int main(int argc, char *argv[])
 {
     int i;
     int j;
-    int ret;
     SocketsServeur socketEcoute;
     SocketsServeur socketService;
     char *portTmp;

@@ -6,18 +6,18 @@ LIBRAIRIE = ./librairies
 SERVEURS = ./serveurs
 CLIENT = ./clients
 
-INCL = -I $(LIBRAIRIE)/
+INCL = -I $(LIBRAIRIE)/ -I $(SERVEURS)/
 GPP = g++ -m64 -Wall -lnsl -lsocket -lpthread $(INCL) -D CPP -D SUN #-D DEV -D DEVPLUS
 LIBRAIRIE_O = Sockets.o SocketsServeur.o SocketsClient.o BaseException.o Trace.o Configurator.o
 
-SERVERCONTAINERS_OBJS = $(LIBRAIRIE_O)
+SERVERCONTAINERS_OBJS = $(LIBRAIRIE_O) ./ParcAcces.o
 CLIENTCONTAINERS_OBJS = $(LIBRAIRIE_O)
 
 all: $(PROGRAM)
 
-Serveur_Containers: $(SERVERCONTAINERS_OBJS) $(SERVEURS)/Serveur_Containers.cpp
+Serveur_Containers: $(SERVERCONTAINERS_OBJS) $(SERVEURS)/Serveur_Containers.cpp ParcAcces.o
 	echo creation du Serveur_Containers
-	$(GPP) $(SERVEURS)/Serveur_Containers.cpp -o ./Serveur_Containers $(SERVERCONTAINERS_OBJS)
+	$(GPP) $(SERVEURS)/Serveur_Containers.cpp -o ./Serveur_Containers $(SERVERCONTAINERS_OBJS) 
 
 Application_Containers: $(CLIENTCONTAINERS_OBJS) $(CLIENT)/Application_Containers.cpp
 	echo creation du Application_Containers
@@ -46,3 +46,7 @@ BaseException.o: $(LIBRAIRIE)/BaseException.cpp $(LIBRAIRIE)/BaseException.h
 Configurator.o: $(LIBRAIRIE)/Configurator.cpp $(LIBRAIRIE)/Configurator.h
 	echo creation de Configurator.o
 	$(GPP) -c $(LIBRAIRIE)/Configurator.cpp -o Configurator.o
+
+ParcAcces.o: $(SERVEURS)/ParcAcces.cpp $(SERVEURS)/ParcAcces.h
+	echo creation de ParcAcces.o
+	$(GPP) -c $(SERVEURS)/ParcAcces.cpp -o ParcAcces.o

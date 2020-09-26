@@ -68,7 +68,6 @@ void SocketsServeur::initSocket(const char* host, int port)
 
 void SocketsServeur::bindSocket(const char* host, int port)
 {
-    int result; //FIXME: utile ??
     struct sockaddr_in adresseSocket; //FIXME: redondant ?? avec socket
     
     adresseSocket = this->getAdressByName(host);

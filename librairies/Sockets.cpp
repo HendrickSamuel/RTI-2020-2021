@@ -168,7 +168,6 @@ void Sockets::receiveStruct(void* structure, int taille)
 {
     Warning("taille","taille que l'on attend: %d\n", taille);
     int tailleMessageRecu = 0;
-    int nbreBytesLus = 0;
     int nbreBytesRecus = 0;
     do 
     {
