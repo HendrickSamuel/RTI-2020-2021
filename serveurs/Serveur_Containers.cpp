@@ -15,8 +15,6 @@
 #include <pthread.h>
 #include "BaseException.h"
 #include "SocketsServeur.h"
-#include "ParcAcces.h"
-#include "StructParc.h"
 
 #define NB_MAX_CONNECTIONS 3
 
@@ -81,9 +79,9 @@ int main(int argc, char *argv[])
     /* ---- DEMARRAGE DES THREADS ---- */
     for(i = 0; i < NB_MAX_CONNECTIONS; i++)
     {
-        ret = pthread_create(&threads[i], NULL, fctThread, (void*)&i);
+        pthread_create(&threads[i], NULL, fctThread, (void*)&i);
         Affiche("TEST","Démarrage du thread secondaire %d\n",i);
-        ret = pthread_detach(threads[i]);
+        pthread_detach(threads[i]);
     }
 
     do
@@ -184,10 +182,11 @@ void * fctThread(void * param)
                         //TODO:recherche si emplacement libre
                         if(true)
                         {
+                            //TODO:enregistrement dans FICH_PARK
                             proto.donnees.reponse.succes = true;
                             cout << "X : ";
                             cin >> proto.donnees.reponse.x;
-                            cout << "Y : "
+                            cout << "Y : ";
                             cin >> proto.donnees.reponse.y;
                         }
                         else
@@ -198,33 +197,63 @@ void * fctThread(void * param)
                         break;
 
                     case 3:
-                        if(true)
+                        //TODO:si container OK
+                        if(true) 
                         {
                             //TODO:enregistrement dans FICH_PARK
+                            proto.donnees.reponse.succes = true;
                         }
                         else
                         {
-                            /* code */
-                        }
-                        
+                            proto.donnees.reponse.succes = false;
+                            strcpy(proto.donnees.reponse.message, "Container non conforme");
 
+                        }
                         break;
 
                     case 4:
+                        //TODO:si il y a des container pour cette destination
+                        // recherche dans FICH_PARK
+                        if(true) 
                         {
-        
+                            //TODO:renvoyer la liste des containers d'apres FICH_PARK
+                            proto.donnees.reponse.succes = true;
                         }
+                        else
+                        {
+                            proto.donnees.reponse.succes = false;
+                            strcpy(proto.donnees.reponse.message, "Pas de container pour cette destination");
+
+                        }  
                         break;
 
                     case 5:
+                        //TODO:recherche du container s'il existe
+                        // recherche dans FICH_PARK
+                        if(true) 
                         {
-        
+                            //TODO:mise a jour de FICH_PARK
+                            proto.donnees.reponse.succes = true;
+                        }
+                        else
+                        {
+                            proto.donnees.reponse.succes = false;
+                            strcpy(proto.donnees.reponse.message, "Container inconnu");
+
                         }
                         break;
 
                     case 6:
+                        //TODO:verifier que le transporteur est bien plein
+                        if(true) 
                         {
-        
+                            proto.donnees.reponse.succes = true;
+                        }
+                        else
+                        {
+                            proto.donnees.reponse.succes = false;
+                            strcpy(proto.donnees.reponse.message, "Incoherence detectee : place encore disponible");
+
                         }
                         break;
 
@@ -245,7 +274,6 @@ void * fctThread(void * param)
             }
             else
             {
-                proto.donnees.reponse.type = Login;
                 proto.donnees.reponse.succes = false;
                 strcpy(proto.donnees.reponse.message, "Vous devez etre connecte pour cette action");
             }
