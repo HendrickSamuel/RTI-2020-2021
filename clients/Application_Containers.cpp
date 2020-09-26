@@ -64,9 +64,9 @@ int main(int argc, char *argv[])
                     char nom[MAXSTRING];
                     char pwd[MAXSTRING];
 
-                    cout << "\tEntrer votre nom : ";
+                    cout << "\tEntrez votre nom : ";
                     cin >> nom;
-                    cout << "\tEntrer votre mot de passe : ";
+                    cout << "\tEntrez votre mot de passe : ";
                     cin >> pwd;
 
                     proto.type = Login;
@@ -78,30 +78,65 @@ int main(int argc, char *argv[])
             case 2:
                 {
                     proto.type = InputTruck;
+                    cout << "\tEntrez l'immatriculation du camion : ";
+                    cin >> proto.donnees.inputTruck.imCamion;
+                    cout << "\tEntrez l'identifiant du container : ";
+                    cin >> proto.donnees.inputTruck.idContainer;
                 }
                 break;
 
             case 3:
                 {
+                    int reponse;
                     proto.type = InputDone;
+                    cout << "\tLe container est il bien en place : " << endl;
+                    cout << "\t 1. OUI" << endl;
+                    cout << "\t 2. NON" << endl;
+                    cout << "\t Choix : ";
+                    cin >> reponse;
+
+                    if(reponse == 1)
+                    {
+                        proto.donnees.inputDone.etat = true;
+                        cout << "\tPoids du container : ";
+                        cin >> proto.donnees.inputDone.poids;
+                    }
+                    else
+                    {
+                        proto.donnees.inputDone.etat = false;
+                    }
                 }
                 break;
 
             case 4:
                 {
                     proto.type = OutputReady;
+                    cout << "\tEntrez l'identifiant du train ou du bateau : ";
+                    cin >> proto.donnees.outputReady.id;
+                    cout << "\tEntrez la capacite maximale : ";
+                    cin >> proto.donnees.outputReady.capacite;
+                    cout << "\tEntrez la destination : ";
+                    cin >> proto.donnees.outputReady.dest;
                 }
                 break;
 
             case 5:
                 {
+                    //TODO: voir comment recupérer le container le plus ancien
                     proto.type = OutputOne;
+                    cout << "\tEntrez l'identifiant du container : ";   // provisoire
+                    cin >> proto.donnees.outputOne.idContainer;         // provisoire
                 }
                 break;
 
             case 6:
                 {
+                    //TODO: A mon avis message automatique, avec une validation d'envoie quand meme
                     proto.type = OutputDone;
+                    cout << "\tEntrez l'identifiant du train ou du bateau : ";
+                    cin >> proto.donnees.outputDone.id;
+                    cout << "\tEntrez le nombre de containers chargé : ";
+                    cin >> proto.donnees.outputDone.nbContainers;
                 }
                 break;
 
@@ -134,7 +169,6 @@ int main(int argc, char *argv[])
                 socket.sendStruct((void*)&proto, sizeof(struct protocole));
 
                 socket.receiveStruct((void*)&proto, sizeof(struct protocole));
-
             }
             catch(BaseException& e)
             {
