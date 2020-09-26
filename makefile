@@ -7,7 +7,7 @@ SERVEURS = ./serveurs
 CLIENT = ./clients
 
 INCL = -I $(LIBRAIRIE)/ -I $(SERVEURS)/
-GPP = g++ -m64 -Wall -lnsl -lsocket -lpthread $(INCL) -D CPP -D SUN #-D DEV -D DEVPLUS
+GPP = g++ -m64 -Wall -lnsl -pthread $(INCL) -D CPP -D LINUX #-D DEV -D DEVPLUS
 LIBRAIRIE_O = Sockets.o SocketsServeur.o SocketsClient.o BaseException.o Trace.o Configurator.o
 
 SERVERCONTAINERS_OBJS = $(LIBRAIRIE_O) ./ParcAcces.o
