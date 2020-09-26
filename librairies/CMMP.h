@@ -83,9 +83,10 @@ struct logout
 /*structure reponse*/
 struct reponse
 {
-	enum typeRequete type;
     bool succes;
     char message[MAXSTRING];
+	int x;
+	int y;
 };
 
 

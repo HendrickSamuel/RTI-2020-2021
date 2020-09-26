@@ -179,15 +179,34 @@ void * fctThread(void * param)
                     break;
 
                     case 2:
+                        //TODO:apres ce message le serveur attendra un INPUT-DONE !!! et pas un autre
+                        //TODO:recherche si emplacement libre
+                        if(true)
                         {
-        
+                            proto.donnees.reponse.succes = true;
+                            cout << "X : ";
+                            cin >> proto.donnees.reponse.x;
+                            cout << "Y : "
+                            cin >> proto.donnees.reponse.y;
+                        }
+                        else
+                        {
+                            proto.donnees.reponse.succes = false;
+                            strcpy(proto.donnees.reponse.message, "Pas d'emplacements libres");
                         }
                         break;
 
                     case 3:
+                        if(true)
                         {
-        
+                            //TODO:enregistrement dans FICH_PARK
                         }
+                        else
+                        {
+                            /* code */
+                        }
+                        
+
                         break;
 
                     case 4:
