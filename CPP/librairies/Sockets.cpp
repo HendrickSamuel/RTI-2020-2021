@@ -72,7 +72,14 @@ sockaddr_in Sockets::getAdressByName(const char* hostName)
     //TODO: peut etre memset à 0 ? 
     if((infosHost = gethostbyname(hostName)) == 0)
     {
-        printf("<Erreur> acquisition d'informations sur le host: %d\n", errno);
+        switch (errno)
+        {
+            case HOST_NOT_FOUND: printf("<Erreur> HOST_NOT_FOUND\n"); break;
+            case NO_DATA: printf("<Erreur> NO_DATA\n"); break;
+            case NO_RECOVERY: printf("<Erreur> NO_RECOVERY\n"); break;
+            case TRY_AGAIN: printf("<Erreur> TRY_AGAIN\n"); break;
+        }
+        
         throw BaseException("<Erreur> acquisition d'informations sur le host ");
     }
     else

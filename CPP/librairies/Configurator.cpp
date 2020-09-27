@@ -34,10 +34,9 @@ char* Configurator::getProperty(const char* fileName, const char* property)
 
         if(strcmp(token, property) == 0)
         {
-            token = strtok(NULL, "\n");
-            cout << "trouvé: " << token << endl;
+            token = strtok(NULL, "\0");
             fb.close();
-            valeur = new char [strlen(token)];
+            valeur = new char [strlen(token)+1];
             strcpy(valeur,token);
             return valeur;
         }
