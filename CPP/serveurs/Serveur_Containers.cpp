@@ -74,8 +74,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    getchar();
-
     /* ---- DEMARRAGE DES THREADS ---- */
     for(i = 0; i < NB_MAX_CONNECTIONS; i++)
     {
