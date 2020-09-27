@@ -8,13 +8,13 @@
 #ifndef STRUCTPARC_H
 #define STRUCTPARC_H
 
-#define MAX_CHAINE 50
+#define MAX_CHAINE 255
 
 struct fich_parc
 {
+    int id;
     float x;
     float y;
-    int id;
     int flagemplacement;
     char datereservation[MAX_CHAINE];
     char datearrivee[MAX_CHAINE];
