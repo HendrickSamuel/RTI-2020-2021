@@ -10,7 +10,7 @@ public class MysqlConnector {
     {
         try {
             Class driver = Class.forName("com.mysql.cj.jdbc.Driver");
-            _con = DriverManager.getConnection("jdbc:mysql://localhost:3306/BD_MOUVEMENTS?serverTimezone="+ TimeZone.getDefault().getID(), "newuser", "");
+            _con = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+database+"?serverTimezone="+ TimeZone.getDefault().getID(), username, password);
             Statement instruc = _con.createStatement();
             ResultSet rs = instruc.executeQuery("show tables;");
             while(rs.next())
