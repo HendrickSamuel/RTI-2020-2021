@@ -6,7 +6,7 @@ public class Tache_Mouvements {
 
     private Socket _socket;
     private boolean disponible;
-    private int nBThreadsLibres;
+    private int nBThreadsLibres = 0;
 
     public Tache_Mouvements()
     {
@@ -26,6 +26,8 @@ public class Tache_Mouvements {
     }
 
     public synchronized Socket prendreSocket() throws InterruptedException{
+        libereThread(); // je précise que mon thread est libre avant de me mettre en attente
+        System.out.println("il y a " + nBThreadsLibres + " Threads libres en attente");
         while(!disponible)
         {
             wait();
@@ -38,12 +40,12 @@ public class Tache_Mouvements {
 
     public synchronized void libereThread()
     {
-        nBThreadsLibres--;
+        nBThreadsLibres++;
     }
 
     public synchronized void occupeThread()
     {
-        nBThreadsLibres++;
+        nBThreadsLibres--;
     }
 
     public synchronized boolean aThreadsDisponibles()
