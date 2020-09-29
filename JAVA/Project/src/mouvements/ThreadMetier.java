@@ -1,11 +1,13 @@
 package mouvements;
 
-public class Serveur_Mouvements_Thread extends Thread
+import java.net.Socket;
+
+public class ThreadMetier extends Thread
 {
     private int _numero;
     private Tache_Mouvements _tache;
 
-    public Serveur_Mouvements_Thread(int i, Tache_Mouvements tache)
+    public ThreadMetier(int i, Tache_Mouvements tache)
     {
         _numero = i;
         _tache = tache;
@@ -18,8 +20,8 @@ public class Serveur_Mouvements_Thread extends Thread
         while(j < 5)
         {
             try {
-                int z = _tache.getSocket();
-                System.out.println("Thread n°" + _numero + " s'occupe de "+z+" \n");
+                Socket z = _tache.prendreSocket();
+                System.out.println("Thread n°" + _numero + " s'occupe de "+ z +" \n");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -4,9 +4,9 @@ import java.net.Socket;
 
 public class Tache_Mouvements {
 
-    private Socket _socket; //todo: changer en liste à taille maximum ?
+    private Socket _socket;
     private boolean disponible;
-    private int _i;
+    private int nBThreadsLibres;
 
     public Tache_Mouvements()
     {
@@ -14,46 +14,41 @@ public class Tache_Mouvements {
         disponible = false;
     }
 
-    public synchronized void donneSocket(Socket sock) throws InterruptedException {
-        while (disponible)
-        {
-            wait();
-        }
+    public synchronized boolean deposerSocket(Socket sock) throws InterruptedException {
+        //while (disponible)wait(); retiré pour que le serveur n'attende pas. si pas de place alors on s'en va
+        if(!aThreadsDisponibles())
+            return false;
+
         _socket = sock;
         disponible = true;
         notify();
+        return true;
     }
 
-    public synchronized void donneSocket(int sock) throws InterruptedException {
-        while (disponible)
-        {
-            wait();
-        }
-        _i = sock;
-        //_socket = sock;
-        disponible = true;
-        notify();
-    }
-
-    /*
-    public synchronized Socket getSocket() throws InterruptedException{
+    public synchronized Socket prendreSocket() throws InterruptedException{
         while(!disponible)
         {
             wait();
         }
         disponible = false;
+        occupeThread(); // je me retire du nbr de threads disponibles
         notify();
         return _socket;
     }
-     */
 
-    public synchronized int getSocket() throws InterruptedException{
-        while(!disponible)
-        {
-            wait();
-        }
-        disponible = false;
-        notify();
-        return _i;
+    public synchronized void libereThread()
+    {
+        nBThreadsLibres--;
     }
+
+    public synchronized void occupeThread()
+    {
+        nBThreadsLibres++;
+    }
+
+    public synchronized boolean aThreadsDisponibles()
+    {
+        return (nBThreadsLibres > 0);
+    }
+
 }
