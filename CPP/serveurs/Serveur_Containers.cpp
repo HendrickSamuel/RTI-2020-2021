@@ -26,8 +26,10 @@ using namespace std;
 
 typedef struct
 {
+    int  dernOpp;
 	bool connect;
 	bool finDialog;
+    char nom[MAXSTRING];
 }S_THREAD;
 
 
@@ -172,114 +174,145 @@ void switchThread(protocole &proto)
 	
 	PT = (S_THREAD*)pthread_getspecific(cle);
 
-    switch(proto.type)
+    cout << "requete recue : " << proto.type << " - ancienne requete : " << PT->dernOpp << endl;
+
+    //FIXME: flemme condition bientot
+    //vérification pour voir si la requête reçue correspond ou non au choix de la requête précédente
+    if((proto.type == Login && (PT->dernOpp != InputTruck && PT->dernOpp != OutputReady && PT->dernOpp != OutputOne )) ||
+        (proto.type == InputTruck && (PT->dernOpp != InputTruck && PT->dernOpp != OutputReady && PT->dernOpp != OutputOne )) || 
+        (proto.type == InputDone && PT->dernOpp == InputTruck ) ||
+        (proto.type == OutputReady && (PT->dernOpp != InputTruck && PT->dernOpp != OutputReady && PT->dernOpp != OutputOne )) ||
+        (proto.type == OutputOne && (PT->dernOpp == OutputReady || PT->dernOpp == OutputOne )) ||
+        (proto.type == OutputDone && PT->dernOpp == OutputOne ) ||
+        (proto.type == Logout && (PT->dernOpp != InputTruck && PT->dernOpp != OutputReady && PT->dernOpp != OutputOne )))
     {
-        case 1:
-            if(Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
-            {
-                proto.donnees.reponse.succes = true;
-                PT->connect = true;
-            }
-            else
-            {
-                proto.donnees.reponse.succes = false;
-                strcpy(proto.donnees.reponse.message, "Login ou mot de passe incorrect");
-            }
-        break;
+        PT->dernOpp = proto.type;
 
-        case 2:
-            //TODO:apres ce message le serveur attendra un INPUT-DONE !!! et pas un autre
-            //TODO:recherche si emplacement libre
-            if(true)
-            {
-                //TODO:enregistrement dans FICH_PARK
-                proto.donnees.reponse.succes = true;
-                cout << "X : ";
-                cin >> proto.donnees.reponse.x;
-                cout << "Y : ";
-                cin >> proto.donnees.reponse.y;
-            }
-            else
-            {
-                proto.donnees.reponse.succes = false;
-                strcpy(proto.donnees.reponse.message, "Pas d'emplacements libres");
-            }
-            break;
+        switch(proto.type)
+        {
+            case 1:
+                if(PT->connect == false)
+                {
+                    if(Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
+                    {
+                        strcpy(PT->nom, proto.donnees.login.nom);
+                        proto.donnees.reponse.succes = true;
+                        PT->connect = true;
+                    }
+                    else
+                    {
+                        proto.donnees.reponse.succes = false;
+                        strcpy(proto.donnees.reponse.message, "Login ou mot de passe incorrect");
+                    }
+                }
+                else
+                {
+                    proto.donnees.reponse.succes = false;
+                    strcpy(proto.donnees.reponse.message, "Vous etes deja connecte");                
+                }
+                break;
 
-        case 3:
-            //TODO:si container OK
-            if(true) 
-            {
-                //TODO:enregistrement dans FICH_PARK
-                proto.donnees.reponse.succes = true;
-            }
-            else
-            {
-                proto.donnees.reponse.succes = false;
-                strcpy(proto.donnees.reponse.message, "Container non conforme");
+            case 2:
+                //TODO:recherche si emplacement libre
+                if(true)
+                {
+                    //TODO:enregistrement dans FICH_PARK
+                    proto.donnees.reponse.succes = true;
+                    cout << "X : ";
+                    cin >> proto.donnees.reponse.x;
+                    cout << "Y : ";
+                    cin >> proto.donnees.reponse.y;
+                }
+                else
+                {
+                    proto.donnees.reponse.succes = false;
+                    strcpy(proto.donnees.reponse.message, "Pas d'emplacements libres");
+                }
+                break;
 
-            }
-            break;
+            case 3:
+                //TODO:si container OK
+                if(true) 
+                {
+                    //TODO:enregistrement dans FICH_PARK
+                    proto.donnees.reponse.succes = true;
+                }
+                else
+                {
+                    proto.donnees.reponse.succes = false;
+                    strcpy(proto.donnees.reponse.message, "Container non conforme");
 
-        case 4:
-            //TODO:si il y a des container pour cette destination
-            // recherche dans FICH_PARK
-            if(true) 
-            {
-                //TODO:renvoyer la liste des containers d'apres FICH_PARK
-                proto.donnees.reponse.succes = true;
-            }
-            else
-            {
-                proto.donnees.reponse.succes = false;
-                strcpy(proto.donnees.reponse.message, "Pas de container pour cette destination");
+                }
+                break;
 
-            }  
-            break;
+            case 4:
+                //TODO:si il y a des container pour cette destination
+                // recherche dans FICH_PARK
+                if(true) 
+                {
+                    //TODO:renvoyer la liste des containers d'apres FICH_PARK
+                    proto.donnees.reponse.succes = true;
+                }
+                else
+                {
+                    proto.donnees.reponse.succes = false;
+                    strcpy(proto.donnees.reponse.message, "Pas de container pour cette destination");
 
-        case 5:
-            //TODO:recherche du container s'il existe
-            // recherche dans FICH_PARK
-            if(true) 
-            {
-                //TODO:mise a jour de FICH_PARK
-                proto.donnees.reponse.succes = true;
-            }
-            else
-            {
-                proto.donnees.reponse.succes = false;
-                strcpy(proto.donnees.reponse.message, "Container inconnu");
+                }  
+                break;
 
-            }
-            break;
+            case 5:
+                //TODO:recherche du container s'il existe
+                // recherche dans FICH_PARK
+                if(true) 
+                {
+                    //TODO:mise a jour de FICH_PARK
+                    proto.donnees.reponse.succes = true;
+                }
+                else
+                {
+                    proto.donnees.reponse.succes = false;
+                    strcpy(proto.donnees.reponse.message, "Container inconnu");
 
-        case 6:
-            //TODO:verifier que le transporteur est bien plein
-            if(true) 
-            {
-                proto.donnees.reponse.succes = true;
-            }
-            else
-            {
-                proto.donnees.reponse.succes = false;
-                strcpy(proto.donnees.reponse.message, "Incoherence detectee : place encore disponible");
+                }
+                break;
 
-            }
-            break;
+            case 6:
+                //TODO:verifier que le transporteur est bien plein
+                if(true) 
+                {
+                    proto.donnees.reponse.succes = true;
+                }
+                else
+                {
+                    proto.donnees.reponse.succes = false;
+                    strcpy(proto.donnees.reponse.message, "Incoherence detectee : place encore disponible");
 
-        case 7:
-            if(Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
-            {
-                proto.donnees.reponse.succes = true;
-                PT->connect = false;
-                PT->finDialog = true;
-            }
-            else
-            {
-                proto.donnees.reponse.succes = false;
-                strcpy(proto.donnees.reponse.message, "Logout ou mot de passe incorrect");
-            }  
-            break;
+                }
+                break;
+
+            case 7:
+                if(PT->connect == true)
+                {
+                    if(strcmp(proto.donnees.login.nom, PT->nom) == 0 && Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
+                    {
+                        proto.donnees.reponse.succes = true;
+                        PT->connect = false;
+                        PT->finDialog = true;
+                    }
+                    else
+                    {
+                        proto.donnees.reponse.succes = false;
+                        strcpy(proto.donnees.reponse.message, "Logout ou mot de passe incorrect");
+                    }  
+                }
+                break;
+        }
+    }
+    else
+    {  
+        proto.donnees.reponse.succes = false;
+        strcpy(proto.donnees.reponse.message, "Type de requete non attendue");    
     }
 }
 
@@ -300,6 +333,7 @@ void * fctThread(void * param)
     S_THREAD *PT = new S_THREAD;
     PT->connect = false;
     PT->finDialog = false;
+    PT->dernOpp = 0;
 
 	//Initialisation de la cle avec la fonction
 	pthread_once(&controleur , InitCle);

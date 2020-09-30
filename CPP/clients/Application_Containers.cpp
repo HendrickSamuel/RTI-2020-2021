@@ -84,8 +84,7 @@ int main(int argc, char *argv[])
 
             switchReceive(proto);
             
-            cout << "\tAppuyez sur une touche" << endl;
-            cin >> choix;
+            cout << endl << endl;
         }
     }
 
@@ -243,11 +242,11 @@ void switchReceive(struct protocole &proto)
             /*si connexion acceptée*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "Connexion reussie" << endl;
+                cout << endl << "Connexion reussie" << endl << endl;
             }
             else
             {
-                cout << "Connexion echouee : " << proto.donnees.reponse.message << endl;
+                cout << endl << "Connexion echouee : " << proto.donnees.reponse.message << endl << endl;
             }                       
             break;
 
@@ -255,11 +254,11 @@ void switchReceive(struct protocole &proto)
             /*si InputTruck OK*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "InputTruck OK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "InputTruck OK : " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
-                cout << "InputTruck NOK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "InputTruck NOK : " << proto.donnees.reponse.message << endl << endl;
             }    
             break;
 
@@ -267,11 +266,11 @@ void switchReceive(struct protocole &proto)
             /*si InputDone OK*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "InputDone OK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "InputDone OK : " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
-                cout << "InputDone NOK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "InputDone NOK : " << proto.donnees.reponse.message << endl << endl;
             }    
             break;
 
@@ -279,11 +278,11 @@ void switchReceive(struct protocole &proto)
             /*si OutputReady OK*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "OutputReady OK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputReady OK : " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
-                cout << "OutputReady NOK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputReady NOK : " << proto.donnees.reponse.message << endl << endl;
             }   
             break;
 
@@ -291,11 +290,11 @@ void switchReceive(struct protocole &proto)
             /*si OutputOne OK*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "OutputOne OK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputOne OK : " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
-                cout << "OutputOne NOK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputOne NOK : " << proto.donnees.reponse.message << endl << endl;
             }   
             break;
 
@@ -303,11 +302,11 @@ void switchReceive(struct protocole &proto)
             /*si OutputDone OK*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "OutputDone OK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputDone OK : " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
-                cout << "OutputDone NOK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputDone NOK : " << proto.donnees.reponse.message << endl << endl;
             }   
             break;
 
@@ -315,11 +314,11 @@ void switchReceive(struct protocole &proto)
             /*si déconnexion acceptée*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "Deconnexion reussie :" << proto.donnees.reponse.message << endl;
+                cout << endl << "Deconnexion reussie" << endl << endl;
             }
             else
             {
-                cout << "Deconnexion echouee :" << proto.donnees.reponse.message << endl;
+                cout << endl << "Deconnexion echouee :" << proto.donnees.reponse.message << endl << endl;
             }
             break;
     } 
