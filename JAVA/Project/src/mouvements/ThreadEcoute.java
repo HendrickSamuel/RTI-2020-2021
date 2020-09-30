@@ -20,6 +20,7 @@ public class ThreadEcoute extends Thread{
         try
         {
             SSocket = new ServerSocket(_port);
+            System.out.println("Thread d'ecoute en attente sur le port: " + _port);
         } catch (IOException e) {
             e.printStackTrace();
         }
