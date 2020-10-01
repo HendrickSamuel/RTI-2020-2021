@@ -9,6 +9,7 @@
 #define PACRACCES_H
 
 #include "StructParc.h"
+#include <list>
 #include <stdio.h>     // FILE structure
 #include <iostream>
 #include <string.h>
@@ -19,12 +20,17 @@ class parcAcces
     private: 
         const char* fileName;
     public: 
+        //constructeurs
         parcAcces(const char* parcAcces);
 
+        //méthodes
+        void initFichPark();
         bool addRecord(struct fich_parc record);
         bool hasRecord(struct fich_parc record);
         bool getRecord(struct fich_parc *record, int id);
         bool removeRecord(struct fich_parc record);
-        bool updateRemove(struct fich_parc record);
+        bool updateRecord(struct fich_parc record);
+        bool searchPlace(struct fich_parc *record);
+        list<fich_parc>* searchDestination(char *destination);
 };
 #endif //PACRACCES_H

@@ -7,6 +7,8 @@
 
 #include "CMMP.h"
 #include "Trace.h"
+#include "ParcAcces.h"
+#include "StructParc.h"
 #include "Configurator.h"
 #include <stdio.h>     
 #include <iostream>
@@ -30,6 +32,7 @@ typedef struct
 	bool connect;
 	bool finDialog;
     char nom[MAXSTRING];
+    struct fich_parc tmpContaineur;
 }S_THREAD;
 
 
@@ -191,7 +194,6 @@ void switchThread(protocole &proto)
         switch(proto.type)
         {
             case Login:
-
                 if(PT->connect == false)
                 {
                     if(Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
@@ -211,47 +213,68 @@ void switchThread(protocole &proto)
                 {
                     proto.donnees.reponse.succes = false;
                     strcpy(proto.donnees.reponse.message, "Vous etes deja connecte");                
-                }
-                
-            break;
+                }    
+                break;
 
             case InputTruck:
-
-                //TODO:recherche si emplacement libre
-                if(true)
                 {
-                    //TODO:enregistrement dans FICH_PARK
-                    proto.donnees.reponse.succes = true;
-                    cout << "X : ";
-                    cin >> proto.donnees.reponse.x;
-                    cout << "Y : ";
-                    cin >> proto.donnees.reponse.y;
-                    strcpy(proto.donnees.reponse.message, "Voice la place reservee");
+                    parcAcces fich_parc("FICH_PARC.dat");
+                    
+                    //recherche si emplacement libre
+                    if(fich_parc.searchPlace(&(PT->tmpContaineur)))
+                    {
+                        PT->tmpContaineur.id = proto.donnees.inputTruck.idContainer;
+                        PT->tmpContaineur.flagemplacement = 1;
+                        //enregistrement dans FICH_PARC
+                        fich_parc.updateRecord(PT->tmpContaineur);
+                        proto.donnees.reponse.succes = true;
+                        proto.donnees.reponse.x = PT->tmpContaineur.x;
+                        proto.donnees.reponse.y = PT->tmpContaineur.y;
+                        strcpy(proto.donnees.reponse.message, "Voice la place reservee en ");
+                    }
+                    else
+                    {
+                        PT->dernOpp = Init;
+                        proto.donnees.reponse.succes = false;
+                        strcpy(proto.donnees.reponse.message, "Pas d'emplacements libres");
+                    }
                 }
-                else
-                {
-                    proto.donnees.reponse.succes = false;
-                    strcpy(proto.donnees.reponse.message, "Pas d'emplacements libres");
-                }
-                
                 break;
 
             case InputDone:
+                {  
+                    parcAcces fich_parc("FICH_PARC.dat");
                     
-                //TODO:si container OK
-                if(true) 
-                {
-                    //TODO:enregistrement dans FICH_PARK
-                    proto.donnees.reponse.succes = true;
-                    strcpy(proto.donnees.reponse.message, "Container enregistre");
-                }
-                else
-                {
-                    proto.donnees.reponse.succes = false;
-                    strcpy(proto.donnees.reponse.message, "Container non conforme");
+                    if(proto.donnees.inputDone.etat == true)
+                    {
 
+                        //verif si le poids du container est OK
+                        if(proto.donnees.inputDone.poids <= atof(Configurator::getProperty("test.conf","POIDS"))) 
+                        {
+                            //enregistrement dans FICH_PARC
+                            PT->tmpContaineur.poids = proto.donnees.inputDone.poids;
+                            fich_parc.updateRecord(PT->tmpContaineur);
+                            proto.donnees.reponse.succes = true;
+                            strcpy(proto.donnees.reponse.message, "Container enregistre");
+                        }
+                        else
+                        {
+                            //libere la place dans FICH_PARC
+                            PT->tmpContaineur.flagemplacement = 0;
+                            fich_parc.updateRecord(PT->tmpContaineur);                       
+                            proto.donnees.reponse.succes = false;
+                            strcpy(proto.donnees.reponse.message, "Container non conforme");
+                        }
+                    }
+                    else
+                    {
+                        //libere la place dans FICH_PARC
+                        PT->tmpContaineur.flagemplacement = 0;
+                        fich_parc.updateRecord(PT->tmpContaineur);
+                        proto.donnees.reponse.succes = false;
+                        strcpy(proto.donnees.reponse.message, PT->nom);
+                    }
                 }
-
                 break;
 
             case OutputReady:
@@ -268,7 +291,6 @@ void switchThread(protocole &proto)
                 {
                     proto.donnees.reponse.succes = false;
                     strcpy(proto.donnees.reponse.message, "Pas de container pour cette destination");
-
                 } 
 
                 break;
