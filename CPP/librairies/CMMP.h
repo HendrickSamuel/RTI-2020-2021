@@ -14,6 +14,7 @@
 /*enum pour le type de requête*/
 enum typeRequete
 {
+	Init		= 0,
 	Login		= 1,
 	InputTruck	= 2,
 	InputDone	= 3,

@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
     catch(BaseException& e)
     {
         cerr << e.getMessage() << '\n';
+        exit(0);
     }
 
     while(run)
@@ -242,7 +243,7 @@ void switchReceive(struct protocole &proto)
             /*si connexion acceptée*/
             if(proto.donnees.reponse.succes)
             {
-                cout << endl << "Connexion reussie" << endl << endl;
+                cout << endl << "Connexion reussie bienvenue " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
@@ -314,7 +315,8 @@ void switchReceive(struct protocole &proto)
             /*si déconnexion acceptée*/
             if(proto.donnees.reponse.succes)
             {
-                cout << endl << "Deconnexion reussie" << endl << endl;
+                cout << endl << "Deconnexion reussie au revoir " << proto.donnees.reponse.message << endl << endl;
+                exit(0);
             }
             else
             {
