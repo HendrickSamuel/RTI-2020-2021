@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
     catch(BaseException& e)
     {
         cerr << e.getMessage() << '\n';
+        exit(0);
     }
 
     while(run)
@@ -84,8 +85,7 @@ int main(int argc, char *argv[])
 
             switchReceive(proto);
             
-            cout << "\tAppuyez sur une touche" << endl;
-            cin >> choix;
+            cout << endl << endl;
         }
     }
 
@@ -131,7 +131,7 @@ void switchSend(int choix, struct protocole &proto)
 {
     switch(choix)
     {
-        case 1:
+        case Login:
             {
                 char nom[MAXSTRING];
                 char pwd[MAXSTRING];
@@ -147,7 +147,7 @@ void switchSend(int choix, struct protocole &proto)
             }
             break;
 
-        case 2:
+        case InputTruck:
             {
                 proto.type = InputTruck;
                 cout << "\tEntrez l'immatriculation du camion : ";
@@ -157,7 +157,7 @@ void switchSend(int choix, struct protocole &proto)
             }
             break;
 
-        case 3:
+        case InputDone:
             {
                 int reponse;
                 proto.type = InputDone;
@@ -180,7 +180,7 @@ void switchSend(int choix, struct protocole &proto)
             }
             break;
 
-        case 4:
+        case OutputReady:
             {
                 proto.type = OutputReady;
                 cout << "\tEntrez l'identifiant du train ou du bateau : ";
@@ -192,16 +192,16 @@ void switchSend(int choix, struct protocole &proto)
             }
             break;
 
-        case 5:
+        case OutputOne:
             {
                 //TODO: voir comment recupérer le container le plus ancien
                 proto.type = OutputOne;
-                cout << "\tEntrez l'identifiant du container : ";   // provisoire
-                cin >> proto.donnees.outputOne.idContainer;         // provisoire
+                cout << "\tEntrez l'identifiant du container : ";
+                cin >> proto.donnees.outputOne.idContainer;
             }
             break;
 
-        case 6:
+        case OutputDone:
             {
                 //TODO: A mon avis message automatique, avec une validation d'envoie quand meme
                 proto.type = OutputDone;
@@ -212,7 +212,7 @@ void switchSend(int choix, struct protocole &proto)
             }
             break;
 
-        case 7:
+        case Logout:
             {
                 char nom[MAXSTRING];
                 char pwd[MAXSTRING];
@@ -239,87 +239,89 @@ void switchReceive(struct protocole &proto)
 {
     switch(proto.type)
     {
-        case 1:
+        case Login:
             /*si connexion acceptée*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "Connexion reussie" << endl;
+                cout << endl << "Connexion reussie bienvenue " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
-                cout << "Connexion echouee : " << proto.donnees.reponse.message << endl;
+                cout << endl << "Connexion echouee : " << proto.donnees.reponse.message << endl << endl;
             }                       
             break;
 
-        case 2:
+        case InputTruck:
             /*si InputTruck OK*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "InputTruck OK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "InputTruck OK : " << proto.donnees.reponse.message << "[" << proto.donnees.reponse.x << "] [" << proto.donnees.reponse.y << "]" << endl << endl;
             }
             else
             {
-                cout << "InputTruck NOK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "InputTruck NOK : " << proto.donnees.reponse.message << endl << endl;  
             }    
             break;
 
-        case 3:
+        case InputDone:
             /*si InputDone OK*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "InputDone OK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "InputDone OK : " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
-                cout << "InputDone NOK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "InputDone NOK : au revoir " << proto.donnees.reponse.message << endl << endl;
+                exit(0);
             }    
             break;
 
-        case 4:
+        case OutputReady:
             /*si OutputReady OK*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "OutputReady OK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputReady OK : " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
-                cout << "OutputReady NOK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputReady NOK : " << proto.donnees.reponse.message << endl << endl;
             }   
             break;
 
-        case 5:
+        case OutputOne:
             /*si OutputOne OK*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "OutputOne OK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputOne OK : " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
-                cout << "OutputOne NOK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputOne NOK : " << proto.donnees.reponse.message << endl << endl;
             }   
             break;
 
-        case 6:
+        case OutputDone:
             /*si OutputDone OK*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "OutputDone OK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputDone OK : " << proto.donnees.reponse.message << endl << endl;
             }
             else
             {
-                cout << "OutputDone NOK : " << proto.donnees.reponse.message << endl;
+                cout << endl << "OutputDone NOK : " << proto.donnees.reponse.message << endl << endl;
             }   
             break;
 
-        case 7:
+        case Logout:
             /*si déconnexion acceptée*/
             if(proto.donnees.reponse.succes)
             {
-                cout << "Deconnexion reussie :" << proto.donnees.reponse.message << endl;
+                cout << endl << "Deconnexion reussie au revoir " << proto.donnees.reponse.message << endl << endl;
+                exit(0);
             }
             else
             {
-                cout << "Deconnexion echouee :" << proto.donnees.reponse.message << endl;
+                cout << endl << "Deconnexion echouee :" << proto.donnees.reponse.message << endl << endl;
             }
             break;
     } 
