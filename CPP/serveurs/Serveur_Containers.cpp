@@ -18,6 +18,9 @@
 #include "BaseException.h"
 #include "SocketsServeur.h"
 
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+
 #define NB_MAX_CONNECTIONS 3
 
 using namespace std;
@@ -28,10 +31,11 @@ using namespace std;
 
 typedef struct
 {
-    typeRequete dernOpp;
 	bool connect;
+    char* message;
 	bool finDialog;
     char nom[MAXSTRING];
+    typeRequete dernOpp;
     struct fich_parc tmpContaineur;
 }S_THREAD;
 
@@ -74,6 +78,7 @@ int main(int argc, char *argv[])
     char *portTmp;
     int port;
     char *adresse;
+
 
     /* lecture des parametres sur fichier */
     try
@@ -198,9 +203,19 @@ void switchThread(protocole &proto)
                 {
                     if(Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
                     {
-                        strcpy(PT->nom, proto.donnees.login.nom);
-                        proto.donnees.reponse.succes = true;
-                        strcpy(proto.donnees.reponse.message, PT->nom);
+                       /* strcpy(PT->nom, proto.donnees.login.nom);
+                        //proto.donnees.reponse.succes = true;
+                        cout << "dans le case login" << endl;
+
+
+                        PT->message = new char[strlen(PT->nom)+3];
+
+                        short taille = strlen(PT->nom);
+                        //strcpy(PT->message, (char*)&taille);
+
+                        strcat(PT->message, PT->nom);*/
+PT->message = new char[100];
+strcpy(PT->message, "1#test on verra bien#j'espere en tt cas#lol#%");
                         PT->connect = true;
                     }
                     else
@@ -225,8 +240,10 @@ void switchThread(protocole &proto)
                     {
                         PT->tmpContaineur.id = proto.donnees.inputTruck.idContainer;
                         PT->tmpContaineur.flagemplacement = 1;
+                        
                         //enregistrement dans FICH_PARC
                         fich_parc.updateRecord(PT->tmpContaineur);
+
                         proto.donnees.reponse.succes = true;
                         proto.donnees.reponse.x = PT->tmpContaineur.x;
                         proto.donnees.reponse.y = PT->tmpContaineur.y;
@@ -251,26 +268,32 @@ void switchThread(protocole &proto)
                         //verif si le poids du container est OK
                         if(proto.donnees.inputDone.poids <= atof(Configurator::getProperty("test.conf","POIDS"))) 
                         {
-                            //enregistrement dans FICH_PARC
+                            
                             PT->tmpContaineur.poids = proto.donnees.inputDone.poids;
+                            //enregistrement dans FICH_PARC
                             fich_parc.updateRecord(PT->tmpContaineur);
+                            
                             proto.donnees.reponse.succes = true;
                             strcpy(proto.donnees.reponse.message, "Container enregistre");
                         }
                         else
                         {
-                            //libere la place dans FICH_PARC
                             PT->tmpContaineur.flagemplacement = 0;
+                            
+                            //libere la place dans FICH_PARC
                             fich_parc.updateRecord(PT->tmpContaineur);                       
+                            
                             proto.donnees.reponse.succes = false;
                             strcpy(proto.donnees.reponse.message, "Container non conforme");
                         }
                     }
                     else
                     {
-                        //libere la place dans FICH_PARC
                         PT->tmpContaineur.flagemplacement = 0;
+                        
+                        //libere la place dans FICH_PARC
                         fich_parc.updateRecord(PT->tmpContaineur);
+                        
                         proto.donnees.reponse.succes = false;
                         strcpy(proto.donnees.reponse.message, PT->nom);
                     }
@@ -408,6 +431,7 @@ void * fctThread(void * param)
             try
             {
                 hSocketService.receiveStruct(&proto, sizeof(struct protocole));
+                cout << "Apres receive" << endl;
             }
             catch(BaseException e)
             {
@@ -429,7 +453,7 @@ void * fctThread(void * param)
             
             try
             {
-                hSocketService.sendStruct((void*)&proto, sizeof(struct protocole));
+                hSocketService.sendString(PT->message, strlen(PT->message));
             }
             catch(BaseException e)
             {

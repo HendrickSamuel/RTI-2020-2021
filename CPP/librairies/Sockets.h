@@ -59,8 +59,10 @@ class Sockets
         void createSocket();
         void sendString(char* message, int taille);
         void sendStruct(void* structure, int taille);
-        void recieveString(char* message, int taille);
         void receiveStruct(void* structure, int taille); 
+        char* receiveString(int taille, char marq1, char marq2);
+        bool marqueurRecu(char* m, int nc, char marq1, char marq2);
+        
         virtual void initSocket(const char* host, int port) = 0;
 
         //en commun des sockets create - getadresse - send - receive - close - shutdown
