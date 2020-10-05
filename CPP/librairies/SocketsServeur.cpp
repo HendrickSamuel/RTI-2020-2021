@@ -95,6 +95,8 @@ void SocketsServeur::listenSocket(int maxConn)
 
 SocketsServeur SocketsServeur::acceptSocket()
 {
+    
+
     struct sockaddr_in adresse;
     int hSocketService;
     unsigned int tailleSockaddr_in = sizeof(struct sockaddr_in);

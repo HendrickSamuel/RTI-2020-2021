@@ -46,24 +46,7 @@ public class ThreadServeur extends Thread{
                 e.printStackTrace();
             }
 
-            ObjectInputStream ois = null;
-            Requete req = null;
-
-            try
-            {
-                ois = new ObjectInputStream(CSocket.getInputStream());
-                req = (Requete)ois.readObject();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            Runnable travail = req.createRunnable(CSocket, _console);
-            if(travail != null)
-            {
-                _sourceTaches.addTache(travail);
-            }
+            _sourceTaches.addTache(CSocket);
         }
     }
 

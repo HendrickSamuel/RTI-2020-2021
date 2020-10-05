@@ -1,10 +1,11 @@
 package genericServer;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class ListeTaches implements SourceTaches
 {
-    private ArrayList<Runnable> _listeTaches;
+    private ArrayList<Socket> _listeTaches;
     private int _waitingThreads = 0;
     public ListeTaches()
     {
@@ -12,7 +13,7 @@ public class ListeTaches implements SourceTaches
     }
 
     @Override
-    public synchronized Runnable getTache() throws InterruptedException {
+    public synchronized Socket getTache() throws InterruptedException {
         _waitingThreads++;
         System.out.println("<Waiting> " + _waitingThreads + " Threads en attente de travail");
         while(!areMoreTaches()) wait();
@@ -27,7 +28,7 @@ public class ListeTaches implements SourceTaches
     }
 
     @Override
-    public synchronized void addTache(Runnable r) {
+    public synchronized void addTache(Socket r) {
         _listeTaches.add(r);
         notify();
     }
