@@ -1,7 +1,9 @@
 package genericServer;
 
+import java.net.Socket;
+
 public interface SourceTaches {
-    public Runnable getTache() throws InterruptedException;
+    public Socket getTache() throws InterruptedException;
     public boolean areMoreTaches();
-    public void addTache(Runnable r);
+    public void addTache(Socket r);
 }

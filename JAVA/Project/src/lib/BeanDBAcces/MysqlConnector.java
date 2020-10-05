@@ -4,22 +4,15 @@ import java.sql.*;
 import java.util.TimeZone;
 
 public class MysqlConnector {
-    private Connection _con;
+    protected Connection _con;
 
     public MysqlConnector(String username, String password, String database)
     {
         try {
             Class driver = Class.forName("com.mysql.cj.jdbc.Driver");
             _con = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+database+"?serverTimezone="+ TimeZone.getDefault().getID(), username, password);
-            Statement instruc = _con.createStatement();
-            ResultSet rs = instruc.executeQuery("show tables;");
-            while(rs.next())
-            {
-                System.out.println(rs.getString(1));
-            }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
     }
-
 }

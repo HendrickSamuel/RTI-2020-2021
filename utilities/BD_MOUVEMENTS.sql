@@ -1,12 +1,14 @@
-CREATE DATABASE IF NOT EXISTS BD_MOUVEMENTS;
+/*CREATE DATABASE IF NOT EXISTS BD_MOUVEMENTS;
 USE BD_MOUVEMENTS;
+*/
+SET storage_engine=INNODB;
 
+DROP TABLE IF EXISTS Mouvements;
 DROP TABLE IF EXISTS Parc;
-DROP TABLE IF EXISTS Societes;
 DROP TABLE IF EXISTS Containers;
 DROP TABLE IF EXISTS Transporteurs;
-DROP TABLE IF EXISTS Mouvements;
 DROP TABLE IF EXISTS Destinations;
+DROP TABLE IF EXISTS Societes;
 
 CREATE TABLE Societes (
 idSociete INT AUTO_INCREMENT PRIMARY KEY,
@@ -67,6 +69,6 @@ destination varchar(255),
 FOREIGN KEY (idContainer) REFERENCES Containers(idContainer),
 FOREIGN KEY (transporteurEntrant) REFERENCES Transporteurs(idTransporteur),
 FOREIGN KEY (transporteurSortant) REFERENCES Transporteurs(idTransporteur),
-FOREIGN KEY (destination) REFERENCES Destinations(ville),
+FOREIGN KEY (destination) REFERENCES Destinations(ville)
 );
 
