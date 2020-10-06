@@ -3,12 +3,10 @@ package protocolTRAMAP;
 import java.io.Serializable;
 
 public class DonneeInputLory implements DonneesTRAMAP, Serializable {
-    private boolean reservation;
     private String numeroReservation;
     private String idContainer;
 
-    public DonneeInputLory(boolean reservation, String numeroReservation, String idContainer) {
-        this.reservation = reservation;
+    public DonneeInputLory(String numeroReservation, String idContainer) {
         this.numeroReservation = numeroReservation;
         this.idContainer = idContainer;
     }
