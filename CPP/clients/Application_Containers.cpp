@@ -23,7 +23,7 @@ using namespace std;
 void afficheEntete();
 void afficheMenu();
 void switchSend(int choix, struct protocole &proto);
-void switchReceive(struct protocole &proto);
+void switchReceive(char *retour);
 
 
 /********************************/
@@ -33,13 +33,15 @@ void switchReceive(struct protocole &proto);
 int main(int argc, char *argv[])
 {
     int port, choix;
+
     bool run = true;
-    char *portTmp, *adresse;
+    char *portTmp = NULL;
+    char *adresse = NULL;
+    char* retour = NULL;
     SocketsClient  socket;
     struct protocole proto;
 
 
-//    memset(&proto, 0, sizeof(struct protocole));
     /* lecture des parametres sur fichier */
     try
     {
@@ -76,14 +78,14 @@ int main(int argc, char *argv[])
             {
                 socket.sendStruct((void*)&proto, sizeof(struct protocole));
 
-                socket.receiveStruct((void*)&proto, sizeof(struct protocole));
+                retour = socket.receiveString(10, '#', '%');
             }
             catch(BaseException& e)
             {
                 std::cerr << e.getMessage() << '\n';
             }
 
-            switchReceive(proto);
+            switchReceive(retour);
             
             cout << endl << endl;
         }
@@ -235,12 +237,15 @@ void switchSend(int choix, struct protocole &proto)
     }
 }
 
-void switchReceive(struct protocole &proto)
+void switchReceive(char *retour)
 {
-    switch(proto.type)
+    int i = 0;
+
+    cout << "le test : [" << retour << "]" << endl;
+    /*switch(i)
     {
         case Login:
-            /*si connexion acceptée*/
+            /*si connexion acceptée*//*
             if(proto.donnees.reponse.succes)
             {
                 cout << endl << "Connexion reussie bienvenue " << proto.donnees.reponse.message << endl << endl;
@@ -252,7 +257,7 @@ void switchReceive(struct protocole &proto)
             break;
 
         case InputTruck:
-            /*si InputTruck OK*/
+            /*si InputTruck OK*//*
             if(proto.donnees.reponse.succes)
             {
                 cout << endl << "InputTruck OK : " << proto.donnees.reponse.message << "[" << proto.donnees.reponse.x << "] [" << proto.donnees.reponse.y << "]" << endl << endl;
@@ -264,7 +269,7 @@ void switchReceive(struct protocole &proto)
             break;
 
         case InputDone:
-            /*si InputDone OK*/
+            /*si InputDone OK*//*
             if(proto.donnees.reponse.succes)
             {
                 cout << endl << "InputDone OK : " << proto.donnees.reponse.message << endl << endl;
@@ -277,7 +282,7 @@ void switchReceive(struct protocole &proto)
             break;
 
         case OutputReady:
-            /*si OutputReady OK*/
+            /*si OutputReady OK*//*
             if(proto.donnees.reponse.succes)
             {
                 cout << endl << "OutputReady OK : " << proto.donnees.reponse.message << endl << endl;
@@ -289,7 +294,7 @@ void switchReceive(struct protocole &proto)
             break;
 
         case OutputOne:
-            /*si OutputOne OK*/
+            /*si OutputOne OK*//*
             if(proto.donnees.reponse.succes)
             {
                 cout << endl << "OutputOne OK : " << proto.donnees.reponse.message << endl << endl;
@@ -301,7 +306,7 @@ void switchReceive(struct protocole &proto)
             break;
 
         case OutputDone:
-            /*si OutputDone OK*/
+            /*si OutputDone OK*//*
             if(proto.donnees.reponse.succes)
             {
                 cout << endl << "OutputDone OK : " << proto.donnees.reponse.message << endl << endl;
@@ -313,7 +318,7 @@ void switchReceive(struct protocole &proto)
             break;
 
         case Logout:
-            /*si déconnexion acceptée*/
+            /*si déconnexion acceptée*//*
             if(proto.donnees.reponse.succes)
             {
                 cout << endl << "Deconnexion reussie au revoir " << proto.donnees.reponse.message << endl << endl;
@@ -324,5 +329,5 @@ void switchReceive(struct protocole &proto)
                 cout << endl << "Deconnexion echouee :" << proto.donnees.reponse.message << endl << endl;
             }
             break;
-    } 
+    } */
 }

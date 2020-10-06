@@ -236,7 +236,7 @@ bool parcAcces::searchPlace(struct fich_parc *record)
     }
 }
 
-list<fich_parc>* searchDestination(char *destination)
+list<fich_parc>* parcAcces::searchDestination(char *destination)
 {
     list<fich_parc> liste;
 
