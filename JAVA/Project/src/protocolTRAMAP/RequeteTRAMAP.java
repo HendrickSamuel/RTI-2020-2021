@@ -18,15 +18,26 @@ public class RequeteTRAMAP implements Requete, Serializable
     private DonneesTRAMAP chargeUtile;
     private Socket socketClient;
 
-    public RequeteTRAMAP(EnumTRAMAP t, DonneesTRAMAP chu)
+    public RequeteTRAMAP(DonneesTRAMAP chu)
     {
-        _type = t;
         chargeUtile = chu;
+        if(chu instanceof DonneeLogin)
+            _type = EnumTRAMAP.LOGIN;
+        else if(chu instanceof DonneeInputLory)
+            _type = EnumTRAMAP.INPUT_LORY;
+        else if(chu instanceof DonneeInputLoryWithoutReservation)
+            _type = EnumTRAMAP.INPUT_LORRY_WITHOUT_RESERVATION;
+        else if(chu instanceof DonneeListOperations)
+            _type = EnumTRAMAP.LIST_OPERATIONS;
+        else if(chu instanceof  DonneeLogout)
+            _type = EnumTRAMAP.LOGOUT;
+        else
+            _type = EnumTRAMAP.NONE;
     }
 
-    public RequeteTRAMAP(EnumTRAMAP t, DonneesTRAMAP chu, Socket s)
+    public RequeteTRAMAP(DonneesTRAMAP chu, Socket s)
     {
-        this(t, chu);
+        this(chu);
         socketClient = s;
     }
 
@@ -74,7 +85,12 @@ public class RequeteTRAMAP implements Requete, Serializable
                     }
                 };
             default:
-                throw new IllegalStateException("Unexpected value: " + _type);
+                return new Runnable() {
+                    @Override
+                    public void run() {
+                        traite404(s, cs);
+                    }
+                };
         }
     }
 
@@ -82,31 +98,17 @@ public class RequeteTRAMAP implements Requete, Serializable
     {
         System.out.println("traiteLOGIN");
 
-        if(chargeUtile instanceof DonneeLogin)
-        {
-            System.out.println("Mot de passe: " + ((DonneeLogin) chargeUtile).getPassword());
-            System.out.println("Utilisateur: " + ((DonneeLogin) chargeUtile).getUsername());
+        System.out.println("Mot de passe: " + ((DonneeLogin) chargeUtile).getPassword());
+        System.out.println("Utilisateur: " + ((DonneeLogin) chargeUtile).getUsername());
 
-            //MysqlConnector mc = new MysqlConnector("root","root","bd_mouvements");
-            ObjectOutputStream oos=null;
-            try {
-                oos = new ObjectOutputStream(sock.getOutputStream());
-                oos.writeObject(new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null));
-                oos.flush();
-            } catch (IOException e) {
-                System.out.println("Le client s'est deconnecte apres cette reponse: " + e.getMessage());
-            }
-        }
-        else
-        {
-            ObjectOutputStream oos=null;
-            try {
-                oos = new ObjectOutputStream(sock.getOutputStream());
-                oos.writeObject(new ReponseTRAMAP(ReponseTRAMAP.BAD_DATA, null, "Objet demande ne correspond pas à l'action demandee"));
-                oos.flush();
-            } catch (IOException e) {
-                System.out.println("Le client s'est deconnecte apres cette reponse: " + e.getMessage());
-            }
+        //MysqlConnector mc = new MysqlConnector("root","root","bd_mouvements");
+        ObjectOutputStream oos=null;
+        try {
+            oos = new ObjectOutputStream(sock.getOutputStream());
+            oos.writeObject(new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null));
+            oos.flush();
+        } catch (IOException e) {
+            System.out.println("Le client s'est deconnecte apres cette reponse: " + e.getMessage());
         }
     }
 
@@ -128,5 +130,18 @@ public class RequeteTRAMAP implements Requete, Serializable
     private void traiteLOGOUT(Socket sock, ConsoleServeur cs)
     {
         System.out.println("traiteLOGOUT");
+    }
+
+    private void traite404(Socket sock, ConsoleServeur cs)
+    {
+        System.out.println("traite404 Request not found");
+        ObjectOutputStream oos=null;
+        try {
+            oos = new ObjectOutputStream(sock.getOutputStream());
+            oos.writeObject(new ReponseTRAMAP(ReponseTRAMAP.REQUEST_NOT_FOUND, null, "request could not be exeuted due to unsopported version."));
+            oos.flush();
+        } catch (IOException e) {
+            System.out.println("Le client s'est deconnecte apres cette reponse: " + e.getMessage());
+        }
     }
 }

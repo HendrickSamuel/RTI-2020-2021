@@ -1,14 +1,12 @@
 package Tests;
 
 import genericRequest.Requete;
-import protocolTRAMAP.DonneeLogin;
-import protocolTRAMAP.EnumTRAMAP;
-import protocolTRAMAP.ReponseTRAMAP;
-import protocolTRAMAP.RequeteTRAMAP;
+import protocolTRAMAP.*;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Date;
 import java.util.Properties;
 
 public class Client {
@@ -18,10 +16,32 @@ public class Client {
         ObjectOutputStream oos;
         Socket cliSock;
 
-        DonneeLogin dl = new DonneeLogin("Sam","PwdSam");
+        System.out.println("Veuillez selectionner votre action: ");
+        System.out.println("1. Login");
+        System.out.println("2. InputLory");
+        System.out.println("3. InputLory Without Reservation");
+        System.out.println("4. DonneeList");
+        System.out.println("5. Logout");
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(System.in));
+        DonneesTRAMAP dt = null;
+        try {
+            String name = reader.readLine();
+            int option = Integer.parseInt(name);
+            switch (option)
+            {
+                case 1: dt = new DonneeLogin("Sam","SamP"); break;
+                case 2: dt = new DonneeInputLory("Resrvation","Container"); break;
+                case 3: dt = new DonneeInputLoryWithoutReservation("Container"); break;
+                case 4: dt = new DonneeListOperations(new Date(), new Date(), "Societe", "Destination"); break;
+                case 5: dt = new DonneeLogout("SamOut","SamP"); break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         RequeteTRAMAP req = null;
-        req = new RequeteTRAMAP(EnumTRAMAP.LOGIN, dl);
+        req = new RequeteTRAMAP(dt);
 
         // Connexion au serveur
         ois=null; oos=null; cliSock = null;
@@ -49,9 +69,7 @@ public class Client {
             ois = new ObjectInputStream(cliSock.getInputStream());
             rep = (ReponseTRAMAP)ois.readObject();
             System.out.println(" *** Reponse reçue : " + rep.getCode());
-            BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(System.in));
-            String name = reader.readLine();
+
         }
         catch (ClassNotFoundException e)
         { System.out.println("--- erreur sur la classe = " + e.getMessage()); }
