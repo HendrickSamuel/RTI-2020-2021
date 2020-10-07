@@ -7,11 +7,14 @@
 
 #include "CMMP.h"
 #include "Trace.h"
+#include <stdio.h> 
 #include <iostream>
 #include <string.h>
 #include "SocketsClient.h"
 #include "BaseException.h"
 #include "Configurator.h"
+
+#define MTU 5000
 
 using namespace std;
 
@@ -20,10 +23,15 @@ using namespace std;
 /*          Prototypes          */
 /********************************/
 
-void afficheEntete();
-void afficheMenu();
-void switchSend(int choix, struct protocole &proto);
-void switchReceive(char *retour);
+void    afficheMenu();
+void    afficheEntete();
+int     getType(char *retour);
+char*   getSucces(char *retour);
+char*   getMessage(char *retour);
+void    switchReceive(char *retour);
+void    getCoordonees(char *retour, int *coordonees);
+void    switchSend(int choix, struct protocole &proto);
+char*   myTokenizer(char *tampon, char token, int *place);
 
 
 /********************************/
@@ -78,7 +86,7 @@ int main(int argc, char *argv[])
             {
                 socket.sendStruct((void*)&proto, sizeof(struct protocole));
 
-                retour = socket.receiveString(10, '#', '%');
+                retour = socket.receiveString(MTU, '#', '%');
             }
             catch(BaseException& e)
             {
@@ -239,95 +247,199 @@ void switchSend(int choix, struct protocole &proto)
 
 void switchReceive(char *retour)
 {
-    int i = 0;
+    int type;
+    char *succes = NULL;
+    char *message = NULL;
 
-    cout << "le test : [" << retour << "]" << endl;
-    /*switch(i)
+    cout << "Le message : [" << retour << "]" << endl;
+
+    type = getType(retour);
+    succes = getSucces(retour);
+    message = getMessage(retour);
+
+    switch(type)
     {
         case Login:
-            /*si connexion acceptée*//*
-            if(proto.donnees.reponse.succes)
+            /*si connexion acceptée*/
+            if(strcmp("true",succes) == 0)
             {
-                cout << endl << "Connexion reussie bienvenue " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "Connexion reussie bienvenue " << message << endl << endl;
             }
             else
             {
-                cout << endl << "Connexion echouee : " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "Connexion echouee : " << message << endl << endl;
             }                       
             break;
 
         case InputTruck:
-            /*si InputTruck OK*//*
-            if(proto.donnees.reponse.succes)
+            /*si InputTruck OK*/
+            if(strcmp("true",succes) == 0)
             {
-                cout << endl << "InputTruck OK : " << proto.donnees.reponse.message << "[" << proto.donnees.reponse.x << "] [" << proto.donnees.reponse.y << "]" << endl << endl;
+                int coord[2];
+                getCoordonees(message, coord);
+                cout << endl << "InputTruck OK : place du container " << "[" << coord[0] << "] [" << coord[1] << "]" << endl << endl;
             }
             else
             {
-                cout << endl << "InputTruck NOK : " << proto.donnees.reponse.message << endl << endl;  
+                cout << endl << "InputTruck NOK : " << message << endl << endl;  
             }    
             break;
 
         case InputDone:
-            /*si InputDone OK*//*
-            if(proto.donnees.reponse.succes)
+            /*si InputDone OK*/
+            if(strcmp("true",succes) == 0)
             {
-                cout << endl << "InputDone OK : " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "InputDone OK : " << message << endl << endl;
             }
             else
             {
-                cout << endl << "InputDone NOK : au revoir " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "InputDone NOK : au revoir " << message << endl << endl;
                 exit(0);
             }    
             break;
 
         case OutputReady:
-            /*si OutputReady OK*//*
-            if(proto.donnees.reponse.succes)
+            /*si OutputReady OK*/
+            if(strcmp("true",succes) == 0)
             {
-                cout << endl << "OutputReady OK : " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "OutputReady OK : " << message << endl << endl;
             }
             else
             {
-                cout << endl << "OutputReady NOK : " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "OutputReady NOK : " << message << endl << endl;
             }   
             break;
 
         case OutputOne:
-            /*si OutputOne OK*//*
-            if(proto.donnees.reponse.succes)
+            /*si OutputOne OK*/
+            if(strcmp("true",succes) == 0)
             {
-                cout << endl << "OutputOne OK : " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "OutputOne OK : " << message << endl << endl;
             }
             else
             {
-                cout << endl << "OutputOne NOK : " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "OutputOne NOK : " << message << endl << endl;
             }   
             break;
 
         case OutputDone:
-            /*si OutputDone OK*//*
-            if(proto.donnees.reponse.succes)
+            /*si OutputDone OK*/
+            if(strcmp("true",succes) == 0)
             {
-                cout << endl << "OutputDone OK : " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "OutputDone OK : " << message << endl << endl;
             }
             else
             {
-                cout << endl << "OutputDone NOK : " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "OutputDone NOK : " << message << endl << endl;
             }   
             break;
 
         case Logout:
-            /*si déconnexion acceptée*//*
-            if(proto.donnees.reponse.succes)
+            /*si déconnexion acceptée*/
+            if(strcmp("true",succes) == 0)
             {
-                cout << endl << "Deconnexion reussie au revoir " << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "Deconnexion reussie au revoir " << message << endl << endl;
                 exit(0);
             }
             else
             {
-                cout << endl << "Deconnexion echouee :" << proto.donnees.reponse.message << endl << endl;
+                cout << endl << "Deconnexion echouee :" << message << endl << endl;
             }
             break;
-    } */
+    }
+}
+
+
+int getType(char *retour)
+{
+    char *pch;
+    int place = 0;
+    
+    pch = myTokenizer(retour, '#', &place);
+
+    return atoi(pch);
+}
+
+char* getSucces(char *retour)
+{
+    char *pch;
+    int place = 0;
+    
+    pch = myTokenizer(retour, '#', &place);
+    free(pch);
+
+    pch = myTokenizer(retour, '#', &place);
+    return pch;
+}
+
+char* getMessage(char *retour)
+{
+    char *pch;
+    int place = 0;
+
+    pch = myTokenizer(retour, '#', &place);
+    free(pch);
+    pch = myTokenizer(retour, '#', &place);
+    free(pch);
+
+    pch = myTokenizer(retour, '#', &place);
+    return pch;
+}
+
+void getCoordonees(char *retour, int *coordonees)
+{
+    char *pch;
+    int place = 0;
+
+    pch = myTokenizer(retour, '/', &place);
+    coordonees[0] = atoi(pch);
+    free(pch);
+
+    pch = myTokenizer(retour, '\0', &place);
+    coordonees[1] = atoi(pch);
+    free(pch);
+}
+
+char* myTokenizer(char *tampon, char token, int *place)
+{
+    bool search = true;
+    char *retour = NULL;
+    char *pT = NULL;
+    int taille = 0;
+    pT = tampon;
+
+    while(search)
+    {
+        if(pT[*place] == token)
+        {
+            search = false;
+        }
+        else if(pT[*place] == '\0')
+        {
+            search = false;
+        }
+        else
+        {
+            (*place)++;
+            taille++;
+        }
+    }
+
+    if(taille > 0)
+    {
+        retour = (char*)malloc(taille+1);
+        memcpy(retour, &pT[*place-taille], (taille));
+        retour[taille] = '\0';
+
+        if(pT[*place] != '\0')
+        {
+            (*place)++;
+        }
+        return retour;
+    }
+    else
+    {
+        return NULL;
+    }
+    
 }

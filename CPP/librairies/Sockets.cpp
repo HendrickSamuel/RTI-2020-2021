@@ -186,6 +186,8 @@ char* Sockets::receiveString(int taille, char marq1, char marq2)
         }
         
     } while (nbrBytesRecus!=0 && nbrBytesRecus!=-1 && !fin);
+
+    strcat(message, "\0");
     
     return message;
 }
