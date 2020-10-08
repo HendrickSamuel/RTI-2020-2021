@@ -137,4 +137,4 @@ template <class T> Cellule<T>* Iterateur<T>::getpCur() const
 
 template class Iterateur<int>;
 #include "Output.h"
-template class ListeBase<Output>;
+template class Iterateur<Output>;

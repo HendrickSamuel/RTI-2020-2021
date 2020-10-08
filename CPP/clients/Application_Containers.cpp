@@ -6,7 +6,7 @@
 /***********************************************************/
 
 #include "CMMP.h"
-#include "Trace.h"
+//#include "Trace.h"
 #include "liste.h"
 #include <stdio.h> 
 #include "Output.h"
