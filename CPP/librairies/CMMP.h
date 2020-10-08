@@ -36,8 +36,8 @@ struct login
 /*structure inputTruck*/
 struct inputTruck
 {
-	int imCamion;
-	int idContainer;
+	char imCamion[10];
+	char idContainer[18];
 };
 
 

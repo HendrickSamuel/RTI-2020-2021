@@ -27,7 +27,7 @@ class parcAcces
         void initFichPark();
         bool addRecord(struct fich_parc record);
         bool hasRecord(struct fich_parc record);
-        bool getRecord(struct fich_parc *record, int id);
+        bool getRecord(struct fich_parc *record, const char* id);
         bool removeRecord(struct fich_parc record);
         bool updateRecord(struct fich_parc record);
         bool searchPlace(struct fich_parc *record);
