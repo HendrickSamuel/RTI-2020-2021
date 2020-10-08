@@ -69,6 +69,7 @@ public class Client {
             ois = new ObjectInputStream(cliSock.getInputStream());
             rep = (ReponseTRAMAP)ois.readObject();
             System.out.println(" *** Reponse reçue : " + rep.getCode());
+            reader.readLine();
 
         }
         catch (ClassNotFoundException e)

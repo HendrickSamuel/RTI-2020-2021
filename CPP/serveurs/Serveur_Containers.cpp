@@ -79,7 +79,55 @@ int main(int argc, char *argv[])
     char *portTmp;
     int port;
     char *adresse;
+    parcAcces pa = parcAcces("FICH_PARC.dat");
 
+    //debut bidon
+
+    /*
+    struct fich_parc fp1;
+    //pa.debugFichPark(); 
+    
+    fp1.id = 1;
+    fp1.flagemplacement = 2;
+    strcpy(fp1.datereservation, "00/00/0000");
+    strcpy(fp1.datearrivee, "08/10/2020");
+    fp1.poids = 250;
+    strcpy(fp1.destination, "Madrid");
+    strcpy(fp1.moyenTransport, "Bateau");
+    bool ret = pa.addRecord(fp1);
+
+    cout << "bool " << ret << endl;
+
+    fp1.id = 2;
+    fp1.flagemplacement = 1;
+    strcpy(fp1.datereservation, "09/10/2020");
+    strcpy(fp1.datearrivee, "00/00/0000");
+    fp1.poids = 112;
+    strcpy(fp1.destination, "Madrid");
+    strcpy(fp1.moyenTransport, "Train");
+    pa.addRecord(fp1);
+
+    fp1.id = 3;
+    fp1.flagemplacement = 2;
+    strcpy(fp1.datereservation, "06/10/2020");
+    strcpy(fp1.datearrivee, "06/10/2020");
+    fp1.poids = 12;
+    strcpy(fp1.destination, "Madrid");
+    strcpy(fp1.moyenTransport, "Bateau");
+    pa.addRecord(fp1);
+
+    pa.debugFichPark(); 
+    getchar();
+
+   char* res = pa.searchDestination("Madrid");
+
+    cout << "RES : " << res << endl;
+
+    getchar();
+    */
+
+
+    //fin bidon
 
     /* lecture des parametres sur fichier */
     try

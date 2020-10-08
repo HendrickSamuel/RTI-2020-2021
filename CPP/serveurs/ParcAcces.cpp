@@ -42,9 +42,9 @@ void parcAcces::initFichPark()
     strcpy(record.destination, "inconnu");
     strcpy(record.moyenTransport, "inconnu");
 
-    for(int x = 0 ; x < 2 ; x++)
+    for(int x = 1 ; x <= 2 ; x++)
     {
-        for(int y = 0 ; y < 10 ; y++)
+        for(int y = 1 ; y <= 10 ; y++)
         {
             record.x = x;
             record.y = y;
@@ -69,24 +69,25 @@ bool parcAcces::addRecord(struct fich_parc record)
     if(fileHandler == NULL)
     {
         initFichPark();
-        fileHandler = fopen(this->fileName, "r");
+        fileHandler = fopen(this->fileName, "r+");
     }
 
     if(fileHandler != NULL)
     {
         while (fread(&tmpRecord, sizeof(struct fich_parc), 1, fileHandler))
         {
-            if(tmpRecord.id == -1)
+            if(tmpRecord.flagemplacement == 0)
             {
                 fseek(fileHandler, -sizeof(struct fich_parc), SEEK_CUR);
+                record.x = tmpRecord.x;
+                record.y = tmpRecord.y;
                 fwrite(&record, sizeof(struct fich_parc),1,fileHandler);
                 fclose(fileHandler);
                 return true;
             }
         }
-        fwrite(&record, sizeof(struct fich_parc),1,fileHandler);
         fclose(fileHandler);
-        return true;
+        return false;
     }
     else
     {
@@ -236,32 +237,68 @@ bool parcAcces::searchPlace(struct fich_parc *record)
     }
 }
 
-list<fich_parc>* parcAcces::searchDestination(char *destination)
+char* parcAcces::searchDestination(const char *destination)
 {
-    list<fich_parc> liste;
 
     FILE* fileHandler;
     struct fich_parc tmpRecord;
+    char* chaineRetour = NULL;
+    int compteur = 0;
+    char buffer[100];
+    size_t size = 0;
 
     fileHandler = fopen(this->fileName, "r+");
     if(fileHandler != NULL)
     {
-      /*  while (fread(&tmpRecord, sizeof(struct fich_parc), 1, fileHandler))
+      while (fread(&tmpRecord, sizeof(struct fich_parc), 1, fileHandler))
         {
-            if(true)
+            if(tmpRecord.flagemplacement == 2 && strcmp(tmpRecord.destination, destination) == 0)
             {
-                fseek(fileHandler, -sizeof(struct fich_parc), SEEK_CUR);
-                fwrite(&record, sizeof(struct fich_parc),1,fileHandler);
-                fclose(fileHandler);
+                sprintf(buffer, "%d@%d@%d/", tmpRecord.id,tmpRecord.x,tmpRecord.y);
+                if(chaineRetour == NULL)
+                    size = 0;
+                else
+                    size = strlen(chaineRetour); 
 
+                chaineRetour = (char*)realloc(chaineRetour, strlen(buffer)+size+1);
+                strcat(chaineRetour, buffer); 
             }
-        }*/
+        }
         fclose(fileHandler);
-        return &liste;
+        chaineRetour[strlen(chaineRetour)-1] = '\0';
+        return chaineRetour;
     }
     else
     {
         return NULL; //TODO: throw exception peut etre
     }
-    return &liste;
+}
+
+void parcAcces::debugFichPark()
+{
+    FILE* fileHandler;
+    struct fich_parc tmpRecord;
+
+    fileHandler = fopen(this->fileName, "r");
+
+    if(fileHandler != NULL)
+    {
+        cout << " -------- DEBUT --------" << endl;
+        while (fread(&tmpRecord, sizeof(struct fich_parc), 1, fileHandler))
+        {
+            cout << " ++ EMPLACEMENT ++ " << endl;
+            cout << "id: " << tmpRecord.id << endl
+            << "x: " << tmpRecord.x << " || y: " << tmpRecord.y << endl
+            << "flagemplacement: " << tmpRecord.flagemplacement << endl
+            << "date R: " << tmpRecord.datereservation << " || date A: " << tmpRecord.datearrivee << endl
+            << "poids: " << tmpRecord.poids << endl
+            << "destination: " << tmpRecord.destination << " || moyen de transport: " << tmpRecord.moyenTransport << endl << endl;
+        }
+        cout << " -------- FIN --------" << endl;
+        fclose(fileHandler);
+    }
+    else
+    {
+        cout << "-- Could not open " << this->fileName <<" -- " << endl;
+    }
 }

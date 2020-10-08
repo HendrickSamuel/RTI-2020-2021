@@ -31,6 +31,7 @@ class parcAcces
         bool removeRecord(struct fich_parc record);
         bool updateRecord(struct fich_parc record);
         bool searchPlace(struct fich_parc *record);
-        list<fich_parc>* searchDestination(char *destination);
+        char* searchDestination(const char *destination);
+        void debugFichPark();
 };
 #endif //PACRACCES_H

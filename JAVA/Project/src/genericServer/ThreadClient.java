@@ -47,6 +47,11 @@ public class ThreadClient extends Thread
                     req = (Requete)ois.readObject();
                     System.out.println("Requete lue par le serveur, instance de " +
                             req.getClass().getName());
+                    Runnable travail = req.createRunnable(tacheEnCours, null); //todo: ajouter une console
+                    if(travail != null)
+                    {
+                        travail.run();
+                    }
                 }
                 catch (ClassNotFoundException e)
                 {
@@ -54,12 +59,6 @@ public class ThreadClient extends Thread
                 } catch (IOException e) {
                     inCommunication = false;
                     System.out.println("Le client s'est deconnecte");
-                }
-
-                Runnable travail = req.createRunnable(tacheEnCours, null); //todo: ajouter une console
-                if(travail != null)
-                {
-                    travail.run();
                 }
             }
         }
