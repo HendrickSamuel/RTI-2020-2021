@@ -48,8 +48,8 @@ template <class T> class ListeBase
 		void setTete(struct Cellule<T> *Tete);
 		
 		//methodes
+		void Aff() const;
 		bool estVide() const;
-		void Affiche() const;
 		void virtual insere(const T &val) = 0;
 
 };

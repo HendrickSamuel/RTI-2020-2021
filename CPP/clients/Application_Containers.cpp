@@ -31,6 +31,7 @@ void    afficheEntete();
 int     getType(char *retour);
 char*   getSucces(char *retour);
 char*   getMessage(char *retour);
+void    createListe(char *donnees);
 void    switchReceive(char *retour);
 void    getCoordonees(char *retour, int *coordonees);
 void    switchSend(int choix, struct protocole &proto);
@@ -147,6 +148,8 @@ void afficheMenu()
     cout << "Faites votre choix : ";  
 }
 
+
+//Fonction avec un switch qui crée le protocole qui sera envoyé au serveur
 void switchSend(int choix, struct protocole &proto)
 {
     switch(choix)
@@ -216,8 +219,23 @@ void switchSend(int choix, struct protocole &proto)
             {
                 //TODO: voir comment recupérer le container le plus ancien
                 proto.type = OutputOne;
-                cout << "\tEntrez l'identifiant du container : ";
-                cin >> proto.donnees.outputOne.idContainer;
+		        int choix = 0;
+                Output out;
+
+                Iterateur<Output> it(listeOut);
+		        it.reset();
+                listeOut.Aff();
+                cout << "\n\tEntrez le numero : ";
+                cin >> choix;
+
+                for(int i = 0 ; i < (choix-1) ; i++)
+                {
+                    it++;
+                }
+
+                out = it.remove();
+
+                strcpy(proto.donnees.outputOne.idContainer, out.getId());
             }
             break;
 
@@ -255,13 +273,13 @@ void switchSend(int choix, struct protocole &proto)
     }
 }
 
+
+//Fonction avec un switch qui "décode" le message reçu âr le serveur
 void switchReceive(char *retour)
 {
     int type;
     char *succes = NULL;
     char *message = NULL;
-
-    cout << "Le message : [" << retour << "]" << endl;
 
     getData(retour, &type, &succes, &message);
 
@@ -312,6 +330,7 @@ void switchReceive(char *retour)
             {
                 cout << endl << "OutputReady OK : vous trouverez la liste des container sous Output One" << endl << endl;
 
+                createListe(message);
             }
             else
             {
@@ -359,6 +378,7 @@ void switchReceive(char *retour)
 }
 
 
+//Fonction qui retourne le type de requête hors de la trame
 int getType(char *retour)
 {
     char *pch;
@@ -369,6 +389,8 @@ int getType(char *retour)
     return atoi(pch);
 }
 
+
+//Fonction qui retourne la "validite" de la requête hors de la trame
 char* getSucces(char *retour)
 {
     char *pch;
@@ -381,6 +403,8 @@ char* getSucces(char *retour)
     return pch;
 }
 
+
+//Fonction qui retourne le message de la trame (peut contenir des données)
 char* getMessage(char *retour)
 {
     char *pch;
@@ -395,6 +419,8 @@ char* getMessage(char *retour)
     return pch;
 }
 
+
+//Fonction qui récupere les coodronées dans le message
 void getCoordonees(char *retour, int *coordonees)
 {
     char *pch;
@@ -409,6 +435,8 @@ void getCoordonees(char *retour, int *coordonees)
     free(pch);
 }
 
+
+//Fonction qui permet d'avoir le type, la validité et le message d'un coup
 void getData(char *retour, int *type, char **succes, char **message)
 {
     char *pch;
@@ -425,6 +453,8 @@ void getData(char *retour, int *type, char **succes, char **message)
     *message = pch;  
 }
 
+
+//Séparateur de chaine de caractère
 char* myTokenizer(char *tampon, char token, int *place)
 {
     bool search = true;
@@ -466,5 +496,29 @@ char* myTokenizer(char *tampon, char token, int *place)
     {
         return NULL;
     }
-    
+}
+
+
+//Fonction qui crée la liste de container 
+//    à afficher pour le Output One
+void createListe(char *donnees)
+{
+    char *pch;
+    int place = 0;
+    Output out;
+
+    while( (pch = myTokenizer(donnees, '@', &place)) != NULL)
+    {
+        out.setId(pch);
+
+        pch = myTokenizer(donnees, '@', &place);
+        out.setX(atoi(pch));
+        free(pch);
+
+        pch = myTokenizer(donnees, '/', &place);
+        out.setY(atoi(pch));
+        free(pch);
+
+        listeOut.insere(out);
+    }
 }

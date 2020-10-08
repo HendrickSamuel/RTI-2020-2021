@@ -136,5 +136,6 @@ template <class T> Cellule<T>* Iterateur<T>::getpCur() const
 }
 
 template class Iterateur<int>;
+template class Iterateur<char*>;
 #include "Output.h"
 template class Iterateur<Output>;

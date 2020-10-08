@@ -92,5 +92,6 @@ template <class T> void Liste<T>::insere(const T &val)
 }
 
 template class Liste<int>;
+template class Liste<char*>;
 #include "Output.h"
 template class Liste<Output>;

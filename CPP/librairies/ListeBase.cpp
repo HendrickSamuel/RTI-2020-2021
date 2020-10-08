@@ -161,23 +161,26 @@ template <class T> bool ListeBase<T>::estVide() const
 		return false;
 }
 
-template <class T> void ListeBase<T>::Affiche() const
+template <class T> void ListeBase<T>::Aff() const
 {
 	if(estVide())
 		cout << "La liste est vide" << endl;
 	else
 	{
+		int i = 1;
 		struct Cellule<T> *tmpCellule = pTete;
-		cout << "[" << tmpCellule->valeur << "]" << endl;
+		cout << i << ". " << tmpCellule->valeur << endl;
 		while(tmpCellule->suivant != NULL)
 		{
+			i++;
 			tmpCellule = tmpCellule->suivant;
-			cout << "[" << tmpCellule->valeur << "]" << endl;
+			cout << i << ". " << tmpCellule->valeur << endl;
 		}
 	}
 }
 
 
 template class ListeBase<int>;
+template class ListeBase<char*>;
 #include "Output.h"
 template class ListeBase<Output>;

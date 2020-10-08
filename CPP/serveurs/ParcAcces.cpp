@@ -163,8 +163,8 @@ bool parcAcces::removeRecord(struct fich_parc record)
             if(strcmp(tmpRecord.id, record.id) == 0)
             {
                 fseek(fileHandler, -sizeof(struct fich_parc), SEEK_CUR);
-                record.flagemplacement = 0;
-                fwrite(&record, sizeof(struct fich_parc),1,fileHandler);
+                tmpRecord.flagemplacement = 0;
+                fwrite(&tmpRecord, sizeof(struct fich_parc),1,fileHandler);
                 fclose(fileHandler);
                 return true;
             }
@@ -237,20 +237,21 @@ bool parcAcces::searchPlace(struct fich_parc *record)
     }
 }
 
-char* parcAcces::searchDestination(const char *destination)
+char* parcAcces::searchDestination(const char *destination, int *nombre)
 {
 
+    int nb = 0;
+    int compteur = 0;
+    size_t size = 0;
+    char buffer[100];
+    char* chaineRetour = NULL;
     FILE* fileHandler;
     struct fich_parc tmpRecord;
-    char* chaineRetour = NULL;
-    int compteur = 0;
-    char buffer[100];
-    size_t size = 0;
 
     fileHandler = fopen(this->fileName, "r+");
     if(fileHandler != NULL)
     {
-      while (fread(&tmpRecord, sizeof(struct fich_parc), 1, fileHandler))
+        while (fread(&tmpRecord, sizeof(struct fich_parc), 1, fileHandler))
         {
             if(tmpRecord.flagemplacement == 2 && strcmp(tmpRecord.destination, destination) == 0)
             {
@@ -262,11 +263,22 @@ char* parcAcces::searchDestination(const char *destination)
 
                 chaineRetour = (char*)realloc(chaineRetour, strlen(buffer)+size+1);
                 strcat(chaineRetour, buffer); 
+                nb++;
             }
         }
         fclose(fileHandler);
-        chaineRetour[strlen(chaineRetour)-1] = '\0';
-        return chaineRetour;
+
+        if(nb > 0)  //Si il y a des container pour cette destination
+        {
+            chaineRetour[strlen(chaineRetour)-1] = '\0';
+            *nombre = nb;
+            return chaineRetour;
+        }
+        else        //S'il n'y en a pas
+        {
+             return NULL;
+        }
+        
     }
     else
     {

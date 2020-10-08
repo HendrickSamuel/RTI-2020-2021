@@ -50,7 +50,7 @@ Output::Output(const Output& o)
 //Opérateur << de cout			
 ostream& operator<<(ostream& s, const Output& o)
 {
-	s<< " Id : " << o.getId() << " X : [" << o.getX() << "] Y : [" << o.getY() << "]" << endl;
+	s<< " Id : " << o.getId() << " X :[" << o.getX() << "]   Y :[" << o.getY() << "]";
 	return s;
 }
 

@@ -19,7 +19,7 @@ struct fich_parc
     int flagemplacement;
     char datereservation[MAX_CHAINE];
     char datearrivee[MAX_CHAINE];
-    float poids;
+    int poids;
     char destination[MAX_CHAINE];
     char moyenTransport[MAX_CHAINE];
 };

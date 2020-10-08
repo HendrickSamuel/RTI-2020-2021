@@ -9,6 +9,8 @@
 #include "Trace.h"
 #include "ParcAcces.h"
 #include "StructParc.h"
+#include "liste.h"
+#include "Output.h"
 #include "Configurator.h"
 #include <stdio.h>     
 #include <iostream>
@@ -31,12 +33,16 @@ using namespace std;
 
 typedef struct
 {
-	bool connect;
-    char* message;
-	bool finDialog;
-    char nom[MAXSTRING];
-    typeRequete dernOpp;
-    struct fich_parc tmpContaineur;
+	bool connect;                   //Booléen pour voir si le client est bien connecte
+    char* message;                  //Message que l'on crée dans la fonction switchThread et qui sera envoyée sur le réseau
+	bool finDialog;                 //Booléen pour la fin de dialogue avec le client
+    char nom[MAXSTRING];            //Nom du client
+    char idTrans[MAXSTRING];        //Id du transporteur
+    typeRequete dernOpp;            //Dernière oppération effectuée par le client
+    Liste<char*> idCont;            //Liste des containers chargé sur le transporteur
+    struct fich_parc tmpContaineur; //Containeur temporaire le temps de l'ajout dans le fichier (fait en plusieurs étapes)
+    int capacite;                   //Capacite du transporteur avec Output ready
+    int nbrEnv;                     //Nombre de container envoyé après le Output ready
 }S_THREAD;
 
 
@@ -45,9 +51,12 @@ typedef struct
 /********************************/
 
 int indiceCourant = -1;
-pthread_cond_t condIndiceCourant;
-pthread_mutex_t mutexIndiceCourant;
+
 pthread_mutex_t mutexFichParc;
+pthread_mutex_t mutexIndiceCourant;
+
+pthread_cond_t condIndiceCourant;
+
 pthread_t threads[NB_MAX_CONNECTIONS];
 SocketsServeur sockets[NB_MAX_CONNECTIONS];
 
@@ -59,8 +68,10 @@ pthread_once_t controleur = PTHREAD_ONCE_INIT;
 /*          Prototypes          */
 /********************************/
 
+//Threads
 void* fctThread(void *param);
 
+//Fonctions
 void InitCle();
 void freePTMess();
 void destructeur(void *p);
@@ -80,15 +91,14 @@ int main(int argc, char *argv[])
     char *portTmp;
     int port;
     char *adresse;
-    parcAcces pa = parcAcces("FICH_PARC.dat");
 
     //debut bidon
-
-    
+/*  
+    parcAcces pa = parcAcces("FICH_PARC.dat");
     struct fich_parc fp1;
     //pa.debugFichPark(); 
     
-    fp1.id = 1;
+    strcpy(fp1.id, "YABB-CHARL-A1B2C3");
     fp1.flagemplacement = 2;
     strcpy(fp1.datereservation, "00/00/0000");
     strcpy(fp1.datearrivee, "08/10/2020");
@@ -99,7 +109,7 @@ int main(int argc, char *argv[])
 
     cout << "bool " << ret << endl;
 
-    fp1.id = 2;
+    strcpy(fp1.id, "YABB-SAMUE-A1B2C3");
     fp1.flagemplacement = 1;
     strcpy(fp1.datereservation, "09/10/2020");
     strcpy(fp1.datearrivee, "00/00/0000");
@@ -108,7 +118,7 @@ int main(int argc, char *argv[])
     strcpy(fp1.moyenTransport, "Train");
     pa.addRecord(fp1);
 
-    fp1.id = 3;
+    strcpy(fp1.id, "YABB-KEVIN-A1B2C3");
     fp1.flagemplacement = 2;
     strcpy(fp1.datereservation, "06/10/2020");
     strcpy(fp1.datearrivee, "06/10/2020");
@@ -117,7 +127,7 @@ int main(int argc, char *argv[])
     strcpy(fp1.moyenTransport, "Bateau");
     pa.addRecord(fp1);
 
-    fp1.id = 4;
+    strcpy(fp1.id, "YABB-BENED-A1B2C3");
     fp1.flagemplacement = 2;
     strcpy(fp1.datereservation, "07/10/2020");
     strcpy(fp1.datearrivee, "07/10/2020");
@@ -126,7 +136,7 @@ int main(int argc, char *argv[])
     strcpy(fp1.moyenTransport, "Bateau");
     pa.addRecord(fp1);
 
-    fp1.id = 5;
+    strcpy(fp1.id, "YABB-LLOIC-A1B2C3");
     fp1.flagemplacement = 2;
     strcpy(fp1.datereservation, "07/10/2020");
     strcpy(fp1.datearrivee, "07/10/2020");
@@ -143,9 +153,7 @@ int main(int argc, char *argv[])
     cout << "RES : " << res << endl;
 
     getchar();
-    
-
-
+*/
     //fin bidon
 
     /* lecture des parametres sur fichier */
@@ -231,20 +239,23 @@ int main(int argc, char *argv[])
 /*          Fonctions           */
 /********************************/
 
+//Fonction d'initialisation de la clé pour la zone spécifique
 void InitCle()
 {
-	//Pour la zone spécifique
 	printf("Initialisation d'une cle\n");
 	pthread_key_create(&cle, destructeur);
 }
 
+
+//Fonction qui libère la mémoire alouée sur laquelle pointe la zone spécifique
 void destructeur(void *p)
 {
-	//On libère la mémoire alouée sur laquelle pointe la zone spécifique
 	printf("Liberation d'une zone specifique\n");
 	free(p);
 }
 
+
+//Fonction qui libère la mémoire du message dans la zone spécifique
 void freePTMess()
 {
     S_THREAD *PT = NULL;
@@ -257,6 +268,8 @@ void freePTMess()
     }
 }
 
+
+//Fonction qui traite le protocole reçu par réseau dans le switch
 void switchThread(protocole &proto)
 {
     S_THREAD *PT = NULL;
@@ -298,13 +311,15 @@ void switchThread(protocole &proto)
                             freePTMess();
                             PT->message = new char[strlen("1#false#Login ou mot de passe incorrect#%")+1];
                             strcpy(PT->message, "1#false#Login ou mot de passe incorrect#%");
+                            PT->dernOpp = Init;
                         }
                     }
                     else
                     {
                         freePTMess();
                         PT->message = new char[strlen("1#false#Vous etes deja connecte#%")+1];
-                        strcpy(PT->message, "1#false#Vous etes deja connecte#%");           
+                        strcpy(PT->message, "1#false#Vous etes deja connecte#%");    
+                        PT->dernOpp = Init;       
                     }  
                 }  
                 break;
@@ -317,7 +332,7 @@ void switchThread(protocole &proto)
                     pthread_mutex_lock(&mutexFichParc);
                     if(fich_parc.searchPlace(&(PT->tmpContaineur)))
                     {
-                        PT->tmpContaineur.id = proto.donnees.inputTruck.idContainer;
+                        strcpy(PT->tmpContaineur.id, proto.donnees.inputTruck.idContainer);
                         PT->tmpContaineur.flagemplacement = 1;
                         
                         //enregistrement dans FICH_PARC
@@ -345,7 +360,7 @@ void switchThread(protocole &proto)
                         PT->dernOpp = Init;
                         freePTMess();
                         PT->message = new char[strlen("2#false#Pas d'emplacements libres#%")+1];
-                        strcpy(PT->message, "2#false#Pas d'emplacements libres#%");           
+                        strcpy(PT->message, "2#false#Pas d'emplacements libres#%");        
                     }
                 }
                 break;
@@ -382,6 +397,7 @@ void switchThread(protocole &proto)
                             freePTMess();
                             PT->message = new char[strlen("3#false#Container non conforme#%")+1];
                             strcpy(PT->message, "3#false#Container non conforme#%");
+                            PT->dernOpp = Init;
                         }
                     }
                     else
@@ -398,6 +414,7 @@ void switchThread(protocole &proto)
                         strcpy(PT->message, "3#false#");
                         strcat(PT->message, PT->nom);
                         strcat(PT->message, "#%");
+                        PT->dernOpp = Init;
                     }
                 }
                 break;
@@ -407,10 +424,12 @@ void switchThread(protocole &proto)
                     char *liste = NULL;
                     parcAcces fich_parc("FICH_PARC.dat");
 
-                    // recherche dans FICH_PARK
+                    // recherche dans FICH_PARC
                     pthread_mutex_lock(&mutexFichParc);
-                    liste = fich_parc.searchDestination(proto.donnees.outputReady.dest);
+                    liste = fich_parc.searchDestination(proto.donnees.outputReady.dest, &(PT->nbrEnv));
                     pthread_mutex_unlock(&mutexFichParc);
+
+                    cout << "test" << endl;
 
                     if(liste != NULL) 
                     {
@@ -419,51 +438,76 @@ void switchThread(protocole &proto)
                         strcpy(PT->message, "4#true#");
                         strcat(PT->message, liste);
                         strcat(PT->message, "#%");
+                        PT->capacite = proto.donnees.outputReady.capacite;
+                        strcpy(PT->idTrans, proto.donnees.outputReady.id);
                     }
                     else
                     {
                         freePTMess();
                         PT->message = new char[strlen("4#false#Pas de container pour cette destination#%")+1];
                         strcpy(PT->message, "4#false#Pas de container pour cette destination#%");
+                        PT->dernOpp = Init;
                     } 
                 }
                 break;
 
             case OutputOne:
                 {
-                    //TODO:a proteger par un mutex
-                    //TODO:recherche du container s'il existe
-                    // recherche dans FICH_PARK
-                    if(true) 
-                    {
-                        //TODO:mise a jour de FICH_PARK
-                        freePTMess();
-                        PT->message = new char[strlen("5#true#Deplacement de container enregistre#%")+1];
-                        strcpy(PT->message, "5#true#Deplacement de container enregistre#%");
-                    }
-                    else
-                    {
-                        freePTMess();
-                        PT->message = new char[strlen("5#false#Container inconnu#%")+1];
-                        strcpy(PT->message, "5#false#Container inconnu#%");
-                    }
+                    char *id = (char*)malloc(18);
+                    strcpy(id, proto.donnees.outputOne.idContainer);
+                    PT->idCont.insere(id);
+                    freePTMess();
+                    PT->message = new char[strlen("5#true#Deplacement de container enregistre#%")+1];
+                    strcpy(PT->message, "5#true#Deplacement de container enregistre#%");
                 }
                 break;
 
             case OutputDone:
                 {
-                    //TODO:verifier que le transporteur est bien plein
-                    if(true) 
+                    if(PT->idCont.getNombreElements() == PT->capacite || PT->idCont.getNombreElements() == PT->nbrEnv) 
                     {
+                        char *id;
+                        struct fich_parc record;
+                        parcAcces fich_parc("FICH_PARC.dat");
+
+                        Liste<char*> tmp(PT->idCont);
+                        tmp.Aff();
+                        Iterateur<char*> it(tmp);
+		                it.reset();
+                        
+                        int taille = PT->idCont.getNombreElements();  
+
+                        //On retire les containers de FICH_PARC
+                        pthread_mutex_lock(&mutexFichParc);                     
+                        for(int i = 0 ; i < taille ; i++)
+                        {
+                            id = it.remove();
+                            strcpy(record.id, id);
+                            free(id);
+                            fich_parc.removeRecord(record);
+                        }
+                        pthread_mutex_unlock(&mutexFichParc);
+
                         freePTMess();
                         PT->message = new char[strlen("6#true#Chargement termine correctement#%")+1];
                         strcpy(PT->message, "6#true#Chargement termine correctement#%");
                     }
                     else
                     {
-                        freePTMess();
-                        PT->message = new char[strlen("6#false#Incoherence detectee : place encore disponible#%")+1];
-                        strcpy(PT->message, "6#false#Incoherence detectee : place encore disponible#%");
+                        if(PT->idCont.getNombreElements() < PT->capacite && PT->idCont.getNombreElements() < PT->nbrEnv)
+                        {
+                            freePTMess();
+                            PT->message = new char[strlen("6#false#Incoherence detectee : place encore disponible#%")+1];
+                            strcpy(PT->message, "6#false#Incoherence detectee : place encore disponible#%");
+                            PT->dernOpp = OutputOne;
+                        }
+                        else
+                        {
+                            freePTMess();
+                            PT->message = new char[strlen("6#false#Incoherence detectee#%")+1];
+                            strcpy(PT->message, "6#false#Incoherence detectee#%");
+                            PT->dernOpp = OutputOne;
+                        }
                     }
                 }
                 break;
@@ -555,7 +599,6 @@ void * fctThread(void * param)
             try
             {
                 hSocketService.receiveStruct(&proto, sizeof(struct protocole));
-                cout << "Apres receive" << endl;
             }
             catch(BaseException e)
             {

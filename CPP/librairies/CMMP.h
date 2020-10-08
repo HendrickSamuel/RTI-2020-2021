@@ -52,7 +52,7 @@ struct inputDone
 /*structure outputReady*/
 struct outputReady
 {
-	int  id;
+	char  id[MAXSTRING];
 	int  capacite;
 	char dest[MAXSTRING];
 };
@@ -61,14 +61,14 @@ struct outputReady
 /*structure outputOne*/
 struct outputOne
 {
-	int idContainer;
+	char idContainer[18];
 };
 
 
 /*structure outputDone*/
 struct outputDone
 {
-	int id;
+	char  id[MAXSTRING];
 	int	nbContainers;
 };
 
