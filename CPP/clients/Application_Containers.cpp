@@ -32,6 +32,7 @@ void    switchReceive(char *retour);
 void    getCoordonees(char *retour, int *coordonees);
 void    switchSend(int choix, struct protocole &proto);
 char*   myTokenizer(char *tampon, char token, int *place);
+void    getData(char *retour, int *type, char **succes, char **message);
 
 
 /********************************/
@@ -253,9 +254,7 @@ void switchReceive(char *retour)
 
     cout << "Le message : [" << retour << "]" << endl;
 
-    type = getType(retour);
-    succes = getSucces(retour);
-    message = getMessage(retour);
+    getData(retour, &type, &succes, &message);
 
     switch(type)
     {
@@ -398,6 +397,22 @@ void getCoordonees(char *retour, int *coordonees)
     pch = myTokenizer(retour, '\0', &place);
     coordonees[1] = atoi(pch);
     free(pch);
+}
+
+void getData(char *retour, int *type, char **succes, char **message)
+{
+    char *pch;
+    int place = 0;
+
+    pch = myTokenizer(retour, '#', &place);
+    *type = atoi(pch);
+    free(pch);
+
+    pch = myTokenizer(retour, '#', &place);
+    *succes = pch;
+
+    pch = myTokenizer(retour, '#', &place);
+    *message = pch;  
 }
 
 char* myTokenizer(char *tampon, char token, int *place)
