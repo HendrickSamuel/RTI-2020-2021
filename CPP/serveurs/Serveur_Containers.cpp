@@ -47,6 +47,7 @@ typedef struct
 int indiceCourant = -1;
 pthread_cond_t condIndiceCourant;
 pthread_mutex_t mutexIndiceCourant;
+pthread_mutex_t mutexFichParc;
 pthread_t threads[NB_MAX_CONNECTIONS];
 SocketsServeur sockets[NB_MAX_CONNECTIONS];
 
@@ -83,7 +84,7 @@ int main(int argc, char *argv[])
 
     //debut bidon
 
-    /*
+    
     struct fich_parc fp1;
     //pa.debugFichPark(); 
     
@@ -116,6 +117,24 @@ int main(int argc, char *argv[])
     strcpy(fp1.moyenTransport, "Bateau");
     pa.addRecord(fp1);
 
+    fp1.id = 4;
+    fp1.flagemplacement = 2;
+    strcpy(fp1.datereservation, "07/10/2020");
+    strcpy(fp1.datearrivee, "07/10/2020");
+    fp1.poids = 1232;
+    strcpy(fp1.destination, "Paris");
+    strcpy(fp1.moyenTransport, "Bateau");
+    pa.addRecord(fp1);
+
+    fp1.id = 5;
+    fp1.flagemplacement = 2;
+    strcpy(fp1.datereservation, "07/10/2020");
+    strcpy(fp1.datearrivee, "07/10/2020");
+    fp1.poids = 1112;
+    strcpy(fp1.destination, "Paris");
+    strcpy(fp1.moyenTransport, "Train");
+    pa.addRecord(fp1);
+
     pa.debugFichPark(); 
     getchar();
 
@@ -124,7 +143,7 @@ int main(int argc, char *argv[])
     cout << "RES : " << res << endl;
 
     getchar();
-    */
+    
 
 
     //fin bidon
@@ -149,6 +168,7 @@ int main(int argc, char *argv[])
     
 
     Affiche("1","Démarrage du thread principale: \n pid: %d \n tid: %u \n\n", getpid(), pthread_self());
+    pthread_mutex_init(&mutexFichParc, NULL);
     pthread_mutex_init(&mutexIndiceCourant, NULL);
     pthread_cond_init(&condIndiceCourant, NULL);
 
@@ -260,39 +280,41 @@ void switchThread(protocole &proto)
         switch(proto.type)
         {
             case Login:
-                if(PT->connect == false)
                 {
-                    if(Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
+                    if(PT->connect == false)
                     {
-                        freePTMess();
-                        strcpy(PT->nom, proto.donnees.login.nom);
-                        PT->message = new char[strlen(PT->nom)+10];
-                        strcpy(PT->message, "1#true#");
-                        strcat(PT->message, PT->nom);
-                        strcat(PT->message, "#%");
-                        PT->connect = true;
+                        if(Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
+                        {
+                            freePTMess();
+                            strcpy(PT->nom, proto.donnees.login.nom);
+                            PT->message = new char[strlen(PT->nom)+10];
+                            strcpy(PT->message, "1#true#");
+                            strcat(PT->message, PT->nom);
+                            strcat(PT->message, "#%");
+                            PT->connect = true;
+                        }
+                        else
+                        {
+                            freePTMess();
+                            PT->message = new char[strlen("1#false#Login ou mot de passe incorrect#%")+1];
+                            strcpy(PT->message, "1#false#Login ou mot de passe incorrect#%");
+                        }
                     }
                     else
                     {
                         freePTMess();
-                        PT->message = new char[strlen("1#false#Login ou mot de passe incorrect#%")+1];
-                        strcpy(PT->message, "1#false#Login ou mot de passe incorrect#%");
-                    }
-                }
-                else
-                {
-                    freePTMess();
-                    PT->message = new char[strlen("1#false#Vous etes deja connecte#%")+1];
-                    strcpy(PT->message, "1#false#Vous etes deja connecte#%");           
-                }    
+                        PT->message = new char[strlen("1#false#Vous etes deja connecte#%")+1];
+                        strcpy(PT->message, "1#false#Vous etes deja connecte#%");           
+                    }  
+                }  
                 break;
 
             case InputTruck:
                 {
-                    //TODO:a proteger par un mutex
                     parcAcces fich_parc("FICH_PARC.dat");
                     
                     //recherche si emplacement libre
+                    pthread_mutex_lock(&mutexFichParc);
                     if(fich_parc.searchPlace(&(PT->tmpContaineur)))
                     {
                         PT->tmpContaineur.id = proto.donnees.inputTruck.idContainer;
@@ -300,6 +322,7 @@ void switchThread(protocole &proto)
                         
                         //enregistrement dans FICH_PARC
                         fich_parc.updateRecord(PT->tmpContaineur);
+                        pthread_mutex_unlock(&mutexFichParc);
 
                         proto.donnees.reponse.x = PT->tmpContaineur.x;
                         proto.donnees.reponse.y = PT->tmpContaineur.y;
@@ -318,6 +341,7 @@ void switchThread(protocole &proto)
                     }
                     else
                     {
+                        pthread_mutex_unlock(&mutexFichParc);
                         PT->dernOpp = Init;
                         freePTMess();
                         PT->message = new char[strlen("2#false#Pas d'emplacements libres#%")+1];
@@ -328,20 +352,19 @@ void switchThread(protocole &proto)
 
             case InputDone:
                 {  
-                    //TODO:a proteger par un mutex
                     parcAcces fich_parc("FICH_PARC.dat");
                     
                     if(proto.donnees.inputDone.etat == true)
                     {
-
                         //verif si le poids du container est OK
                         if(proto.donnees.inputDone.poids <= atof(Configurator::getProperty("test.conf","POIDS"))) 
                         {
                             
                             PT->tmpContaineur.poids = proto.donnees.inputDone.poids;
                             //enregistrement dans FICH_PARC
+                            pthread_mutex_lock(&mutexFichParc);
                             fich_parc.updateRecord(PT->tmpContaineur);
-                            
+                            pthread_mutex_unlock(&mutexFichParc);
 
                             freePTMess();
                             PT->message = new char[strlen("3#true#Container enregistre#%")+1];
@@ -352,7 +375,9 @@ void switchThread(protocole &proto)
                             PT->tmpContaineur.flagemplacement = 0;
                             
                             //libere la place dans FICH_PARC
-                            fich_parc.updateRecord(PT->tmpContaineur);                       
+                            pthread_mutex_lock(&mutexFichParc);
+                            fich_parc.updateRecord(PT->tmpContaineur);
+                            pthread_mutex_unlock(&mutexFichParc);                       
                             
                             freePTMess();
                             PT->message = new char[strlen("3#false#Container non conforme#%")+1];
@@ -364,7 +389,9 @@ void switchThread(protocole &proto)
                         PT->tmpContaineur.flagemplacement = 0;
                         
                         //libere la place dans FICH_PARC
+                        pthread_mutex_lock(&mutexFichParc);
                         fich_parc.updateRecord(PT->tmpContaineur);
+                        pthread_mutex_unlock(&mutexFichParc);
                         
                         freePTMess();
                         PT->message = new char[strlen("3#false##%")+strlen(PT->nom)+1];
@@ -376,93 +403,94 @@ void switchThread(protocole &proto)
                 break;
 
             case OutputReady:
-
-                //TODO:a proteger par un mutex
-                //TODO:si il y a des container pour cette destination
-                // recherche dans FICH_PARK
-                if(true) 
                 {
-                    //TODO:renvoyer la liste des containers d'apres FICH_PARK
-                    //dans le texte
+                    char *liste = NULL;
+                    parcAcces fich_parc("FICH_PARC.dat");
 
-                    freePTMess();
-                    PT->message = new char[strlen("4#true#%")+1];
-                    strcpy(PT->message, "4#true#%");
-                    //strcat(PT->message, PT->nom);
-                    //strcat(PT->message, "#%");
+                    // recherche dans FICH_PARK
+                    pthread_mutex_lock(&mutexFichParc);
+                    liste = fich_parc.searchDestination(proto.donnees.outputReady.dest);
+                    pthread_mutex_unlock(&mutexFichParc);
 
-                    //strcpy(proto.donnees.reponse.message, "Voici la liste des containers");
-                }
-                else
-                {
-                    freePTMess();
-                    PT->message = new char[strlen("4#false#Pas de container pour cette destination#%")+1];
-                    strcpy(PT->message, "4#false#Pas de container pour cette destination#%");
-                } 
-
-                break;
-
-            case OutputOne:
-                //TODO:a proteger par un mutex
-                //TODO:recherche du container s'il existe
-                // recherche dans FICH_PARK
-                if(true) 
-                {
-                    //TODO:mise a jour de FICH_PARK
-                    freePTMess();
-                    PT->message = new char[strlen("5#true#Deplacement de container enregistre#%")+1];
-                    strcpy(PT->message, "5#true#Deplacement de container enregistre#%");
-                }
-                else
-                {
-                    freePTMess();
-                    PT->message = new char[strlen("5#false#Container inconnu#%")+1];
-                    strcpy(PT->message, "5#false#Container inconnu#%");
-                }
-
-                break;
-
-            case OutputDone:
-
-                //TODO:verifier que le transporteur est bien plein
-                if(true) 
-                {
-                    freePTMess();
-                    PT->message = new char[strlen("6#true#Chargement termine correctement#%")+1];
-                    strcpy(PT->message, "6#true#Chargement termine correctement#%");
-                }
-                else
-                {
-                    freePTMess();
-                    PT->message = new char[strlen("6#false#Incoherence detectee : place encore disponible#%")+1];
-                    strcpy(PT->message, "6#false#Incoherence detectee : place encore disponible#%");
-                }
-
-                break;
-
-            case Logout:
-
-                if(PT->connect == true)
-                {
-                    if(strcmp(proto.donnees.login.nom, PT->nom) == 0 && Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
+                    if(liste != NULL) 
                     {
-                        PT->connect = false;
-                        PT->finDialog = true;
-
                         freePTMess();
-                        PT->message = new char[strlen("6#true##%")+strlen(PT->nom)+1];
-                        strcpy(PT->message, "6#true#");
-                        strcat(PT->message, PT->nom);
+                        PT->message = new char[strlen("4#true#%")+strlen(liste)+1];
+                        strcpy(PT->message, "4#true#");
+                        strcat(PT->message, liste);
                         strcat(PT->message, "#%");
                     }
                     else
                     {
                         freePTMess();
-                        PT->message = new char[strlen("7#false#Nom d'utilisateur ou mot de passe incorrect#%")+1];
-                        strcpy(PT->message, "7#false#Nom d'utilisateur ou mot de passe incorrect#%");  
-                    }  
+                        PT->message = new char[strlen("4#false#Pas de container pour cette destination#%")+1];
+                        strcpy(PT->message, "4#false#Pas de container pour cette destination#%");
+                    } 
                 }
+                break;
 
+            case OutputOne:
+                {
+                    //TODO:a proteger par un mutex
+                    //TODO:recherche du container s'il existe
+                    // recherche dans FICH_PARK
+                    if(true) 
+                    {
+                        //TODO:mise a jour de FICH_PARK
+                        freePTMess();
+                        PT->message = new char[strlen("5#true#Deplacement de container enregistre#%")+1];
+                        strcpy(PT->message, "5#true#Deplacement de container enregistre#%");
+                    }
+                    else
+                    {
+                        freePTMess();
+                        PT->message = new char[strlen("5#false#Container inconnu#%")+1];
+                        strcpy(PT->message, "5#false#Container inconnu#%");
+                    }
+                }
+                break;
+
+            case OutputDone:
+                {
+                    //TODO:verifier que le transporteur est bien plein
+                    if(true) 
+                    {
+                        freePTMess();
+                        PT->message = new char[strlen("6#true#Chargement termine correctement#%")+1];
+                        strcpy(PT->message, "6#true#Chargement termine correctement#%");
+                    }
+                    else
+                    {
+                        freePTMess();
+                        PT->message = new char[strlen("6#false#Incoherence detectee : place encore disponible#%")+1];
+                        strcpy(PT->message, "6#false#Incoherence detectee : place encore disponible#%");
+                    }
+                }
+                break;
+
+            case Logout:
+                {
+                    if(PT->connect == true)
+                    {
+                        if(strcmp(proto.donnees.login.nom, PT->nom) == 0 && Configurator::getLog("login.csv", proto.donnees.login.nom, proto.donnees.login.pwd))
+                        {
+                            PT->connect = false;
+                            PT->finDialog = true;
+
+                            freePTMess();
+                            PT->message = new char[strlen("7#true##%")+strlen(PT->nom)+1];
+                            strcpy(PT->message, "7#true#");
+                            strcat(PT->message, PT->nom);
+                            strcat(PT->message, "#%");
+                        }
+                        else
+                        {
+                            freePTMess();
+                            PT->message = new char[strlen("7#false#Nom d'utilisateur ou mot de passe incorrect#%")+1];
+                            strcpy(PT->message, "7#false#Nom d'utilisateur ou mot de passe incorrect#%");  
+                        }  
+                    }
+                }
                 break;
         }
     }

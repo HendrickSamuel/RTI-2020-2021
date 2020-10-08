@@ -7,9 +7,11 @@
 
 #include "CMMP.h"
 #include "Trace.h"
+#include "liste.h"
 #include <stdio.h> 
 #include <iostream>
 #include <string.h>
+#include "iterateur.h"
 #include "SocketsClient.h"
 #include "BaseException.h"
 #include "Configurator.h"
@@ -34,6 +36,12 @@ void    switchSend(int choix, struct protocole &proto);
 char*   myTokenizer(char *tampon, char token, int *place);
 void    getData(char *retour, int *type, char **succes, char **message);
 
+
+/********************************/
+/*      Variables globales      */
+/********************************/
+
+Liste<>	listeOut;
 
 /********************************/
 /*             Main             */
@@ -301,7 +309,8 @@ void switchReceive(char *retour)
             /*si OutputReady OK*/
             if(strcmp("true",succes) == 0)
             {
-                cout << endl << "OutputReady OK : " << message << endl << endl;
+                cout << endl << "OutputReady OK : vous trouverez la liste des container sous Output One" << endl << endl;
+
             }
             else
             {

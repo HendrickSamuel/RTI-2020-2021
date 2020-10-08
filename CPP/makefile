@@ -8,7 +8,7 @@ CLIENT = ./clients
 
 INCL = -I $(LIBRAIRIE)/ -I $(SERVEURS)/
 GPP = g++ -m64 -Wall -lnsl -pthread $(INCL) -D CPP -D LINUX #-D DEV -D DEVPLUS
-LIBRAIRIE_O = Sockets.o SocketsServeur.o SocketsClient.o BaseException.o Trace.o Configurator.o
+LIBRAIRIE_O = Sockets.o SocketsServeur.o SocketsClient.o BaseException.o Trace.o Configurator.o ListeBase.o Liste.o Iterateur.o
 
 SERVERCONTAINERS_OBJS = $(LIBRAIRIE_O) ./ParcAcces.o
 CLIENTCONTAINERS_OBJS = $(LIBRAIRIE_O)
@@ -50,3 +50,15 @@ Configurator.o: $(LIBRAIRIE)/Configurator.cpp $(LIBRAIRIE)/Configurator.h
 ParcAcces.o: $(SERVEURS)/ParcAcces.cpp $(SERVEURS)/ParcAcces.h
 	echo creation de ParcAcces.o
 	$(GPP) -c $(SERVEURS)/ParcAcces.cpp -o ParcAcces.o
+
+ListeBase.o: $(LIBRAIRIE)/ListeBase.cpp $(LIBRAIRIE)/ListeBase.h
+	echo Creation de ListeBase.o
+	$(GPP) -c $(LIBRAIRIE)/ListeBase.cpp -o ListeBase.o
+	
+Liste.o: $(LIBRAIRIE)/Liste.cpp $(LIBRAIRIE)/Liste.h
+	echo Creation de Liste.o
+	$(GPP) -c $(LIBRAIRIE)/Liste.cpp -o Liste.o
+	
+Iterateur.o: $(LIBRAIRIE)/Iterateur.cpp $(LIBRAIRIE)/Iterateur.h
+	echo Creation de Iterateur.o
+	$(GPP) -c $(LIBRAIRIE)/Iterateur.cpp -o Iterateur.o
