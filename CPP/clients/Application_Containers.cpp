@@ -9,6 +9,7 @@
 #include "Trace.h"
 #include "liste.h"
 #include <stdio.h> 
+#include "Output.h"
 #include <iostream>
 #include <string.h>
 #include "iterateur.h"
@@ -41,7 +42,7 @@ void    getData(char *retour, int *type, char **succes, char **message);
 /*      Variables globales      */
 /********************************/
 
-Liste<>	listeOut;
+Liste<Output>	listeOut;
 
 /********************************/
 /*             Main             */

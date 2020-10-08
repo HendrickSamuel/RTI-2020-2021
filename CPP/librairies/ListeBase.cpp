@@ -179,3 +179,5 @@ template <class T> void ListeBase<T>::Affiche() const
 
 
 template class ListeBase<int>;
+#include "Output.h"
+template class ListeBase<Output>;
