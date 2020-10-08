@@ -83,11 +83,10 @@ int main(int argc, char *argv[])
 
     //debut bidon
 
-    /*
     struct fich_parc fp1;
     //pa.debugFichPark(); 
     
-    fp1.id = 1;
+    strcpy(fp1.id, "YABB-CHARL-A1B2C3");
     fp1.flagemplacement = 2;
     strcpy(fp1.datereservation, "00/00/0000");
     strcpy(fp1.datearrivee, "08/10/2020");
@@ -98,7 +97,7 @@ int main(int argc, char *argv[])
 
     cout << "bool " << ret << endl;
 
-    fp1.id = 2;
+    strcpy(fp1.id, "YABB-KEVIN-A1B2C3");
     fp1.flagemplacement = 1;
     strcpy(fp1.datereservation, "09/10/2020");
     strcpy(fp1.datearrivee, "00/00/0000");
@@ -107,7 +106,7 @@ int main(int argc, char *argv[])
     strcpy(fp1.moyenTransport, "Train");
     pa.addRecord(fp1);
 
-    fp1.id = 3;
+    strcpy(fp1.id, "YABB-SAMUE-A1B2C3");
     fp1.flagemplacement = 2;
     strcpy(fp1.datereservation, "06/10/2020");
     strcpy(fp1.datearrivee, "06/10/2020");
@@ -119,12 +118,11 @@ int main(int argc, char *argv[])
     pa.debugFichPark(); 
     getchar();
 
-   char* res = pa.searchDestination("Madrid");
+    char* res = pa.searchDestination("Madrid");
 
     cout << "RES : " << res << endl;
 
     getchar();
-    */
 
 
     //fin bidon
@@ -295,7 +293,7 @@ void switchThread(protocole &proto)
                     //recherche si emplacement libre
                     if(fich_parc.searchPlace(&(PT->tmpContaineur)))
                     {
-                        PT->tmpContaineur.id = proto.donnees.inputTruck.idContainer;
+                        strcpy(PT->tmpContaineur.id, proto.donnees.inputTruck.idContainer);
                         PT->tmpContaineur.flagemplacement = 1;
                         
                         //enregistrement dans FICH_PARC

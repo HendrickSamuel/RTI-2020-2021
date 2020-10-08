@@ -32,7 +32,7 @@ void parcAcces::initFichPark()
 
     fileHandler = fopen(this->fileName, "w");
 
-    record.id = 0;
+    strcpy(record.id, "0000-00000-000000");
     record.x = 0;
     record.y = 0;
     record.flagemplacement = 0;
@@ -108,7 +108,7 @@ bool parcAcces::hasRecord(struct fich_parc record)
     {
         while (fread(&tmpRecord, sizeof(struct fich_parc), 1, fileHandler))
         {
-            if(tmpRecord.id == record.id)
+            if(strcmp(tmpRecord.id, record.id) == 0)
             {
                 fclose(fileHandler);
                 return true;
@@ -123,7 +123,7 @@ bool parcAcces::hasRecord(struct fich_parc record)
     }
 }
 
-bool parcAcces::getRecord(struct fich_parc *record, int id)
+bool parcAcces::getRecord(struct fich_parc *record, const char* id)
 {
     FILE* fileHandler;
     struct fich_parc tmpRecord;
@@ -133,7 +133,7 @@ bool parcAcces::getRecord(struct fich_parc *record, int id)
     {
         while (fread(&tmpRecord, sizeof(struct fich_parc), 1, fileHandler))
         {
-            if(tmpRecord.id == id)
+            if(strcmp(tmpRecord.id, id) == 0)
             {
                 memcpy(record, &tmpRecord, sizeof(struct fich_parc));
                 fclose(fileHandler);
@@ -160,10 +160,10 @@ bool parcAcces::removeRecord(struct fich_parc record)
     {
         while (fread(&tmpRecord, sizeof(struct fich_parc), 1, fileHandler))
         {
-            if(tmpRecord.id == record.id)
+            if(strcmp(tmpRecord.id, record.id) == 0)
             {
                 fseek(fileHandler, -sizeof(struct fich_parc), SEEK_CUR);
-                record.id = -1;
+                record.flagemplacement = 0;
                 fwrite(&record, sizeof(struct fich_parc),1,fileHandler);
                 fclose(fileHandler);
                 return true;
@@ -254,7 +254,7 @@ char* parcAcces::searchDestination(const char *destination)
         {
             if(tmpRecord.flagemplacement == 2 && strcmp(tmpRecord.destination, destination) == 0)
             {
-                sprintf(buffer, "%d@%d@%d/", tmpRecord.id,tmpRecord.x,tmpRecord.y);
+                sprintf(buffer, "%s@%d@%d/", tmpRecord.id,tmpRecord.x,tmpRecord.y);
                 if(chaineRetour == NULL)
                     size = 0;
                 else
