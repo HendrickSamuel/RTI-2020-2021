@@ -23,7 +23,7 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
-#define NB_MAX_CONNECTIONS 3
+#define NB_MAX_CONNECTIONS 1
 
 using namespace std;
 
@@ -93,62 +93,11 @@ int main(int argc, char *argv[])
     char *adresse;
 
     //debut bidon
-/*  
+/*
     parcAcces pa = parcAcces("FICH_PARC.dat");
-    struct fich_parc fp1;
-    //pa.debugFichPark(); 
-    
-    strcpy(fp1.id, "YABB-CHARL-A1B2C3");
-    fp1.flagemplacement = 2;
-    strcpy(fp1.datereservation, "00/00/0000");
-    strcpy(fp1.datearrivee, "08/10/2020");
-    fp1.poids = 250;
-    strcpy(fp1.destination, "Madrid");
-    strcpy(fp1.moyenTransport, "Bateau");
-    bool ret = pa.addRecord(fp1);
+    pa.setBidon();
 
-    cout << "bool " << ret << endl;
-
-    strcpy(fp1.id, "YABB-SAMUE-A1B2C3");
-    fp1.flagemplacement = 1;
-    strcpy(fp1.datereservation, "09/10/2020");
-    strcpy(fp1.datearrivee, "00/00/0000");
-    fp1.poids = 112;
-    strcpy(fp1.destination, "Madrid");
-    strcpy(fp1.moyenTransport, "Train");
-    pa.addRecord(fp1);
-
-    strcpy(fp1.id, "YABB-KEVIN-A1B2C3");
-    fp1.flagemplacement = 2;
-    strcpy(fp1.datereservation, "06/10/2020");
-    strcpy(fp1.datearrivee, "06/10/2020");
-    fp1.poids = 12;
-    strcpy(fp1.destination, "Madrid");
-    strcpy(fp1.moyenTransport, "Bateau");
-    pa.addRecord(fp1);
-
-    strcpy(fp1.id, "YABB-BENED-A1B2C3");
-    fp1.flagemplacement = 2;
-    strcpy(fp1.datereservation, "07/10/2020");
-    strcpy(fp1.datearrivee, "07/10/2020");
-    fp1.poids = 1232;
-    strcpy(fp1.destination, "Paris");
-    strcpy(fp1.moyenTransport, "Bateau");
-    pa.addRecord(fp1);
-
-    strcpy(fp1.id, "YABB-LLOIC-A1B2C3");
-    fp1.flagemplacement = 2;
-    strcpy(fp1.datereservation, "07/10/2020");
-    strcpy(fp1.datearrivee, "07/10/2020");
-    fp1.poids = 1112;
-    strcpy(fp1.destination, "Paris");
-    strcpy(fp1.moyenTransport, "Train");
-    pa.addRecord(fp1);
-
-    pa.debugFichPark(); 
-    getchar();
-
-   char* res = pa.searchDestination("Madrid");
+    char* res = pa.searchDestination("Madrid");
 
     cout << "RES : " << res << endl;
 
@@ -214,7 +163,10 @@ int main(int argc, char *argv[])
         if(j == NB_MAX_CONNECTIONS)
         {
             printf("Plus de connexion disponible\n");
-            //TODO: SEND message
+            char* msgRetour;
+            msgRetour = (char*)malloc(255);
+            strcpy(msgRetour, "0#false#Plus de ressources disponibles#%");
+            socketService.sendString(msgRetour, strlen(msgRetour));
         }
         else
         {
@@ -440,6 +392,7 @@ void switchThread(protocole &proto)
                         strcat(PT->message, "#%");
                         PT->capacite = proto.donnees.outputReady.capacite;
                         strcpy(PT->idTrans, proto.donnees.outputReady.id);
+                        free(liste);
                     }
                     else
                     {
@@ -469,7 +422,7 @@ void switchThread(protocole &proto)
                         char *id;
                         struct fich_parc record;
                         parcAcces fich_parc("FICH_PARC.dat");
-
+    /*
                         Liste<char*> tmp(PT->idCont);
                         tmp.Aff();
                         Iterateur<char*> it(tmp);
@@ -487,7 +440,7 @@ void switchThread(protocole &proto)
                             fich_parc.removeRecord(record);
                         }
                         pthread_mutex_unlock(&mutexFichParc);
-
+*/
                         freePTMess();
                         PT->message = new char[strlen("6#true#Chargement termine correctement#%")+1];
                         strcpy(PT->message, "6#true#Chargement termine correctement#%");
@@ -572,13 +525,15 @@ void * fctThread(void * param)
 	//Initialisation de la cle avec la fonction
 	pthread_once(&controleur , InitCle);
 
-
 	//On met la structure fantome dans la zone spécifique
 	pthread_setspecific(cle, PT);
 
-
     SocketsServeur hSocketService;
     int indiceClientTraite;
+
+    char* msgConfirmation = NULL;
+    msgConfirmation = (char*)malloc(255);
+    strcpy(msgConfirmation, "0#true#Mise en place de la connection#%");
 
     while(true)
     {
@@ -592,6 +547,9 @@ void * fctThread(void * param)
 
         hSocketService = sockets[indiceClientTraite];
         pthread_mutex_unlock(&mutexIndiceCourant);
+
+        
+        hSocketService.sendString(msgConfirmation, strlen(msgConfirmation));
         Affiche("test","\033[1;36m<TASK>\033[0m Thread n° %d s'occupe du socket %d \n", pthread_self(), indiceClientTraite);
 
         do

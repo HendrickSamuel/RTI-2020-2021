@@ -25,6 +25,7 @@ class parcAcces
 
         //méthodes
         void initFichPark();
+        void setBidon();
         bool addRecord(struct fich_parc record);
         bool hasRecord(struct fich_parc record);
         bool getRecord(struct fich_parc *record, const char* id);

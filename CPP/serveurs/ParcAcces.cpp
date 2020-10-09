@@ -6,7 +6,6 @@
 /***********************************************************/
 
 #include "ParcAcces.h"
-
 /********************************/
 /*                              */
 /*         Constructeurs        */
@@ -53,6 +52,56 @@ void parcAcces::initFichPark()
     }
 
     fclose(fileHandler);;
+}
+
+void parcAcces::setBidon()
+{
+    struct fich_parc fp1;
+    
+    strcpy(fp1.id, "YABB-CHARL-A1B2C3");
+    fp1.flagemplacement = 2;
+    strcpy(fp1.datereservation, "00/00/0000");
+    strcpy(fp1.datearrivee, "08/10/2020");
+    fp1.poids = 250;
+    strcpy(fp1.destination, "Madrid");
+    strcpy(fp1.moyenTransport, "Bateau");
+    this->addRecord(fp1);
+
+    strcpy(fp1.id, "YABB-SAMUE-A1B2C3");
+    fp1.flagemplacement = 1;
+    strcpy(fp1.datereservation, "09/10/2020");
+    strcpy(fp1.datearrivee, "00/00/0000");
+    fp1.poids = 112;
+    strcpy(fp1.destination, "Madrid");
+    strcpy(fp1.moyenTransport, "Train");
+    this->addRecord(fp1);
+
+    strcpy(fp1.id, "YABB-KEVIN-A1B2C3");
+    fp1.flagemplacement = 2;
+    strcpy(fp1.datereservation, "06/10/2020");
+    strcpy(fp1.datearrivee, "06/10/2020");
+    fp1.poids = 12;
+    strcpy(fp1.destination, "Madrid");
+    strcpy(fp1.moyenTransport, "Bateau");
+    this->addRecord(fp1);
+
+    strcpy(fp1.id, "YABB-BENED-A1B2C3");
+    fp1.flagemplacement = 2;
+    strcpy(fp1.datereservation, "07/10/2020");
+    strcpy(fp1.datearrivee, "07/10/2020");
+    fp1.poids = 1232;
+    strcpy(fp1.destination, "Paris");
+    strcpy(fp1.moyenTransport, "Bateau");
+    this->addRecord(fp1);
+
+    strcpy(fp1.id, "YABB-LLOIC-A1B2C3");
+    fp1.flagemplacement = 2;
+    strcpy(fp1.datereservation, "07/10/2020");
+    strcpy(fp1.datearrivee, "07/10/2020");
+    fp1.poids = 1112;
+    strcpy(fp1.destination, "Paris");
+    strcpy(fp1.moyenTransport, "Train");
+    this->addRecord(fp1);
 }
 
 bool parcAcces::addRecord(struct fich_parc record)
