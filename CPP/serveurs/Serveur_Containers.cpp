@@ -573,36 +573,29 @@ void * fctThread(void * param)
             try
             {
                 hSocketService.receiveStruct(&proto, sizeof(struct protocole));
+
+                /*condition pour voir si le login à deja été effectué*/
+                if(PT->connect == true || proto.type == 1)
+                {
+                    switchThread(proto);
+                }
+                else
+                {
+                    freePTMess();
+                    PT->message = new char[strlen("#false#Vous devez etre connecte pour cette action#%")+2];
+                    char type[10];
+                    sprintf(type, "%d", proto.type);
+                    strcpy(PT->message, type);
+                    strcat(PT->message, "#false#Vous devez etre connecte pour cette action#%");
+                }
+            
+                hSocketService.sendString(PT->message, strlen(PT->message));
             }
             catch(BaseException e)
             {
                 PT->finDialog = true;
                 PT->connect = false;
-                std::cerr << e.getMessage() << '\n';
-            }
-
-            /*condition pour voir si le login à deja été effectué*/
-            if(PT->connect == true || proto.type == 1)
-            {
-                switchThread(proto);
-            }
-            else
-            {
-                freePTMess();
-                PT->message = new char[strlen("#false#Vous devez etre connecte pour cette action#%")+2];
-                char type[10];
-                sprintf(type, "%d", proto.type);
-                strcpy(PT->message, type);
-                strcat(PT->message, "#false#Vous devez etre connecte pour cette action#%");
-            }
-            
-            try
-            {
-                hSocketService.sendString(PT->message, strlen(PT->message));
-            }
-            catch(BaseException e)
-            {
-                std::cerr << e.getMessage() << '\n';
+                std::cerr << e.getMessage() << endl;
             }
 
         } while (!PT->finDialog);
