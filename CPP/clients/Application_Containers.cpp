@@ -73,6 +73,28 @@ int main(int argc, char *argv[])
         
         port = atoi(portTmp);
         socket.initSocket(adresse, port);
+        
+        retour = socket.receiveString(MTU, '#', '%');
+
+        int type;
+        char *succes = NULL;
+        char *message = NULL;
+
+        getData(retour, &type, &succes, &message);
+
+        if(strcmp(succes, "true") == 0)
+        {
+                cout << "Succes: " << message << endl;
+        }
+        else
+        {
+            cout << "Echec: " << message << endl
+            << "Veuillez réessayer plus tard" <<endl;
+            socket.closeSocket();
+            exit(-1);
+        }
+        
+
 
         cout << "Appuyez sur une touche" << endl;
         getchar();
