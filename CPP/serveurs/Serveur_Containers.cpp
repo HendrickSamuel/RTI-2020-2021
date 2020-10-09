@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 //Fonction d'initialisation de la clé pour la zone spécifique
 void InitCle()
 {
-	printf("Initialisation d'une cle\n");
+	printf("Initialisation de cle (zone specifique)\n");
 	pthread_key_create(&cle, destructeur);
 }
 
