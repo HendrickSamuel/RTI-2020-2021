@@ -411,12 +411,22 @@ void switchThread(protocole &proto)
 
             case OutputOne:
                 {
-                    char *id = (char*)malloc(18);
-                    strcpy(id, proto.donnees.outputOne.idContainer);
-                    PT->idCont.insere(id);
-                    freePTMess();
-                    PT->message = new char[strlen("5#true#Deplacement de container enregistre#%")+1];
-                    strcpy(PT->message, "5#true#Deplacement de container enregistre#%");
+                    if(PT->capacite == PT->idCont.getNombreElements())
+                    {
+                        freePTMess();
+                        PT->message = new char[strlen("5#false#Vous n'avez plus de place#%")+1];
+                        strcpy(PT->message, "5#false#Vous n'avez plus de place#%");
+                    }
+                    else
+                    {
+                        char *id = (char*)malloc(18);
+                        strcpy(id, proto.donnees.outputOne.idContainer);
+                        PT->idCont.insere(id);
+                        freePTMess();
+                        PT->message = new char[strlen("5#true#Deplacement de container enregistre#%")+1];
+                        strcpy(PT->message, "5#true#Deplacement de container enregistre#%");       
+                    }
+                    
                 }
                 break;
 
