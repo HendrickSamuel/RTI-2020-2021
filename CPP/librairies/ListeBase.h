@@ -48,6 +48,7 @@ template <class T> class ListeBase
 		void setTete(struct Cellule<T> *Tete);
 		
 		//methodes
+		void removeAll();
 		void Aff() const;
 		bool estVide() const;
 		void virtual insere(const T &val) = 0;

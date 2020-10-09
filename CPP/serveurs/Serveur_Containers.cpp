@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     char *adresse;
 
     //debut bidon
-/*  
+
     parcAcces pa = parcAcces("FICH_PARC.dat");
     struct fich_parc fp1;
     //pa.debugFichPark(); 
@@ -148,12 +148,7 @@ int main(int argc, char *argv[])
     pa.debugFichPark(); 
     getchar();
 
-   char* res = pa.searchDestination("Madrid");
 
-    cout << "RES : " << res << endl;
-
-    getchar();
-*/
     //fin bidon
 
     /* lecture des parametres sur fichier */
@@ -468,25 +463,25 @@ void switchThread(protocole &proto)
                     {
                         char *id;
                         struct fich_parc record;
-                        parcAcces fich_parc("FICH_PARC.dat");
+                        parcAcces fich_parc("FICH_PARC.dat"); 
 
-                        Liste<char*> tmp(PT->idCont);
-                        tmp.Aff();
-                        Iterateur<char*> it(tmp);
-		                it.reset();
-                        
-                        int taille = PT->idCont.getNombreElements();  
+                        struct Cellule<char*> *cel = PT->idCont.getTete();
 
                         //On retire les containers de FICH_PARC
                         pthread_mutex_lock(&mutexFichParc);                     
-                        for(int i = 0 ; i < taille ; i++)
+                        do
                         {
-                            id = it.remove();
+                            id = cel->valeur;
+                            cel = cel->suivant;
+
                             strcpy(record.id, id);
                             free(id);
                             fich_parc.removeRecord(record);
-                        }
+                        }while(cel != NULL);
+
                         pthread_mutex_unlock(&mutexFichParc);
+
+                        PT->idCont.removeAll();
 
                         freePTMess();
                         PT->message = new char[strlen("6#true#Chargement termine correctement#%")+1];
@@ -494,6 +489,7 @@ void switchThread(protocole &proto)
                     }
                     else
                     {
+                        cout << "getNombrElem = " << PT->idCont.getNombreElements() << " capacite = " << PT->capacite << " nbrEnv = " << PT->nbrEnv << endl;
                         if(PT->idCont.getNombreElements() < PT->capacite && PT->idCont.getNombreElements() < PT->nbrEnv)
                         {
                             freePTMess();

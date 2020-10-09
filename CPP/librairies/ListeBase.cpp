@@ -153,6 +153,22 @@ template <class T> void ListeBase<T>::setTete(struct Cellule<T> *Tete)
 /*                              */
 /********************************/
 		
+template <class T> void ListeBase<T>::removeAll()
+{
+	if(!estVide())
+	{
+		struct Cellule<T> *tmpCellule = pTete->suivant;
+		
+		while(tmpCellule != NULL)
+		{
+			delete pTete;
+			pTete = tmpCellule;
+			tmpCellule = pTete->suivant;
+		}
+		setTete(NULL);
+	}
+}
+
 template <class T> bool ListeBase<T>::estVide() const
 {
 	if(pTete == NULL)

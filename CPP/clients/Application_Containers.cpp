@@ -89,25 +89,33 @@ int main(int argc, char *argv[])
         afficheMenu();
         cin >> choix;
 
-        switchSend(choix, proto);
-
-        if(choix >= 1 && choix <= 7)
+        if(choix == OutputOne && listeOut.estVide())
         {
-            try
-            {
-                socket.sendStruct((void*)&proto, sizeof(struct protocole));
-
-                retour = socket.receiveString(MTU, '#', '%');
-            }
-            catch(BaseException& e)
-            {
-                std::cerr << e.getMessage() << '\n';
-            }
-
-            switchReceive(retour);
-            
-            cout << endl << endl;
+            cout << "il n'y a pas d'elements dans la liste" << endl;
         }
+        else
+        {
+            switchSend(choix, proto);
+
+            if(choix >= 1 && choix <= 7)
+            {
+                try
+                {
+                    socket.sendStruct((void*)&proto, sizeof(struct protocole));
+
+                    retour = socket.receiveString(MTU, '#', '%');
+                }
+                catch(BaseException& e)
+                {
+                    std::cerr << e.getMessage() << '\n';
+                }
+
+                switchReceive(retour);
+                
+                cout << endl << endl;
+            }
+        }
+        
     }
 
     try
@@ -219,29 +227,36 @@ void switchSend(int choix, struct protocole &proto)
             {
                 //TODO: voir comment recupérer le container le plus ancien
                 proto.type = OutputOne;
-		        int choix = 0;
-                Output out;
-
-                Iterateur<Output> it(listeOut);
-		        it.reset();
-                listeOut.Aff();
-                cout << "\n\tEntrez le numero : ";
-                cin >> choix;
-
-                for(int i = 0 ; i < (choix-1) ; i++)
+                if(!listeOut.estVide())
                 {
-                    it++;
+                    int choix = 0;
+                    Output out;
+
+                    Iterateur<Output> it(listeOut);
+                    it.reset();
+                    listeOut.Aff();
+                    cout << "\n\tEntrez le numero : ";
+                    cin >> choix;
+
+                    for(int i = 0 ; i < (choix-1) ; i++)
+                    {
+                        it++;
+                    }
+
+                    out = it.remove();
+
+                    strcpy(proto.donnees.outputOne.idContainer, out.getId());
                 }
-
-                out = it.remove();
-
-                strcpy(proto.donnees.outputOne.idContainer, out.getId());
+                else
+                {
+                    cout << "\nIl n'y a plus de container !";
+                }
+                
             }
             break;
 
         case OutputDone:
             {
-                //TODO: A mon avis message automatique, avec une validation d'envoie quand meme
                 proto.type = OutputDone;
                 cout << "\tEntrez l'identifiant du train ou du bateau : ";
                 cin >> proto.donnees.outputDone.id;
@@ -355,6 +370,8 @@ void switchReceive(char *retour)
             if(strcmp("true",succes) == 0)
             {
                 cout << endl << "OutputDone OK : " << message << endl << endl;
+                //Comme le chargement est terminé correctement on vide la liste reçue
+                listeOut.removeAll();
             }
             else
             {
