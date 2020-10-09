@@ -44,6 +44,7 @@ void    getData(char *retour, int *type, char **succes, char **message);
 /********************************/
 
 Liste<Output>	listeOut;
+char            idTransport[MAXSTRING];
 
 /********************************/
 /*             Main             */
@@ -113,7 +114,7 @@ int main(int argc, char *argv[])
 
         if(choix == OutputOne && listeOut.estVide())
         {
-            cout << "il n'y a pas d'elements dans la liste" << endl;
+            cout << endl << "OutputOne NOK : il n'y a pas d'elements dans la liste!" << endl << endl;
         }
         else
         {
@@ -238,6 +239,7 @@ void switchSend(int choix, struct protocole &proto)
                 proto.type = OutputReady;
                 cout << "\tEntrez l'identifiant du train ou du bateau : ";
                 cin >> proto.donnees.outputReady.id;
+                strcpy(idTransport, proto.donnees.outputReady.id);
                 cout << "\tEntrez la capacite maximale : ";
                 cin >> proto.donnees.outputReady.capacite;
                 cout << "\tEntrez la destination : ";
@@ -280,10 +282,8 @@ void switchSend(int choix, struct protocole &proto)
         case OutputDone:
             {
                 proto.type = OutputDone;
-                cout << "\tEntrez l'identifiant du train ou du bateau : ";
-                cin >> proto.donnees.outputDone.id;
-                cout << "\tEntrez le nombre de containers chargé : ";
-                cin >> proto.donnees.outputDone.nbContainers;
+                strcpy(proto.donnees.outputDone.id, idTransport);
+                proto.donnees.outputDone.nbContainers = listeOut.getNombreElements();
             }
             break;
 
