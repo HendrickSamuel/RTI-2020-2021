@@ -76,7 +76,7 @@ void SocketsServeur::bindSocket(const char* host, int port)
     
     this->adresseSocket = adresseSocket;
     
-    printf("Adresse IP = %s\n",inet_ntoa(adresseSocket.sin_addr)); 
+    cout << "Adresse IP = " << inet_ntoa(adresseSocket.sin_addr) << endl;
 
     //TODO: verifier que this->hSocket est set (valide)
     if (bind(this->hSocket, (struct sockaddr *)&adresseSocket, sizeof(struct sockaddr_in)) == -1)
@@ -84,7 +84,7 @@ void SocketsServeur::bindSocket(const char* host, int port)
         throw BaseException("Erreur de bind");
     }
     else 
-        printf("<OK> Bind adresse et port socket OK\n");
+        cout << "<OK> Bind adresse et port socket OK" << endl;
 }
 
 void SocketsServeur::listenSocket(int maxConn)

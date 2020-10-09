@@ -74,16 +74,16 @@ sockaddr_in Sockets::getAdressByName(const char* hostName)
     {
         switch (errno)
         {
-            case HOST_NOT_FOUND: printf("<Erreur> HOST_NOT_FOUND\n"); break;
-            case NO_DATA: printf("<Erreur> NO_DATA\n"); break;
-            case NO_RECOVERY: printf("<Erreur> NO_RECOVERY\n"); break;
-            case TRY_AGAIN: printf("<Erreur> TRY_AGAIN\n"); break;
+            case HOST_NOT_FOUND: cout << "<Erreur> HOST_NOT_FOUND" << endl; break;
+            case NO_DATA: cout << "<Erreur> NO_DATA" << endl; break;
+            case NO_RECOVERY: cout << "<Erreur> NO_RECOVERY" << endl; break;
+            case TRY_AGAIN: cout << "<Erreur> TRY_AGAIN" << endl; break;
         }
         
         throw BaseException("<Erreur> acquisition d'informations sur le host ");
     }
     else
-        printf("<OK> acquisition d'informations sur le host\n");
+        cout << "<OK> acquisition d'informations sur le host" << endl;
     
     memcpy(&adresse.sin_addr, infosHost->h_addr, infosHost->h_length);
 
@@ -125,7 +125,12 @@ void Sockets::sendString(char* message, int taille)
 {
 	if(send(gethSocket(), message, taille,0) == -1)
     {
-        printf("<Erreur> Le message n'a pas pu etre envoye: %d\n", errno);
+        switch (errno)
+        {
+            case EBADF: cout << "<Erreur> BAD FILE DESCRIPTOR" << endl; break;
+            case ENOTSOCK: cout << "<Erreur> SOCKET OPERATION ON NON SOCKET" << endl; break;
+            case EINTR: cout << "<Erreur> EINTR" << endl; break;
+        }
         throw BaseException("<Erreur> Le message n'a pas pu etre envoye ");      
     }	
     else
@@ -138,7 +143,12 @@ void Sockets::sendStruct(void* structure, int taille)
 {
 	if(send(gethSocket(), structure, taille,0) == -1)
     {
-        printf("<Erreur> Le message n'a pas pu etre envoye: %d\n", errno);
+        switch (errno)
+        {
+            case EBADF: cout << "<Erreur> BAD FILE DESCRIPTOR" << endl; break;
+            case ENOTSOCK: cout << "<Erreur> SOCKET OPERATION ON NON SOCKET" << endl; break;
+            case EINTR: cout << "<Erreur> EINTR" << endl; break;
+        }
         throw BaseException("<Erreur> Le message n'a pas pu etre envoye ");      
     }	
     else
@@ -161,6 +171,12 @@ char* Sockets::receiveString(int taille, char marq1, char marq2)
     {
         if((nbrBytesRecus = recv(this->hSocket, buff, taille, 0)) == -1)
         {
+            switch (errno)
+            {
+                case EBADF: cout << "<Erreur> BAD FILE DESCRIPTOR" << endl; break;
+                case ENOTSOCK: cout << "<Erreur> SOCKET OPERATION ON NON SOCKET" << endl; break;
+                case EINTR: cout << "<Erreur> EINTR" << endl; break;
+            }
             Affiche("Error","Tout le message n'a pas su etre lu: %d\n", errno);
             //TODO: fermer socket ou qqch ? 
         }
@@ -168,7 +184,7 @@ char* Sockets::receiveString(int taille, char marq1, char marq2)
         {
             if(nbrBytesRecus == 0)
             {
-                throw BaseException("Le client est parti");
+                throw BaseException("La connection a ete fermee");
             }
 
             fin = marqueurRecu(buff, nbrBytesRecus, marq1, marq2);
@@ -197,11 +213,17 @@ void Sockets::receiveStruct(void* structure, int taille)
     Warning("taille","taille que l'on attend: %d\n", taille);
     int tailleMessageRecu = 0;
     int nbreBytesRecus = 0;
-    do 
+    do
     {
         Affiche("SOCKET","numero: %d", this->hSocket);
         if((nbreBytesRecus = recv(this->hSocket,((char*)structure)+tailleMessageRecu, taille-tailleMessageRecu,0)) == -1)
         {
+            switch (errno)
+            {
+                case EBADF: cout << "<Erreur> BAD FILE DESCRIPTOR" << endl; break;
+                case ENOTSOCK: cout << "<Erreur> SOCKET OPERATION ON NON SOCKET" << endl; break;
+                case EINTR: cout << "<Erreur> EINTR" << endl; break;
+            }
             Affiche("Error","Tout le message n'a pas su etre lu: %d\n", errno);
             //TODO: fermer socket ou qqch ?
         }
@@ -209,7 +231,7 @@ void Sockets::receiveStruct(void* structure, int taille)
         {
             if(nbreBytesRecus == 0)
             {
-                throw BaseException("Le client est parti");
+                throw BaseException("La connection a ete fermee");
             }
             tailleMessageRecu += nbreBytesRecus;
             Affiche("INFO","Taille message recu = %d et taille attendue %d \n",tailleMessageRecu, taille);
@@ -217,8 +239,7 @@ void Sockets::receiveStruct(void* structure, int taille)
     }
     while(nbreBytesRecus!=0 && nbreBytesRecus!=-1 && tailleMessageRecu!= taille);
 
-    //Affiche("test","Tout le message à été lu \n");
-    printf("Tout le message à été lu \n");
+    Affiche("OK","Tout le message à été lu \n");
 }
 
 

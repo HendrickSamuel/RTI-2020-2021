@@ -23,7 +23,7 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
-#define NB_MAX_CONNECTIONS 1
+//#define NB_MAX_CONNECTIONS 1
 
 using namespace std;
 
@@ -57,8 +57,8 @@ pthread_mutex_t mutexIndiceCourant;
 
 pthread_cond_t condIndiceCourant;
 
-pthread_t threads[NB_MAX_CONNECTIONS];
-SocketsServeur sockets[NB_MAX_CONNECTIONS];
+pthread_t* threads;
+SocketsServeur* sockets;
 
 // Déclaration de la clé et du controleur
 pthread_key_t cle;
@@ -88,6 +88,8 @@ int main(int argc, char *argv[])
     int j;
     SocketsServeur socketEcoute;
     SocketsServeur socketService;
+    char *ThreadsMaxTmp;
+    int ThreadsMax;
     char *portTmp;
     int port;
     char *adresse;
@@ -102,6 +104,15 @@ int main(int argc, char *argv[])
     /* lecture des parametres sur fichier */
     try
     {
+        ThreadsMaxTmp = Configurator::getProperty("test.conf","MAX-THREADS");
+        cout << "Test " << ThreadsMaxTmp << endl;
+        ThreadsMax = atoi(ThreadsMaxTmp);
+
+        cout << "APPLICATION: " << ThreadsMax << " Threads au démarrage " << endl;
+
+        threads = new pthread_t[ThreadsMax];
+        sockets = new SocketsServeur[ThreadsMax];
+        
         portTmp = Configurator::getProperty("test.conf","PORT");
         adresse = Configurator::getProperty("test.conf","HOSTNAME");
         if(portTmp == NULL || adresse == NULL)
@@ -123,7 +134,7 @@ int main(int argc, char *argv[])
     pthread_mutex_init(&mutexIndiceCourant, NULL);
     pthread_cond_init(&condIndiceCourant, NULL);
 
-    for(i = 0; i < NB_MAX_CONNECTIONS; i++)
+    for(i = 0; i < ThreadsMax; i++)
         sockets[i].setLibre(true);
 
     try
@@ -137,7 +148,7 @@ int main(int argc, char *argv[])
     }
 
     /* ---- DEMARRAGE DES THREADS ---- */
-    for(i = 0; i < NB_MAX_CONNECTIONS; i++)
+    for(i = 0; i < ThreadsMax; i++)
     {
         pthread_create(&threads[i], NULL, fctThread, (void*)&i);
         Affiche("TEST","Démarrage du thread secondaire %d\n",i);
@@ -152,9 +163,9 @@ int main(int argc, char *argv[])
 
         Affiche("","Recherche d'une socket libre\n");
 
-        for(j = 0; j < NB_MAX_CONNECTIONS && sockets[j].esLibre() != true; j++); //j'aime pas
+        for(j = 0; j < ThreadsMax && sockets[j].esLibre() != true; j++); //j'aime pas
 
-        if(j == NB_MAX_CONNECTIONS)
+        if(j == ThreadsMax)
         {
             printf("Plus de connexion disponible\n");
             char* msgRetour;
@@ -508,7 +519,7 @@ void * fctThread(void * param)
     *identite = *((int *)param);
     //int vr = (int)(param);
 
-    Affiche("thread","Thread n° %d demarre a la position %d \n", pthread_self(), *identite);
+    Affiche("THREAD","DEMARRAGE DU THREAD \n");
     
     //Initialisation de la structure Thread
     S_THREAD *PT = new S_THREAD;
