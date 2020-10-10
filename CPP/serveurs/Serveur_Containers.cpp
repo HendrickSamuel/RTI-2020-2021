@@ -7,16 +7,16 @@
 
 #include "CMMP.h"
 #include "Trace.h"
-#include "ParcAcces.h"
-#include "StructParc.h"
 #include "liste.h"
+#include <stdio.h>
 #include "Output.h"
-#include "Configurator.h"
-#include <stdio.h>     
 #include <iostream>
 #include <unistd.h> 
 #include <stdlib.h>
 #include <pthread.h>
+#include "ParcAcces.h"
+#include "StructParc.h"
+#include "Configurator.h"
 #include "BaseException.h"
 #include "SocketsServeur.h"
 

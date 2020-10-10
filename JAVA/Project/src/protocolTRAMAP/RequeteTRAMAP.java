@@ -1,3 +1,10 @@
+/***********************************************************/
+/*Auteurs : HENDRICK Samuel et DELAVAL Kevin               */
+/*Groupe : 2302                                            */
+/*Labo : R.T.I.                                            */
+/*Date de la dernière mise à jour : 10/10/2020             */
+/***********************************************************/
+
 package protocolTRAMAP;
 
 import genericRequest.Reponse;
@@ -14,10 +21,17 @@ import java.util.Properties;
 
 public class RequeteTRAMAP implements Requete, Serializable
 {
+    /********************************/
+    /*           Variables          */
+    /********************************/
     private EnumTRAMAP _type;
     private DonneesTRAMAP chargeUtile;
     private Socket socketClient;
 
+
+    /********************************/
+    /*         Constructeurs        */
+    /********************************/
     public RequeteTRAMAP(DonneesTRAMAP chu)
     {
         chargeUtile = chu;
@@ -41,6 +55,10 @@ public class RequeteTRAMAP implements Requete, Serializable
         socketClient = s;
     }
 
+
+    /********************************/
+    /*          Méthodes            */
+    /********************************/
     @Override
     public Runnable createRunnable(Socket s, ConsoleServeur cs) {
         switch (_type)
@@ -48,7 +66,8 @@ public class RequeteTRAMAP implements Requete, Serializable
             case LOGIN:
                 return new Runnable()
                 {
-                    public void run() {
+                    public void run()
+                    {
                         traiteLOGIN(s,cs);
                     }
                 };
@@ -56,38 +75,47 @@ public class RequeteTRAMAP implements Requete, Serializable
             case INPUT_LORY:
                 return new Runnable()
                 {
-                    public void run() {
+                    public void run()
+                    {
                         traiteINPUTLORY(s,cs);
                     }
                 };
 
             case INPUT_LORRY_WITHOUT_RESERVATION:
-                return new Runnable() {
+                return new Runnable()
+                {
                     @Override
-                    public void run() {
+                    public void run()
+                    {
                         traiteINPUTLORYWITHOUTRESERVATION(s, cs);
                     }
                 };
 
             case LIST_OPERATIONS:
-                return new Runnable() {
+                return new Runnable()
+                {
                     @Override
-                    public void run() {
+                    public void run()
+                    {
                         traiteListe(s, cs);
                     }
                 };
 
             case LOGOUT:
-                return new Runnable() {
+                return new Runnable()
+                {
                     @Override
-                    public void run() {
+                    public void run()
+                    {
                         traiteLOGOUT(s, cs);
                     }
                 };
             default:
-                return new Runnable() {
+                return new Runnable()
+                {
                     @Override
-                    public void run() {
+                    public void run()
+                    {
                         traite404(s, cs);
                     }
                 };
@@ -103,11 +131,14 @@ public class RequeteTRAMAP implements Requete, Serializable
 
         //MysqlConnector mc = new MysqlConnector("root","root","bd_mouvements");
         ObjectOutputStream oos=null;
-        try {
+        try
+        {
             oos = new ObjectOutputStream(sock.getOutputStream());
             oos.writeObject(new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null));
             oos.flush();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             System.out.println("Le client s'est deconnecte apres cette reponse: " + e.getMessage());
         }
     }
@@ -136,11 +167,14 @@ public class RequeteTRAMAP implements Requete, Serializable
     {
         System.out.println("traite404 Request not found");
         ObjectOutputStream oos=null;
-        try {
+        try
+        {
             oos = new ObjectOutputStream(sock.getOutputStream());
             oos.writeObject(new ReponseTRAMAP(ReponseTRAMAP.REQUEST_NOT_FOUND, null, "request could not be exeuted due to unsopported version."));
             oos.flush();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             System.out.println("Le client s'est deconnecte apres cette reponse: " + e.getMessage());
         }
     }
