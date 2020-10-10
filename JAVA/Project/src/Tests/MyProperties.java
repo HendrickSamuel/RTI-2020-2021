@@ -1,26 +1,30 @@
 /***********************************************************/
-/*Auteurs : HENDRICK Samuel et DELAVAL Kevin               */
-/*Groupe : 2302                                            */
-/*Labo : R.T.I.                                            */
-/*Date de la dernière mise à jour : 10/10/2020             */
+/*Auteurs : DELAVAL Kevin & HENDRICK Samuel                */
+/*Groupe : 2203                                            */
+/*Application : InpresHarbour                              */
+/*Date de la dernière mise à jour : 18/05/2020             */
 /***********************************************************/
 
 package Tests;
         import java.io.*;
         import java.util.*;
 
-public class MyProperties
-{
-    /********************************/
-    /*           Variables          */
-    /********************************/
+public class MyProperties {
+    /**************************/
+    /*                        */
+    /*   VARIABLES MEMBRES    */
+    /*                        */
+    /**************************/
+
     private Properties _properties;
     private String _fileName;
 
+    /**************************/
+    /*                        */
+    /*      CONSTRUCTEURS     */
+    /*                        */
+    /**************************/
 
-    /********************************/
-    /*         Constructeurs        */
-    /********************************/
     public MyProperties(String fileName)
     {
         setProperty(new Properties());
@@ -28,10 +32,12 @@ public class MyProperties
         Load();
     }
 
+    /**************************/
+    /*                        */
+    /*         SETTERS        */
+    /*                        */
+    /**************************/
 
-    /********************************/
-    /*           Setters            */
-    /********************************/
     public void setProperty(Properties prop)
     {
         _properties = prop;
@@ -42,10 +48,12 @@ public class MyProperties
         _fileName = fileName;
     }
 
+    /**************************/
+    /*                        */
+    /*         GETTERS        */
+    /*                        */
+    /**************************/
 
-    /********************************/
-    /*           Getters            */
-    /********************************/
     public Properties getPropertY()
     {
         return _properties;
@@ -64,10 +72,12 @@ public class MyProperties
         return rep+sep;
     }
 
+    /**************************/
+    /*                        */
+    /*        METHODES        */
+    /*                        */
+    /**************************/
 
-    /********************************/
-    /*          Méthodes            */
-    /********************************/
     public void Save()
     {
         try(OutputStream output = new FileOutputStream(getFilePath()+getFileName()))
