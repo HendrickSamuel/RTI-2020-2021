@@ -1,9 +1,11 @@
 package protocolTRAMAP;
 
+import genericRequest.DonneeRequete;
+
 import java.io.Serializable;
 import java.util.Date;
 
-public class DonneeListOperations implements DonneesTRAMAP, Serializable {
+public class DonneeListOperations implements DonneeRequete, Serializable {
     private Date dateDebut;
     private Date dateFin;
     private String nomSociete;

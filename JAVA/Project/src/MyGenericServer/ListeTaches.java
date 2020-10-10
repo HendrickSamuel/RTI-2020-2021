@@ -1,4 +1,4 @@
-package genericServer;
+package MyGenericServer;
 
 import java.net.Socket;
 import java.util.ArrayList;

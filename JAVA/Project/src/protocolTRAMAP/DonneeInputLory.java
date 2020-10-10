@@ -1,8 +1,10 @@
 package protocolTRAMAP;
 
+import genericRequest.DonneeRequete;
+
 import java.io.Serializable;
 
-public class DonneeInputLory implements DonneesTRAMAP, Serializable {
+public class DonneeInputLory implements DonneeRequete, Serializable {
     private String numeroReservation;
     private String idContainer;
 
