@@ -1,3 +1,10 @@
+/***********************************************************/
+/*Auteurs : HENDRICK Samuel et DELAVAL Kevin               */
+/*Groupe : 2302                                            */
+/*Labo : R.T.I.                                            */
+/*Date de la dernière mise à jour : 10/10/2020             */
+/***********************************************************/
+
 package MyGenericServer;
 
 import genericRequest.Reponse;
@@ -11,60 +18,91 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ThreadClientConnecte extends Thread implements ThreadClient {
-
+public class ThreadClientConnecte extends Thread implements ThreadClient
+{
+    /********************************/
+    /*           Variables          */
+    /********************************/
     private SourceTaches _taches;
     private String nom;
     private Socket tacheEnCours;
     private Traitement traitement;
 
+
+    /********************************/
+    /*         Constructeurs        */
+    /********************************/
     public ThreadClientConnecte()
     {
         System.out.println("DEMARRAGE ThreadClientConnecte");
     }
 
-    public void set_taches(SourceTaches _taches) {
-        this._taches = _taches;
-    }
 
-    public String getNom() {
+    /********************************/
+    /*            Getters           */
+    /********************************/
+    public String getNom()
+    {
         return nom;
     }
 
-    public void setNom(String nom) {
+
+    /********************************/
+    /*            Setters           */
+    /********************************/
+    public void set_taches(SourceTaches _taches)
+    {
+        this._taches = _taches;
+    }
+
+    public void setNom(String nom)
+    {
         this.nom = nom;
     }
 
     @Override
-    public void setTraitement(String nom) throws IOException, ClassNotFoundException {
+    public void setTraitement(String nom) throws IOException, ClassNotFoundException
+    {
         traitement = (Traitement)Beans.instantiate(null, nom);
     }
 
-    public void setTacheEnCours(Socket tacheEnCours) {
+    public void setTacheEnCours(Socket tacheEnCours)
+    {
         this.tacheEnCours = tacheEnCours;
     }
 
+
+    /********************************/
+    /*            Methodes          */
+    /********************************/
     @Override
-    public void run() {
+    public void run()
+    {
 
         System.out.println("Je suis :" + nom + " et je demarre en tant que Thread");
         boolean inCommunication = false;
         while(!isInterrupted())
         {
-            try {
+            try
+            {
                 tacheEnCours = _taches.getTache();
                 inCommunication = true;
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
 
             ObjectInputStream ois=null;
             ObjectOutputStream oos=null;
             Requete req = null;
-            try {
+            try
+            {
                 ois = new ObjectInputStream(tacheEnCours.getInputStream());
                 oos = new ObjectOutputStream(tacheEnCours.getOutputStream());
-            } catch (IOException e) {
+            }
+            catch (IOException e)
+            {
                 e.printStackTrace();
             }
 

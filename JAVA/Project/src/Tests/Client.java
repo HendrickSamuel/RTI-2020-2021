@@ -1,3 +1,10 @@
+/***********************************************************/
+/*Auteurs : HENDRICK Samuel et DELAVAL Kevin               */
+/*Groupe : 2302                                            */
+/*Labo : R.T.I.                                            */
+/*Date de la dernière mise à jour : 10/10/2020             */
+/***********************************************************/
+
 package Tests;
 
 import genericRequest.DonneeRequete;
@@ -10,7 +17,8 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Properties;
 
-public class Client {
+public class Client
+{
     public static void main(String[] args)
     {
         ObjectInputStream ois;
@@ -26,7 +34,8 @@ public class Client {
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(System.in));
         DonneeRequete dt = null;
-        try {
+        try
+        {
             String name = reader.readLine();
             int option = Integer.parseInt(name);
             switch (option)
@@ -37,7 +46,9 @@ public class Client {
                 case 4: dt = new DonneeListOperations(new Date(), new Date(), "Societe", "Destination"); break;
                 case 5: dt = new DonneeLogout("SamOut","SamP"); break;
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
         }
 
@@ -52,9 +63,13 @@ public class Client {
             System.out.println(cliSock.getInetAddress().toString());
         }
         catch (UnknownHostException e)
-        { System.err.println("Erreur ! Host non trouvé [" + e + "]"); }
+        {
+            System.err.println("Erreur ! Host non trouvé [" + e + "]");
+        }
         catch (IOException e)
-        { System.err.println("Erreur ! Pas de connexion ? [" + e + "]"); }
+        {
+            System.err.println("Erreur ! Pas de connexion ? [" + e + "]");
+        }
         // Envoie de la requête
         try
         {
@@ -62,7 +77,9 @@ public class Client {
             oos.writeObject(req); oos.flush();
         }
         catch (IOException e)
-        { System.err.println("Erreur réseau ? [" + e.getMessage() + "]"); }
+        {
+            System.err.println("Erreur réseau ? [" + e.getMessage() + "]");
+        }
         // Lecture de la réponse
         ReponseTRAMAP rep = null;
         try
@@ -71,12 +88,14 @@ public class Client {
             rep = (ReponseTRAMAP)ois.readObject();
             System.out.println(" *** Reponse reçue : " + rep.getCode());
             reader.readLine();
-
         }
         catch (ClassNotFoundException e)
-        { System.out.println("--- erreur sur la classe = " + e.getMessage()); }
+        {
+            System.out.println("--- erreur sur la classe = " + e.getMessage());
+        }
         catch (IOException e)
-        { System.out.println("--- erreur IO = " + e.getMessage()); }
-
+        {
+            System.out.println("--- erreur IO = " + e.getMessage());
+        }
     }
 }

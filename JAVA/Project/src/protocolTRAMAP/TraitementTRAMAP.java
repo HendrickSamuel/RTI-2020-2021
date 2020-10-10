@@ -1,3 +1,10 @@
+/***********************************************************/
+/*Auteurs : HENDRICK Samuel et DELAVAL Kevin               */
+/*Groupe : 2302                                            */
+/*Labo : R.T.I.                                            */
+/*Date de la dernière mise à jour : 10/10/2020             */
+/***********************************************************/
+
 package protocolTRAMAP;
 
 import genericRequest.DonneeRequete;
@@ -5,13 +12,17 @@ import genericRequest.Reponse;
 import genericRequest.Traitement;
 import MyGenericServer.ConsoleServeur;
 
-public class TraitementTRAMAP implements Traitement {
+public class TraitementTRAMAP implements Traitement
+{
 
     //todo: rajouter un Objet client ici
 
+    /********************************/
+    /*            Methodes          */
+    /********************************/
     @Override
-    public Reponse traiteRequete(DonneeRequete Requete) throws ClassCastException {
-
+    public Reponse traiteRequete(DonneeRequete Requete) throws ClassCastException
+    {
         if(Requete instanceof DonneeLogin)
             return traiteLOGIN(null, (DonneeLogin)Requete);
         else if(Requete instanceof DonneeInputLory)

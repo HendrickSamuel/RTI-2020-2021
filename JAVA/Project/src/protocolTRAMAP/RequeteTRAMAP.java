@@ -1,3 +1,10 @@
+/***********************************************************/
+/*Auteurs : HENDRICK Samuel et DELAVAL Kevin               */
+/*Groupe : 2302                                            */
+/*Labo : R.T.I.                                            */
+/*Date de la dernière mise à jour : 10/10/2020             */
+/***********************************************************/
+
 package protocolTRAMAP;
 
 import genericRequest.DonneeRequete;
@@ -8,16 +15,28 @@ import java.io.Serializable;
 
 public class RequeteTRAMAP implements Requete, Serializable
 {
+    /********************************/
+    /*          Variables           */
+    /********************************/
     private DonneeRequete chargeUtile;
 
+
+    /********************************/
+    /*         Constructeurs        */
+    /********************************/
     public RequeteTRAMAP(DonneeRequete chu)
     {
         chargeUtile = chu;
 
     }
 
+
+    /********************************/
+    /*            Getters           */
+    /********************************/
     @Override
-    public DonneeRequete getChargeUtile() {
+    public DonneeRequete getChargeUtile()
+    {
         return chargeUtile;
     }
 }

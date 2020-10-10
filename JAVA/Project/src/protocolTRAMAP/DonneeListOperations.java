@@ -1,3 +1,10 @@
+/***********************************************************/
+/*Auteurs : HENDRICK Samuel et DELAVAL Kevin               */
+/*Groupe : 2302                                            */
+/*Labo : R.T.I.                                            */
+/*Date de la dernière mise à jour : 10/10/2020             */
+/***********************************************************/
+
 package protocolTRAMAP;
 
 import genericRequest.DonneeRequete;
@@ -5,48 +12,74 @@ import genericRequest.DonneeRequete;
 import java.io.Serializable;
 import java.util.Date;
 
-public class DonneeListOperations implements DonneeRequete, Serializable {
+public class DonneeListOperations implements DonneeRequete, Serializable
+{
+    /********************************/
+    /*           Variables          */
+    /********************************/
     private Date dateDebut;
     private Date dateFin;
     private String nomSociete;
     private String nomDestination;
 
-    public DonneeListOperations(Date dateDebut, Date dateFin, String nomSociete, String nomDestination) {
+
+    /********************************/
+    /*         Constructeurs        */
+    /********************************/
+    public DonneeListOperations(Date dateDebut, Date dateFin, String nomSociete, String nomDestination)
+    {
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
         this.nomSociete = nomSociete;
         this.nomDestination = nomDestination;
     }
 
-    public Date getDateDebut() {
+
+    /********************************/
+    /*            Getters           */
+    /********************************/
+    public Date getDateDebut()
+    {
         return dateDebut;
     }
 
-    public void setDateDebut(Date dateDebut) {
-        this.dateDebut = dateDebut;
-    }
-
-    public Date getDateFin() {
+    public Date getDateFin()
+    {
         return dateFin;
     }
 
-    public void setDateFin(Date dateFin) {
-        this.dateFin = dateFin;
-    }
-
-    public String getNomSociete() {
+    public String getNomSociete()
+    {
         return nomSociete;
     }
 
-    public void setNomSociete(String nomSociete) {
-        this.nomSociete = nomSociete;
-    }
-
-    public String getNomDestination() {
+    public String getNomDestination()
+    {
         return nomDestination;
     }
 
-    public void setNomDestination(String nomDestination) {
+
+    /********************************/
+    /*            Setters           */
+    /********************************/
+    public void setDateDebut(Date dateDebut)
+    {
+        this.dateDebut = dateDebut;
+    }
+
+    public void setDateFin(Date dateFin)
+    {
+        this.dateFin = dateFin;
+    }
+
+    public void setNomSociete(String nomSociete)
+    {
+        this.nomSociete = nomSociete;
+    }
+
+    public void setNomDestination(String nomDestination)
+    {
         this.nomDestination = nomDestination;
     }
+
 }
