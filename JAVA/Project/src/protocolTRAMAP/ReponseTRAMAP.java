@@ -1,5 +1,6 @@
 package protocolTRAMAP;
 
+import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import java.io.Serializable;
 import java.util.Properties;
@@ -11,9 +12,9 @@ public class ReponseTRAMAP implements Reponse, Serializable {
     public static int REQUEST_NOT_FOUND = 404;
     private int codeRetour;
     private String message;
-    private DonneesTRAMAP chargeUtile;
+    private DonneeRequete chargeUtile;
 
-    public ReponseTRAMAP(int c, DonneesTRAMAP chu, String msg)
+    public ReponseTRAMAP(int c, DonneeRequete chu, String msg)
     {
         codeRetour = c;
         setChargeUtile(chu);
@@ -21,6 +22,6 @@ public class ReponseTRAMAP implements Reponse, Serializable {
     }
 
     public int getCode() { return codeRetour; }
-    public DonneesTRAMAP getChargeUtile() { return chargeUtile; }
-    public void setChargeUtile(DonneesTRAMAP chargeUtile) { this.chargeUtile = chargeUtile; }
+    public DonneeRequete getChargeUtile() { return chargeUtile; }
+    public void setChargeUtile(DonneeRequete chargeUtile) { this.chargeUtile = chargeUtile; }
 }

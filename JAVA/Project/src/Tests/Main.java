@@ -1,15 +1,16 @@
 package Tests;
 
-import genericServer.ListeTaches;
-import genericServer.ThreadServeur;
+import MyGenericServer.ThreadServer;
+import MyGenericServer.ListeTaches;
 
 public class Main {
 
     public static void main (String[] args){
         MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
-        System.out.println(mp.getContent("PORT"));
+        int port = Integer.parseInt(mp.getContent("PORT"));
+        System.out.println(port);
         ListeTaches lt = new ListeTaches();
-        ThreadServeur ts = new ThreadServeur(50001, lt, null);
+        ThreadServer ts = new ThreadServer(port, lt, null, true,"protocolTRAMAP.TraitementTRAMAP");
         ts.start();
     }
 }

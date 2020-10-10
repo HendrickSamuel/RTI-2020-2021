@@ -1,5 +1,6 @@
 package Tests;
 
+import genericRequest.DonneeRequete;
 import genericRequest.Requete;
 import protocolTRAMAP.*;
 
@@ -24,7 +25,7 @@ public class Client {
         System.out.println("5. Logout");
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(System.in));
-        DonneesTRAMAP dt = null;
+        DonneeRequete dt = null;
         try {
             String name = reader.readLine();
             int option = Integer.parseInt(name);

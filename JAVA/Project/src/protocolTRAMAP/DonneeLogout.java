@@ -1,8 +1,10 @@
 package protocolTRAMAP;
 
+import genericRequest.DonneeRequete;
+
 import java.io.Serializable;
 
-public class DonneeLogout implements DonneesTRAMAP, Serializable {
+public class DonneeLogout implements DonneeRequete, Serializable {
     private String username;
     private String password;
 
