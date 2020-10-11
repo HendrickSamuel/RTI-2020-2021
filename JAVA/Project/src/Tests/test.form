@@ -32,6 +32,14 @@
           <text value="Button"/>
         </properties>
       </component>
+      <component id="cfa" class="javax.swing.JTree" binding="tree1" default-binding="true">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="50"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
     </children>
   </grid>
 </form>

@@ -40,8 +40,8 @@ public class Client
             int option = Integer.parseInt(name);
             switch (option)
             {
-                case 1: dt = new DonneeLogin("Sam","SamP"); break;
-                case 2: dt = new DonneeInputLory("Resrvation","Container"); break;
+                case 1: dt = new DonneeLogin("Sam","superSecurePass123"); break;
+                case 2: dt = new DonneeInputLory("test","blabla"); break;
                 case 3: dt = new DonneeInputLoryWithoutReservation("Container"); break;
                 case 4: dt = new DonneeListOperations(new Date(), new Date(), "Societe", "Destination"); break;
                 case 5: dt = new DonneeLogout("SamOut","SamP"); break;
@@ -87,6 +87,10 @@ public class Client
             ois = new ObjectInputStream(cliSock.getInputStream());
             rep = (ReponseTRAMAP)ois.readObject();
             System.out.println(" *** Reponse reçue : " + rep.getCode());
+            if(rep.getMessage() != null)
+            {
+                System.out.println("Message reçu: " + rep.getMessage());
+            }
             reader.readLine();
         }
         catch (ClassNotFoundException e)

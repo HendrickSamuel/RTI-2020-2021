@@ -20,6 +20,7 @@ public class ReponseTRAMAP implements Reponse, Serializable
     public static int OK = 200;
     public static int LOGIN_OK = 201;
     public static int BAD_DATA = 401;
+    public static int LOGIN_NOK = 400;
     public static int REQUEST_NOT_FOUND = 404;
     private int codeRetour;
     private String message;
@@ -48,6 +49,11 @@ public class ReponseTRAMAP implements Reponse, Serializable
     public DonneeRequete getChargeUtile()
     {
         return chargeUtile;
+    }
+
+    public String getMessage()
+    {
+        return message;
     }
 
 

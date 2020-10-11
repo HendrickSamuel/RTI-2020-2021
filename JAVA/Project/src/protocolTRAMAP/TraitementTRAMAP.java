@@ -11,11 +11,37 @@ import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import MyGenericServer.ConsoleServeur;
+import lib.BeanDBAcces.BDMouvements;
 
 public class TraitementTRAMAP implements Traitement
 {
 
     //todo: rajouter un Objet client ici
+
+    BDMouvements _bd;
+
+
+    /********************************/
+    /*         Constructeurs        */
+    /********************************/
+    public TraitementTRAMAP() {
+        this._bd = new BDMouvements("root","root","bd_mouvements");;
+    }
+
+    /********************************/
+    /*            Getters           */
+    /********************************/
+    public BDMouvements get_bd() {
+        return _bd;
+    }
+
+    /********************************/
+    /*            Setters           */
+    /********************************/
+    public void set_bd(BDMouvements _bd) {
+        this._bd = _bd;
+    }
+
 
     /********************************/
     /*            Methodes          */
@@ -26,7 +52,7 @@ public class TraitementTRAMAP implements Traitement
         if(Requete instanceof DonneeLogin)
             return traiteLOGIN(null, (DonneeLogin)Requete);
         else if(Requete instanceof DonneeInputLory)
-            traiteINPUTLORY(null, (DonneeInputLory)Requete);
+            return traiteINPUTLORY(null, (DonneeInputLory)Requete);
         else if(Requete instanceof DonneeInputLoryWithoutReservation)
             traiteINPUTLORYWITHOUTRESERVATION( null, (DonneeInputLoryWithoutReservation)Requete);
         else if(Requete instanceof DonneeListOperations)
@@ -43,17 +69,28 @@ public class TraitementTRAMAP implements Traitement
     {
         System.out.println("traiteLOGIN");
 
-        System.out.println("Mot de passe: " + (chargeUtile).getPassword());
-        System.out.println("Utilisateur: " + (chargeUtile).getUsername());
-
-        //MysqlConnector mc = new MysqlConnector("root","root","bd_mouvements");
-
-        return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+        System.out.println("Mot de passe: " + chargeUtile.getPassword());
+        System.out.println("Utilisateur: " + chargeUtile.getUsername());
+        boolean ret = _bd.tryLogin(chargeUtile.getUsername(),chargeUtile.getPassword());
+        if(ret)
+            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+        else
+            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
     }
 
-    private void traiteINPUTLORY(ConsoleServeur cs, DonneeInputLory chargeUtile)
+    private Reponse traiteINPUTLORY(ConsoleServeur cs, DonneeInputLory chargeUtile)
     {
         System.out.println("traiteINPUTLORY");
+        Object ret = _bd.getReservation(chargeUtile.getNumeroReservation(), chargeUtile.getIdContainer());
+        if(ret != null)
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
+        }
+        else
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Aucune réservation ne correspond à ce container");
+            //todo: verifier si on attent + si les 2 vont ensemble ?
+        }
     }
 
     private void traiteINPUTLORYWITHOUTRESERVATION(ConsoleServeur cs, DonneeInputLoryWithoutReservation chargeUtile)

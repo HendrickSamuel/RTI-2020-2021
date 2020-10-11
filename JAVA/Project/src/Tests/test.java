@@ -11,6 +11,7 @@ public class test extends JFrame {
     private JSlider slider1;
     private JButton button1;
     private JPanel test;
+    private JTree tree1;
 
     public test() {
         super("Titre marrant");

@@ -30,6 +30,8 @@ public class ThreadServer extends Thread
     private String _clientType;
     private String protocol;
 
+    //todo: Ajouts d'evenements pour le plantage
+
 
     /********************************/
     /*         Constructeurs        */
