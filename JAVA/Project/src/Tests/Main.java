@@ -12,7 +12,6 @@ import MyGenericServer.ListeTaches;
 
 public class Main
 {
-
     public static void main (String[] args)
     {
         MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");

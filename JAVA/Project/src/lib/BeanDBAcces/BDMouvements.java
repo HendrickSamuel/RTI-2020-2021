@@ -84,18 +84,14 @@ public class BDMouvements extends MysqlConnector
 
     public synchronized void getInputWithoutRes(String immatriculation, String idContainer)
     {
-       /* try {
-
-            PreparedStatement ps = _con.prepareStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
-            ps.setString(1, idContainer);
-            ps.setString(2, numReservation);
-            ResultSet rs = ps.executeQuery();
-            if(rs.next())
-                System.out.println("Trouvé: " + rs.getString("x") + " - " + rs.getString("y"));
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }*/
+        /*
+        PreparedStatement ps = _con.prepareStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
+        ps.setString(1, idContainer);
+        ps.setString(2, numReservation);
+        ResultSet rs = ps.executeQuery();
+        if(rs.next())
+            System.out.println("Trouvé: " + rs.getString("x") + " - " + rs.getString("y"));
+        */
     }
 
     public synchronized List<String> getListOperations(Date dateDebut, Date dateFin, String nomSociete, String destination)
@@ -110,8 +106,8 @@ public class BDMouvements extends MysqlConnector
             {
                ps = _con.prepareStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
             }
-
-            /*ps.setString(1, idContainer);
+/*
+            ps.setString(1, idContainer);
             ps.setString(2, numReservation);
             ResultSet rs = ps.executeQuery();
             if(rs.next())
@@ -120,7 +116,8 @@ public class BDMouvements extends MysqlConnector
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return  null;
+
+        return null;
     }
 
 }

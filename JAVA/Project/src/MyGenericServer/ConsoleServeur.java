@@ -9,5 +9,5 @@ package MyGenericServer;
 
 public interface ConsoleServeur
 {
-
+    public void Affiche(String message);
 }

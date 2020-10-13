@@ -5,7 +5,13 @@
 
 package Mouvement.Serveur;
 
-public class ICI {
+import MyGenericServer.ConsoleServeur;
+
+import javax.swing.*;
+
+public class ConsoleSwing implements ConsoleServeur {
+
+    JTextArea jta;
 
     /********************************/
     /*           Variables          */
@@ -14,7 +20,9 @@ public class ICI {
     /********************************/
     /*         Constructeurs        */
     /********************************/
-
+    public ConsoleSwing(JTextArea jta) {
+        this.jta = jta;
+    }
     /********************************/
     /*            Getters           */
     /********************************/
@@ -26,5 +34,10 @@ public class ICI {
     /********************************/
     /*            Methodes          */
     /********************************/
+
+    @Override
+    public void Affiche(String message) {
+        jta.append(message+"\n");
+    }
 
 }
