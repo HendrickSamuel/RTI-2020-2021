@@ -1,0 +1,213 @@
+//Auteurs : HENDRICK Samuel et DELAVAL Kevin
+//Groupe : 2302
+//Projet : R.T.I.
+//Date de la création : 13/10/2020
+
+package Mouvement;
+
+import genericRequest.DonneeRequete;
+import protocolTRAMAP.DonneeLogin;
+import protocolTRAMAP.ReponseTRAMAP;
+import protocolTRAMAP.RequeteTRAMAP;
+
+import javax.swing.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+public class DialogLogin extends javax.swing.JDialog
+{
+    /********************************/
+    /*           Variables          */
+    /********************************/
+    private boolean _loginValide;
+    private String _utilisateur;
+
+    ObjectInputStream ois;
+    ObjectOutputStream oos;
+    Socket cliSock;
+    DonneeRequete dt;
+
+    private JPanel contentPane;
+    private JButton buttonOK;
+    private JButton buttonCancel;
+    private JTextField loginField;
+    private JTextField passwordField;
+    private JLabel passwordLabel;
+    private JLabel loginLabel;
+
+
+    /********************************/
+    /*         Constructeurs        */
+    /********************************/
+    public DialogLogin()
+    {
+        initComponents();
+
+        this.setLocationRelativeTo(null);
+        setLoginValide(false);
+
+    }
+
+    public DialogLogin(java.awt.Frame parent, boolean modal)
+    {
+        initComponents();
+
+        this.setLocationRelativeTo(null);
+        setLoginValide(false);
+
+        dt = null;
+    }
+
+
+    /********************************/
+    /*            Getters           */
+    /********************************/
+    public String getUtilisateur()
+    {
+        return _utilisateur;
+    }
+
+    public boolean getLoginValide()
+    {
+        return _loginValide;
+    }
+
+
+    /********************************/
+    /*            Setters           */
+    /********************************/
+    public void setUtilisateur(String utilisateur)
+    {
+        _utilisateur = utilisateur;
+    }
+
+    public void setLoginValide(boolean val)
+    {
+        _loginValide = val;
+    }
+
+
+    /********************************/
+    /*            Methodes          */
+    /********************************/
+
+    private void initComponents()
+    {
+        setContentPane(contentPane);
+        setModal(true);
+        getRootPane().setDefaultButton(buttonOK);
+
+        buttonOK.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                onOK();
+            }
+        });
+
+        buttonCancel.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                onCancel();
+            }
+        });
+
+        // call onCancel() when cross is clicked
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                onCancel();
+            }
+        });
+
+        // call onCancel() on ESCAPE
+        contentPane.registerKeyboardAction(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e) {
+                onCancel();
+            }
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
+
+    /********************************/
+    /*            Boutons           */
+    /********************************/
+    private void onOK()
+    {
+        dt = new DonneeLogin("Sam","superSecurePass123");
+        RequeteTRAMAP req = null;
+        req = new RequeteTRAMAP(dt);
+
+        // Connexion au serveur
+        ois=null; oos=null; cliSock = null;
+        try
+        {
+            cliSock = new Socket("127.0.0.1", 50001);
+            System.out.println(cliSock.getInetAddress().toString());
+        }
+        catch (UnknownHostException e)
+        {
+            System.err.println("Erreur ! Host non trouvé [" + e + "]");
+        }
+        catch (IOException e)
+        {
+            System.err.println("Erreur ! Pas de connexion ? [" + e + "]");
+        }
+        // Envoie de la requête
+        try
+        {
+            oos = new ObjectOutputStream(cliSock.getOutputStream());
+            oos.writeObject(req); oos.flush();
+        }
+        catch (IOException e)
+        {
+            System.err.println("Erreur réseau ? [" + e.getMessage() + "]");
+        }
+        // Lecture de la réponse
+        ReponseTRAMAP rep = null;
+        try
+        {
+            ois = new ObjectInputStream(cliSock.getInputStream());
+            rep = (ReponseTRAMAP)ois.readObject();
+            System.out.println(" *** Reponse reçue : " + rep.getCode());
+            if(rep.getMessage() != null)
+            {
+                System.out.println("Message reçu: " + rep.getMessage());
+            }
+          //  reader.readLine();
+        }
+        catch (ClassNotFoundException e)
+        {
+            System.out.println("--- erreur sur la classe = " + e.getMessage());
+        }
+        catch (IOException e)
+        {
+            System.out.println("--- erreur IO = " + e.getMessage());
+        }
+
+        dispose();
+    }
+
+    private void onCancel()
+    {
+        setLoginValide(false);
+        dispose();
+    }
+
+
+    /********************************/
+    /*             Main             */
+    /********************************/
+    public static void main(String[] args)
+    {
+        DialogLogin dialog = new DialogLogin();
+        dialog.pack();
+        dialog.setVisible(true);
+        System.exit(0);
+    }
+}
