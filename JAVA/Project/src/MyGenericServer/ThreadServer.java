@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ThreadServer extends Thread
 {
@@ -30,6 +32,10 @@ public class ThreadServer extends Thread
     private String _clientType;
     private String protocol;
 
+    private LinkedList<ThreadClient> listeThreadsEnfants;
+    //private ThreadGroup _threadGroup;
+
+    //private volatile boolean manualStop = false;
     //todo: Ajouts d'evenements pour le plantage
 
 
@@ -48,6 +54,8 @@ public class ThreadServer extends Thread
             _clientType = "ThreadClientDeconnecte";
 
         this.protocol = protocol;
+
+        this.listeThreadsEnfants = new LinkedList<>();
     }
 
 
@@ -59,11 +67,14 @@ public class ThreadServer extends Thread
         try
         {
             SSocket = new ServerSocket(_port);
+            _console.Affiche("Demarrage du serveur sur le port: "+_port);
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
+
+        //_threadGroup = new ThreadGroup("Threads"+_port);
 
         for(int i = 0; i < _nbMaxConnections; i++)
         {
@@ -72,19 +83,12 @@ public class ThreadServer extends Thread
                 String truc = this.getClass().getPackage().getName()+"."+_clientType;
                 System.out.println(truc);
                 ThreadClient o = (ThreadClient)Beans.instantiate(null, truc);
+                listeThreadsEnfants.add(o);
 
                 o.set_taches(_sourceTaches);
                 o.setNom("Thread n° " + i);
                 o.setTraitement(protocol);
-
-                if(o instanceof ThreadClientConnecte)
-                {
-                    ((ThreadClientConnecte) o).start();
-                }
-                else
-                {
-                    ((ThreadClientDeconnecte) o).start();
-                }
+                o.start();
 
             }
             catch (IOException | ClassNotFoundException e)
@@ -99,14 +103,32 @@ public class ThreadServer extends Thread
             try
             {
                 CSocket = SSocket.accept();
-                //_console.printLine(""); //todo: ajouter quelque chose
+                _console.Affiche("Réception d'un client: " + CSocket.getInetAddress());
+                _sourceTaches.addTache(CSocket);
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                //e.printStackTrace();
+                //_console.Affiche("> test");
+                System.out.println(isInterrupted());
+                for(ThreadClient tc : listeThreadsEnfants)
+                {
+                    tc.interrupt();
+                }
+                //break;
             }
+        }
 
-            _sourceTaches.addTache(CSocket);
+        _console.Affiche("Le serveur se coupe");
+    }
+
+    public void StopServeur()
+    {
+        try {
+            this.interrupt();
+            SSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

@@ -20,7 +20,6 @@ public class TraitementTRAMAP implements Traitement
 
     BDMouvements _bd;
 
-
     /********************************/
     /*         Constructeurs        */
     /********************************/

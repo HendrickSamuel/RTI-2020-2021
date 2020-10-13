@@ -11,7 +11,7 @@ import MyGenericServer.SourceTaches;
 
 import java.net.Socket;
 
-public class ThreadClientDeconnecte extends Thread implements ThreadClient
+public class ThreadClientDeconnecte extends ThreadClient
 {
     /********************************/
     /*           Variables          */

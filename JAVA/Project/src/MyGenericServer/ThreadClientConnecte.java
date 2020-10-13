@@ -10,7 +10,6 @@ package MyGenericServer;
 import genericRequest.Reponse;
 import genericRequest.Requete;
 import genericRequest.Traitement;
-import MyGenericServer.SourceTaches;
 
 import java.beans.Beans;
 import java.io.IOException;
@@ -18,7 +17,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class ThreadClientConnecte extends Thread implements ThreadClient
+public class ThreadClientConnecte extends ThreadClient
 {
     /********************************/
     /*           Variables          */
@@ -78,32 +77,33 @@ public class ThreadClientConnecte extends Thread implements ThreadClient
     @Override
     public void run()
     {
-
         System.out.println("Je suis :" + nom + " et je demarre en tant que Thread");
         boolean inCommunication = false;
         while(!isInterrupted())
         {
+            ObjectInputStream ois=null;
+            ObjectOutputStream oos=null;
+            Requete req = null;
+
             try
             {
                 tacheEnCours = _taches.getTache();
                 inCommunication = true;
+
+                try
+                {
+                    ois = new ObjectInputStream(tacheEnCours.getInputStream());
+                    oos = new ObjectOutputStream(tacheEnCours.getOutputStream());
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
             }
             catch (InterruptedException e)
             {
-                e.printStackTrace();
-            }
-
-            ObjectInputStream ois=null;
-            ObjectOutputStream oos=null;
-            Requete req = null;
-            try
-            {
-                ois = new ObjectInputStream(tacheEnCours.getInputStream());
-                oos = new ObjectOutputStream(tacheEnCours.getOutputStream());
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
+                System.out.println(nom + " a quitte le truc");
+                inCommunication = false;
             }
 
             while(!isInterrupted() && inCommunication)
