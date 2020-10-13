@@ -8,6 +8,8 @@ package lib.BeanDBAcces;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 public class BDMouvements extends MysqlConnector
 {
@@ -77,6 +79,46 @@ public class BDMouvements extends MysqlConnector
         } catch (SQLException throwables) {
             throwables.printStackTrace();
             return null;
+        }
+    }
+
+    public synchronized void getInputWithoutRes(String immatriculation, String idContainer)
+    {
+        try {
+            /*
+            PreparedStatement ps = _con.prepareStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
+            ps.setString(1, idContainer);
+            ps.setString(2, numReservation);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next())
+                System.out.println("Trouvé: " + rs.getString("x") + " - " + rs.getString("y"));
+            */
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public synchronized List<String> getListOperations(Date dateDebut, Date dateFin, String nomSociete, String destination)
+    {
+        try {
+            PreparedStatement ps;
+            if(nomSociete != null)
+            {
+               ps = _con.prepareStatement("SELECT * FROM ");
+            }
+            else
+            {
+               ps = _con.prepareStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
+            }
+
+            ps.setString(1, idContainer);
+            ps.setString(2, numReservation);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next())
+                System.out.println("Trouvé: " + rs.getString("x") + " - " + rs.getString("y"));
+            */
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
     }
 
