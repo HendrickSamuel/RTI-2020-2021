@@ -24,7 +24,7 @@ public class TraitementTRAMAP implements Traitement
     /*         Constructeurs        */
     /********************************/
     public TraitementTRAMAP() {
-        this._bd = new BDMouvements("root","root","bd_mouvements");;
+        this._bd = new BDMouvements("root","","bd_mouvements");;
     }
 
     /********************************/
