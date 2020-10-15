@@ -37,6 +37,8 @@ public class ClientLayout extends JFrame
         this.setLocationRelativeTo(null);
 
         initComponents();
+
+        setConnect(false);
     }
 
 
@@ -104,32 +106,97 @@ public class ClientLayout extends JFrame
 
     private void onInputLorry(java.awt.event.ActionEvent evt)
     {
+        this.setVisible(false);
 
+        if(isConnect())
+        {
+
+        }
+        else
+        {
+            showError("Vous n'etes pas connecte");
+        }
+
+        this.setVisible(true);
     }
 
     private void onInputLorryWithoutRes(java.awt.event.ActionEvent evt)
     {
+        this.setVisible(false);
 
+        if(isConnect())
+        {
+
+        }
+        else
+        {
+            showError("Vous n'etes pas connecte");
+        }
+
+        this.setVisible(true);
     }
 
     private void onOperations(java.awt.event.ActionEvent evt)
     {
+        this.setVisible(false);
 
+        if(isConnect())
+        {
+
+        }
+        else
+        {
+            showError("Vous n'etes pas connecte");
+        }
+
+        this.setVisible(true);
     }
 
     private void onLogout(java.awt.event.ActionEvent evt)
     {
+        this.setVisible(false);
 
+        if(isConnect())
+        {
+
+            setConnect(false);
+        }
+        else
+        {
+            showError("Vous n'etes pas connecte");
+        }
+
+        this.setVisible(true);
     }
 
     private void onLogin(java.awt.event.ActionEvent evt)
     {
         this.setVisible(false);
 
-        DialogLogin login = new DialogLogin(this, true);
-        login.setSize(260, 190);
-        login.setVisible(true);
+        if(isConnect())
+        {
+            showError("Vous etes deja connecte");
+        }
+        else
+        {
+            DialogLogin login = new DialogLogin(this, true);
+            login.setSize(260, 190);
+            login.setVisible(true);
 
+            if(login.getLoginValide())
+            {
+                setConnect(true);
+            }
+        }
+
+        this.setVisible(true);
+    }
+
+    private void showError(String message)
+    {
+        DialogErreur erreur = new DialogErreur(this, true, message);
+        erreur.setSize(260, 190);
+        erreur.setVisible(true);
     }
 
     /********************************/

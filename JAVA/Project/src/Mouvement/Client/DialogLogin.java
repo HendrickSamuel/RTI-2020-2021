@@ -5,6 +5,7 @@
 
 package Mouvement.Client;
 
+import Tests.MyProperties;
 import genericRequest.DonneeRequete;
 import protocolTRAMAP.DonneeLogin;
 import protocolTRAMAP.ReponseTRAMAP;
@@ -50,7 +51,6 @@ public class DialogLogin extends javax.swing.JDialog
         this.setTitle("Login Mouvement");
         this.setLocationRelativeTo(null);
         setLoginValide(false);
-
     }
 
     public DialogLogin(java.awt.Frame parent, boolean modal)
@@ -145,20 +145,26 @@ public class DialogLogin extends javax.swing.JDialog
         RequeteTRAMAP req = null;
         req = new RequeteTRAMAP(dt);
 
+        MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
+        String HOST = mp.getContent("BDUSER");
+        int PORT = Integer.parseInt(mp.getContent("PORT1"));
+
         // Connexion au serveur
         ois=null; oos=null; cliSock = null;
         try
         {
-            cliSock = new Socket("127.0.0.1", 50001);
+            cliSock = new Socket(HOST, PORT);
             System.out.println(cliSock.getInetAddress().toString());
         }
         catch (UnknownHostException e)
         {
             System.err.println("Erreur ! Host non trouvé [" + e + "]");//TODO:quitter
+            dispose();
         }
         catch (IOException e)
         {
             System.err.println("Erreur ! Pas de connexion ? [" + e + "]");//TODO:quitter
+            dispose();
         }
 
         // Envoie de la requête
@@ -172,6 +178,7 @@ public class DialogLogin extends javax.swing.JDialog
         catch (IOException e)
         {
             System.err.println("Erreur réseau ? [" + e.getMessage() + "]");//TODO:quitter
+            dispose();
         }
         // Lecture de la réponse
         ReponseTRAMAP rep = null;
@@ -189,10 +196,12 @@ public class DialogLogin extends javax.swing.JDialog
         catch (ClassNotFoundException e)
         {
             System.out.println("--- erreur sur la classe = " + e.getMessage());
+            dispose();
         }
         catch (IOException e)
         {
             System.out.println("--- erreur IO = " + e.getMessage());
+            dispose();
         }
 
         //dispose();

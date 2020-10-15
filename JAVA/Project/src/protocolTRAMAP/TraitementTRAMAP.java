@@ -8,6 +8,7 @@
 package protocolTRAMAP;
 
 import MyGenericServer.Client;
+import Tests.MyProperties;
 import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
@@ -22,8 +23,12 @@ public class TraitementTRAMAP implements Traitement
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public TraitementTRAMAP() {
-        this._bd = new BDMouvements("root","root","bd_mouvements");;
+    public TraitementTRAMAP()
+    {
+        MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
+        String USER = mp.getContent("BDUSER");
+        String PWD = mp.getContent("BDPWD");
+        this._bd = new BDMouvements(USER,PWD,"bd_mouvements");;
     }
 
     /********************************/
