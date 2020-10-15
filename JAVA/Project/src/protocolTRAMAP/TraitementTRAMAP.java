@@ -7,6 +7,7 @@
 
 package protocolTRAMAP;
 
+import MyGenericServer.Client;
 import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
@@ -15,16 +16,14 @@ import lib.BeanDBAcces.BDMouvements;
 
 public class TraitementTRAMAP implements Traitement
 {
-
-    //todo: rajouter un Objet client ici
-
     BDMouvements _bd;
+    ConsoleServeur _cs;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
     public TraitementTRAMAP() {
-        this._bd = new BDMouvements("root","","bd_mouvements");;
+        this._bd = new BDMouvements("root","root","bd_mouvements");;
     }
 
     /********************************/
@@ -34,6 +33,7 @@ public class TraitementTRAMAP implements Traitement
         return _bd;
     }
 
+
     /********************************/
     /*            Setters           */
     /********************************/
@@ -41,43 +41,67 @@ public class TraitementTRAMAP implements Traitement
         this._bd = _bd;
     }
 
+    public void setConsole(ConsoleServeur cs)
+    {
+        this._cs = cs;
+    }
 
     /********************************/
     /*            Methodes          */
     /********************************/
     @Override
-    public Reponse traiteRequete(DonneeRequete Requete) throws ClassCastException
+    public Reponse traiteRequete(DonneeRequete Requete, Client client) throws ClassCastException
     {
         if(Requete instanceof DonneeLogin)
-            return traiteLOGIN(null, (DonneeLogin)Requete);
+            return traiteLOGIN((DonneeLogin)Requete, client);
         else if(Requete instanceof DonneeInputLory)
-            return traiteINPUTLORY(null, (DonneeInputLory)Requete);
+            return traiteINPUTLORY((DonneeInputLory)Requete, client);
         else if(Requete instanceof DonneeInputLoryWithoutReservation)
-            traiteINPUTLORYWITHOUTRESERVATION( null, (DonneeInputLoryWithoutReservation)Requete);
+            traiteINPUTLORYWITHOUTRESERVATION( (DonneeInputLoryWithoutReservation)Requete, client);
         else if(Requete instanceof DonneeListOperations)
-            traiteListe( null, (DonneeListOperations)Requete);
+            traiteListe( (DonneeListOperations)Requete, client);
         else if(Requete instanceof  DonneeLogout)
-            traiteLOGOUT( null, (DonneeLogout)Requete);
+            traiteLOGOUT( (DonneeLogout)Requete, client);
         else
-            return traite404( null);
+            return traite404();
 
         return null;
     }
 
-    private Reponse traiteLOGIN(ConsoleServeur cs, DonneeLogin chargeUtile)
-    {
-        System.out.println("traiteLOGIN");
-
-        System.out.println("Mot de passe: " + chargeUtile.getPassword());
-        System.out.println("Utilisateur: " + chargeUtile.getUsername());
-        boolean ret = _bd.tryLogin(chargeUtile.getUsername(),chargeUtile.getPassword());
-        if(ret)
-            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+    @Override
+    public void AfficheTraitement(String message) {
+        if (_cs != null)
+        {
+            _cs.Affiche(message);
+        }
         else
-            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
+        {
+            System.err.println("-- Le serveur n'a pas de console dédiée pour ce message -- " + message);
+        }
     }
 
-    private Reponse traiteINPUTLORY(ConsoleServeur cs, DonneeInputLory chargeUtile)
+    private Reponse traiteLOGIN(DonneeLogin chargeUtile, Client client)
+    {
+        if(client.is_loggedIn())
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Le client est deja connecte dans le serveur");
+        }
+
+        System.out.println("Utilisateur: " + chargeUtile.getUsername());
+        System.out.println("Mot de passe: " + chargeUtile.getPassword());
+        boolean ret = _bd.tryLogin(chargeUtile.getUsername(),chargeUtile.getPassword());
+        if(ret)
+        {
+            client.set_loggedIn(true);
+            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+        }
+        else
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
+        }
+    }
+
+    private Reponse traiteINPUTLORY(DonneeInputLory chargeUtile, Client client)
     {
         System.out.println("traiteINPUTLORY");
         Object ret = _bd.getReservation(chargeUtile.getNumeroReservation(), chargeUtile.getIdContainer());
@@ -92,24 +116,40 @@ public class TraitementTRAMAP implements Traitement
         }
     }
 
-    private void traiteINPUTLORYWITHOUTRESERVATION(ConsoleServeur cs, DonneeInputLoryWithoutReservation chargeUtile)
+    private void traiteINPUTLORYWITHOUTRESERVATION(DonneeInputLoryWithoutReservation chargeUtile, Client client)
     {
         System.out.println("traiteINPUTLORYWITHOUTRESERVATION");
     }
 
-    private void traiteListe(ConsoleServeur cs, DonneeListOperations chargeUtile)
+    private void traiteListe(DonneeListOperations chargeUtile, Client client)
     {
         System.out.println("traiteListe");
     }
 
-    private void traiteLOGOUT(ConsoleServeur cs, DonneeLogout chargeUtile)
-    {
-        System.out.println("traiteLOGOUT");
-    }
-
-    private Reponse traite404(ConsoleServeur cs)
+    private Reponse traite404()
     {
         System.out.println("traite404 Request not found");
         return new ReponseTRAMAP(ReponseTRAMAP.REQUEST_NOT_FOUND, null, "request could not be exeuted due to unsopported version.");
+    }
+
+    private Reponse traiteLOGOUT(DonneeLogout chargeUtile, Client client)
+    {
+        if(!client.is_loggedIn())
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Le client n'est pas connecte dans le serveur");
+        }
+
+        System.out.println("Utilisateur: " + chargeUtile.getUsername());
+        System.out.println("Mot de passe: " + chargeUtile.getPassword());
+        boolean ret = _bd.tryLogin(chargeUtile.getUsername(),chargeUtile.getPassword());
+        if(ret)
+        {
+            client.set_loggedIn(false);
+            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+        }
+        else
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
+        }
     }
 }

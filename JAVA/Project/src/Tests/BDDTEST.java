@@ -13,7 +13,7 @@ public class BDDTEST
     public static void main (String[] args)
     {
         BDMouvements bdm = new BDMouvements("root","root","bd_mouvements");
-        boolean ret = bdm.tryLogin("Sam","superSecurePass123");
+        boolean ret = bdm.tryLogin("Samuel","superSecurePass123");
 
         if(ret)
         {
