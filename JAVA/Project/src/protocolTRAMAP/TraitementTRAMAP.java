@@ -57,7 +57,7 @@ public class TraitementTRAMAP implements Traitement
         else if(Requete instanceof DonneeInputLory)
             return traiteINPUTLORY((DonneeInputLory)Requete, client);
         else if(Requete instanceof DonneeInputLoryWithoutReservation)
-            traiteINPUTLORYWITHOUTRESERVATION( (DonneeInputLoryWithoutReservation)Requete, client);
+            return traiteINPUTLORYWITHOUTRESERVATION( (DonneeInputLoryWithoutReservation)Requete, client);
         else if(Requete instanceof DonneeListOperations)
             traiteListe( (DonneeListOperations)Requete, client);
         else if(Requete instanceof  DonneeLogout)
@@ -104,7 +104,7 @@ public class TraitementTRAMAP implements Traitement
     private Reponse traiteINPUTLORY(DonneeInputLory chargeUtile, Client client)
     {
         System.out.println("traiteINPUTLORY");
-        Object ret = _bd.getReservation(chargeUtile.getNumeroReservation(), chargeUtile.getIdContainer());
+        String ret = _bd.getReservation(chargeUtile.getNumeroReservation(), chargeUtile.getIdContainer());
         if(ret != null)
         {
             return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
@@ -116,9 +116,19 @@ public class TraitementTRAMAP implements Traitement
         }
     }
 
-    private void traiteINPUTLORYWITHOUTRESERVATION(DonneeInputLoryWithoutReservation chargeUtile, Client client)
+    private Reponse traiteINPUTLORYWITHOUTRESERVATION(DonneeInputLoryWithoutReservation chargeUtile, Client client)
     {
         System.out.println("traiteINPUTLORYWITHOUTRESERVATION");
+        String ret = _bd.getInputWithoutRes(chargeUtile.getImmatriculation(), chargeUtile.getIdContainer());
+        if(ret != null)
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
+        }
+        else
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
+            //todo: verifier si on attent + si les 2 vont ensemble ?
+        }
     }
 
     private void traiteListe(DonneeListOperations chargeUtile, Client client)

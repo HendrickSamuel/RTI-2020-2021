@@ -17,9 +17,9 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
     /*           Variables          */
     /********************************/
     private String idContainer;
+    private String immatriculation;
 
-
-    /********************************/
+/********************************/
     /*         Constructeurs        */
     /********************************/
     public DonneeInputLoryWithoutReservation(String idContainer)
@@ -36,6 +36,9 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
         return idContainer;
     }
 
+    public String getImmatriculation() {
+        return immatriculation;
+    }
 
     /********************************/
     /*            Setters           */
@@ -43,5 +46,9 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
     public void setIdContainer(String idContainer)
     {
         this.idContainer = idContainer;
+    }
+
+    public void setImmatriculation(String immatriculation) {
+        this.immatriculation = immatriculation;
     }
 }

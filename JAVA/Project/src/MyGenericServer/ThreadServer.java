@@ -50,7 +50,6 @@ public class ThreadServer extends Thread
         this.listeThreadsEnfants = new LinkedList<>();
     }
 
-
     /********************************/
     /*            Methodes          */
     /********************************/
@@ -80,7 +79,6 @@ public class ThreadServer extends Thread
                 o.setTraitement(protocol);
                 o.set_console(this._console);
                 o.start();
-
             }
             catch (IOException | ClassNotFoundException e)
             {
