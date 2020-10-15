@@ -27,6 +27,7 @@ public class ThreadClientConnecte extends ThreadClient
     private Socket tacheEnCours;
     private Traitement traitement;
 
+    private Client _client;
 
     /********************************/
     /*         Constructeurs        */
@@ -34,6 +35,7 @@ public class ThreadClientConnecte extends ThreadClient
     public ThreadClientConnecte()
     {
         System.out.println("DEMARRAGE ThreadClientConnecte");
+        _client = new Client();
     }
 
 
@@ -63,6 +65,7 @@ public class ThreadClientConnecte extends ThreadClient
     public void setTraitement(String nom) throws IOException, ClassNotFoundException
     {
         traitement = (Traitement)Beans.instantiate(null, nom);
+        traitement.setConsole(this._console);
     }
 
     public void setTacheEnCours(Socket tacheEnCours)
@@ -88,6 +91,7 @@ public class ThreadClientConnecte extends ThreadClient
             try
             {
                 tacheEnCours = _taches.getTache();
+                _client = new Client(); //nouveau client par connection
                 inCommunication = true;
 
                 try
@@ -114,7 +118,7 @@ public class ThreadClientConnecte extends ThreadClient
                     System.out.println("Requete lue par le serveur, instance de " +
                             req.getClass().getName());
 
-                    Reponse rp = traitement.traiteRequete(req.getChargeUtile());
+                    Reponse rp = traitement.traiteRequete(req.getChargeUtile(), _client);
                     oos.writeObject(rp);
                     oos.flush();
                 }

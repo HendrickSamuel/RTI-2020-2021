@@ -7,17 +7,11 @@
 
 package MyGenericServer;
 
-import genericRequest.Requete;
-import MyGenericServer.ConsoleServeur;
-import MyGenericServer.SourceTaches;
-
 import java.beans.Beans;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
-import java.util.List;
 
 public class ThreadServer extends Thread
 {
@@ -33,9 +27,7 @@ public class ThreadServer extends Thread
     private String protocol;
 
     private LinkedList<ThreadClient> listeThreadsEnfants;
-    //private ThreadGroup _threadGroup;
 
-    //private volatile boolean manualStop = false;
     //todo: Ajouts d'evenements pour le plantage
 
 
@@ -67,14 +59,12 @@ public class ThreadServer extends Thread
         try
         {
             SSocket = new ServerSocket(_port);
-            _console.Affiche("Demarrage du serveur sur le port: "+_port);
+            this.AfficheServeur("Demarrage du serveur sur le port: "+_port);
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
-
-        //_threadGroup = new ThreadGroup("Threads"+_port);
 
         for(int i = 0; i < _nbMaxConnections; i++)
         {
@@ -88,6 +78,7 @@ public class ThreadServer extends Thread
                 o.set_taches(_sourceTaches);
                 o.setNom("Thread n° " + i);
                 o.setTraitement(protocol);
+                o.set_console(this._console);
                 o.start();
 
             }
@@ -103,13 +94,13 @@ public class ThreadServer extends Thread
             try
             {
                 CSocket = SSocket.accept();
-                _console.Affiche("Réception d'un client: " + CSocket.getInetAddress());
+                this.AfficheServeur("Réception d'un client: " + CSocket.getInetAddress());
                 _sourceTaches.addTache(CSocket);
             }
             catch (IOException e)
             {
                 //e.printStackTrace();
-                //_console.Affiche("> test");
+                //this.AfficheServeur("> test");
                 System.out.println(isInterrupted());
                 for(ThreadClient tc : listeThreadsEnfants)
                 {
@@ -119,7 +110,19 @@ public class ThreadServer extends Thread
             }
         }
 
-        _console.Affiche("Le serveur se coupe");
+        this.AfficheServeur("Le serveur se coupe");
+    }
+
+    private void AfficheServeur(String message)
+    {
+        if(_console != null)
+        {
+            _console.Affiche(message);
+        }
+        else
+        {
+            System.err.println("-- Le serveur n'a pas de console dédiée pour ce message -- " + message);
+        }
     }
 
     public void StopServeur()
