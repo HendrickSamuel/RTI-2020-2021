@@ -39,6 +39,7 @@ public class DialogLogin extends javax.swing.JDialog
     private JTextField passwordField;
     private JLabel passwordLabel;
     private JLabel loginLabel;
+    private JLabel labelError;
 
 
     /********************************/
@@ -141,12 +142,12 @@ public class DialogLogin extends javax.swing.JDialog
     /********************************/
     private void onOK()
     {
-        dt = new DonneeLogin("Samuel","uperSecurePass123");
+        dt = new DonneeLogin(loginField.getText(),passwordField.getText());
         RequeteTRAMAP req = null;
         req = new RequeteTRAMAP(dt);
 
         MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
-        String HOST = mp.getContent("BDUSER");
+        String HOST = mp.getContent("IPSERV");
         int PORT = Integer.parseInt(mp.getContent("PORT1"));
 
         // Connexion au serveur
@@ -191,7 +192,17 @@ public class DialogLogin extends javax.swing.JDialog
             {
                 System.out.println("Message reçu: " + rep.getMessage());
             }
-          //  reader.readLine();
+            if(rep.getCode() == 201)
+            {
+                labelError.setText("");
+                setLoginValide(true);
+                dispose();
+            }
+            else
+            {
+                labelError.setText("Login ou mot de passe incorrect !");
+            }
+
         }
         catch (ClassNotFoundException e)
         {
@@ -203,8 +214,6 @@ public class DialogLogin extends javax.swing.JDialog
             System.out.println("--- erreur IO = " + e.getMessage());
             dispose();
         }
-
-        //dispose();
     }
 
     private void onCancel()
