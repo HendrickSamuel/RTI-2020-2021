@@ -131,7 +131,4 @@ public class ServerLayout extends JFrame {
             toggleServer2.setText("-- START --");
         }
     }
-
-
-
 }
