@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Mouvement.DialogLogin">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="Mouvement.Client.DialogLogin">
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
@@ -9,7 +9,7 @@
       <maximumSize width="300" height="230"/>
       <minimumSize width="250" height="180"/>
       <name value=""/>
-      <preferredSize width="250" height="180"/>
+      <preferredSize width="260" height="190"/>
     </properties>
     <border type="none"/>
     <children>

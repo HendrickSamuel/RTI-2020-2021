@@ -3,7 +3,7 @@
 //Projet : R.T.I.
 //Date de la création : 13/10/2020
 
-package Mouvement;
+package Mouvement.Client;
 
 import genericRequest.DonneeRequete;
 import protocolTRAMAP.DonneeLogin;
@@ -26,10 +26,10 @@ public class DialogLogin extends javax.swing.JDialog
     private boolean _loginValide;
     private String _utilisateur;
 
-    ObjectInputStream ois;
-    ObjectOutputStream oos;
-    Socket cliSock;
-    DonneeRequete dt;
+    private ObjectInputStream ois;
+    private ObjectOutputStream oos;
+    private Socket cliSock;
+    private DonneeRequete dt;
 
     private JPanel contentPane;
     private JButton buttonOK;
@@ -47,6 +47,7 @@ public class DialogLogin extends javax.swing.JDialog
     {
         initComponents();
 
+        this.setTitle("Login Mouvement");
         this.setLocationRelativeTo(null);
         setLoginValide(false);
 
@@ -54,6 +55,7 @@ public class DialogLogin extends javax.swing.JDialog
 
     public DialogLogin(java.awt.Frame parent, boolean modal)
     {
+        super(parent, modal);
         initComponents();
 
         this.setLocationRelativeTo(null);
@@ -139,7 +141,7 @@ public class DialogLogin extends javax.swing.JDialog
     /********************************/
     private void onOK()
     {
-        dt = new DonneeLogin("Sam","superSecurePass123");
+        dt = new DonneeLogin("Samuel","uperSecurePass123");
         RequeteTRAMAP req = null;
         req = new RequeteTRAMAP(dt);
 
@@ -152,21 +154,24 @@ public class DialogLogin extends javax.swing.JDialog
         }
         catch (UnknownHostException e)
         {
-            System.err.println("Erreur ! Host non trouvé [" + e + "]");
+            System.err.println("Erreur ! Host non trouvé [" + e + "]");//TODO:quitter
         }
         catch (IOException e)
         {
-            System.err.println("Erreur ! Pas de connexion ? [" + e + "]");
+            System.err.println("Erreur ! Pas de connexion ? [" + e + "]");//TODO:quitter
         }
+
         // Envoie de la requête
         try
         {
             oos = new ObjectOutputStream(cliSock.getOutputStream());
-            oos.writeObject(req); oos.flush();
+            oos.writeObject(req);
+            //pour vider le cache
+            oos.flush();
         }
         catch (IOException e)
         {
-            System.err.println("Erreur réseau ? [" + e.getMessage() + "]");
+            System.err.println("Erreur réseau ? [" + e.getMessage() + "]");//TODO:quitter
         }
         // Lecture de la réponse
         ReponseTRAMAP rep = null;
@@ -190,7 +195,7 @@ public class DialogLogin extends javax.swing.JDialog
             System.out.println("--- erreur IO = " + e.getMessage());
         }
 
-        dispose();
+        //dispose();
     }
 
     private void onCancel()
