@@ -8,6 +8,7 @@ package lib.BeanDBAcces;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -102,23 +103,27 @@ public class BDMouvements extends MysqlConnector
         }
     }
 
-    public synchronized List<String> getListOperations(Date dateDebut, Date dateFin, String nomSociete, String destination)
+    public synchronized List<String> getListOperationsSociete(Date dateDebut, Date dateFin, String nomSociete)
     {
+        ArrayList<String> resultats = new ArrayList<>();
         try {
-            PreparedStatement ps;
-            if(nomSociete != null)
+            PreparedStatement ps = _con.prepareStatement("SELECT * FROM mouvements" +
+                    "INNER JOIN containers c on mouvements.idContainer = c.idContainer" +
+                    "INNER JOIN societes s on c.idSociete = s.idSociete" +
+                    "WHERE UPPER(s.nom) = UPPER(?)" +
+                    "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
             {
-               ps = _con.prepareStatement("SELECT * FROM ");
+                String row = rs.getInt("id") + "#" + rs.getString("c.idSsociete"); //todo ajouter le reste des champs
+                resultats.add(row);
             }
-            else
-            {
-               ps = _con.prepareStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
-            }
+
+            return resultats;
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+            return null;
         }
-
-        return null;
     }
 
 }

@@ -139,6 +139,17 @@ public class TraitementTRAMAP implements Traitement
     private void traiteListe(DonneeListOperations chargeUtile, Client client)
     {
         System.out.println("traiteListe");
+
+    }
+
+    private String traiteListeSociete(DonneeListOperations chargeUtile)
+    {
+
+    }
+
+    private String traiteListeDestination(DonneeListOperations chargeUtile)
+    {
+
     }
 
     private Reponse traite404()
