@@ -8,6 +8,7 @@
 package MyGenericServer;
 
 import MyGenericServer.SourceTaches;
+import lib.BeanDBAcces.DataSource;
 
 import java.net.Socket;
 
@@ -46,7 +47,7 @@ public class ThreadClientDeconnecte extends ThreadClient
     }
 
     @Override
-    public void setTraitement(String nom)
+    public void setTraitement(String nom, DataSource ds)
     {
 
     }

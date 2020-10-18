@@ -10,6 +10,7 @@ package MyGenericServer;
 import genericRequest.Reponse;
 import genericRequest.Requete;
 import genericRequest.Traitement;
+import lib.BeanDBAcces.DataSource;
 
 import java.beans.Beans;
 import java.io.IOException;
@@ -62,10 +63,11 @@ public class ThreadClientConnecte extends ThreadClient
     }
 
     @Override
-    public void setTraitement(String nom) throws IOException, ClassNotFoundException
+    public void setTraitement(String nom, DataSource ds) throws IOException, ClassNotFoundException
     {
         traitement = (Traitement)Beans.instantiate(null, nom);
         traitement.setConsole(this._console);
+        traitement.setDataSource(ds);
     }
 
     public void setTacheEnCours(Socket tacheEnCours)

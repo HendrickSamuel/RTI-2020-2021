@@ -8,15 +8,17 @@
 package MyGenericServer;
 
 import MyGenericServer.SourceTaches;
+import lib.BeanDBAcces.DataSource;
 
 import java.io.IOException;
 
 public abstract class ThreadClient extends Thread {
     protected ConsoleServeur _console;
+    protected DataSource _dataSource;
 
     void set_taches(SourceTaches _taches){};
     public void setNom(String nom){};
-    public void setTraitement(String nom) throws IOException, ClassNotFoundException{};
+    public void setTraitement(String nom, DataSource ds) throws IOException, ClassNotFoundException{};
 
     public ConsoleServeur get_console() {
         return _console;
@@ -24,5 +26,13 @@ public abstract class ThreadClient extends Thread {
 
     public void set_console(ConsoleServeur _console) {
         this._console = _console;
+    }
+
+    public DataSource get_dataSource() {
+        return _dataSource;
+    }
+
+    public void set_dataSource(DataSource _dataSource) {
+        this._dataSource = _dataSource;
     }
 }

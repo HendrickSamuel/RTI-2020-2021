@@ -10,7 +10,7 @@ package lib.BeanDBAcces;
 import java.sql.*;
 import java.util.TimeZone;
 
-public class MysqlConnector
+public class MysqlConnector implements DataSource
 {
     /********************************/
     /*           Variables          */

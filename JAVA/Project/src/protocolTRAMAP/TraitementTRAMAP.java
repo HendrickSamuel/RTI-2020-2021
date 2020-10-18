@@ -14,6 +14,9 @@ import genericRequest.Reponse;
 import genericRequest.Traitement;
 import MyGenericServer.ConsoleServeur;
 import lib.BeanDBAcces.BDMouvements;
+import lib.BeanDBAcces.DataSource;
+
+import java.util.List;
 
 public class TraitementTRAMAP implements Traitement
 {
@@ -25,10 +28,11 @@ public class TraitementTRAMAP implements Traitement
     /********************************/
     public TraitementTRAMAP()
     {
-        MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
-        String USER = mp.getContent("BDUSER");
-        String PWD = mp.getContent("BDPWD");
-        this._bd = new BDMouvements(USER,PWD,"bd_mouvements");;
+
+    }
+
+    public TraitementTRAMAP(BDMouvements _bd) {
+        this._bd = _bd;
     }
 
     /********************************/
@@ -49,6 +53,13 @@ public class TraitementTRAMAP implements Traitement
     public void setConsole(ConsoleServeur cs)
     {
         this._cs = cs;
+    }
+
+    @Override
+    public void setDataSource(DataSource ds) throws ClassCastException {
+        BDMouvements bm = (BDMouvements)ds;
+        if(bm == null)
+            throw new ClassCastException();
     }
 
     /********************************/
@@ -142,14 +153,30 @@ public class TraitementTRAMAP implements Traitement
 
     }
 
-    private String traiteListeSociete(DonneeListOperations chargeUtile)
+    private Reponse traiteListeSociete(DonneeListOperations chargeUtile)
     {
-
+        List<String> ret = _bd.getListOperationsSociete(chargeUtile.getDateDebut(), chargeUtile.getDateFin(), chargeUtile.getNomSociete());
+        if(ret != null)
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
+        }
+        else
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
+        }
     }
 
-    private String traiteListeDestination(DonneeListOperations chargeUtile)
+    private Reponse traiteListeDestination(DonneeListOperations chargeUtile)
     {
-
+        List<String> ret = _bd.getListOperationsDestiination(chargeUtile.getDateDebut(), chargeUtile.getDateFin(), chargeUtile.getNomDestination());
+        if(ret != null)
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
+        }
+        else
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
+        }
     }
 
     private Reponse traite404()

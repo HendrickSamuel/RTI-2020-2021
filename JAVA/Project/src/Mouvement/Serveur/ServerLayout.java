@@ -8,8 +8,11 @@ package Mouvement.Serveur;
 import MyGenericServer.ListeTaches;
 import MyGenericServer.ThreadServer;
 import Tests.MyProperties;
+import lib.BeanDBAcces.BDMouvements;
+import lib.BeanDBAcces.DataSource;
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -89,7 +92,10 @@ public class ServerLayout extends JFrame {
             int port = Integer.parseInt(mp.getContent("PORT1"));
             labelPort1.setText("PORT: " + port);
             ListeTaches lt = new ListeTaches();
-            th1 = new ThreadServer(port, lt, cs, true, "protocolTRAMAP.TraitementTRAMAP");
+            String USER = mp.getContent("BDUSER");
+            String PWD = mp.getContent("BDPWD");
+            DataSource bd = new BDMouvements(USER,PWD,"bd_mouvements");;
+            th1 = new ThreadServer(port, lt, cs, true, "protocolTRAMAP.TraitementTRAMAP", bd);
             th1.start();
         }
         else
@@ -116,7 +122,10 @@ public class ServerLayout extends JFrame {
             int port = Integer.parseInt(mp.getContent("PORT2"));
             labelPort2.setText("PORT: " + port);
             ListeTaches lt = new ListeTaches();
-            th2 = new ThreadServer(port, lt, cs, true, "protocolTRAMAP.TraitementTRAMAP");
+            String USER = mp.getContent("BDUSER");
+            String PWD = mp.getContent("BDPWD");
+            DataSource bd = new BDMouvements(USER,PWD,"bd_mouvements");;
+            th2 = new ThreadServer(port, lt, cs, true, "protocolTRAMAP.TraitementTRAMAP", bd);
             th2.start();
         }
         else

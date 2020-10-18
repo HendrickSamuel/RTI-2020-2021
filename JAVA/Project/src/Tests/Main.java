@@ -18,7 +18,7 @@ public class Main
         int port = Integer.parseInt(mp.getContent("PORT1"));
         System.out.println(port);
         ListeTaches lt = new ListeTaches();
-        ThreadServer ts = new ThreadServer(port, lt, null, true,"protocolTRAMAP.TraitementTRAMAP");
+        ThreadServer ts = new ThreadServer(port, lt, null, true,"protocolTRAMAP.TraitementTRAMAP", null);
         ts.start();
     }
 }

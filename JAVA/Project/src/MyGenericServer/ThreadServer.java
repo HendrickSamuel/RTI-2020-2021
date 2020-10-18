@@ -7,6 +7,8 @@
 
 package MyGenericServer;
 
+import lib.BeanDBAcces.DataSource;
+
 import java.beans.Beans;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -20,6 +22,7 @@ public class ThreadServer extends Thread
     /********************************/
     private int _port;
     private SourceTaches _sourceTaches;
+    private DataSource _dataSource;
     private ConsoleServeur _console; //todo: en faire une liste pour afficher dans le gui et dns un fichier en meme temps ?
     private ServerSocket SSocket = null;
     private int _nbMaxConnections = 3;
@@ -34,7 +37,7 @@ public class ThreadServer extends Thread
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ThreadServer(int p, SourceTaches st, ConsoleServeur cs, boolean connecte, String protocol)
+    public ThreadServer(int p, SourceTaches st, ConsoleServeur cs, boolean connecte, String protocol, DataSource ds)
     {
         this._port = p;
         this._sourceTaches = st;
@@ -48,6 +51,7 @@ public class ThreadServer extends Thread
         this.protocol = protocol;
 
         this.listeThreadsEnfants = new LinkedList<>();
+        this._dataSource = ds;
     }
 
     /********************************/
@@ -76,8 +80,9 @@ public class ThreadServer extends Thread
 
                 o.set_taches(_sourceTaches);
                 o.setNom("Thread n° " + i);
-                o.setTraitement(protocol);
+                o.setTraitement(protocol, this._dataSource);
                 o.set_console(this._console);
+                o.set_dataSource(this._dataSource);
                 o.start();
             }
             catch (IOException | ClassNotFoundException e)

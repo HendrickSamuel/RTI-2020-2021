@@ -7,7 +7,7 @@
 
 package lib.BeanDBAcces;
 
-public class OracleConnector
+public class OracleConnector implements DataSource
 {
 
 }
