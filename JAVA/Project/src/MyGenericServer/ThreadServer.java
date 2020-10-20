@@ -62,7 +62,7 @@ public class ThreadServer extends Thread
         try
         {
             SSocket = new ServerSocket(_port);
-            this.AfficheServeur("Demarrage du serveur sur le port: "+_port);
+            this.AfficheServeur("Demarrage du serveur : "+SSocket.getLocalSocketAddress());
         }
         catch (IOException e)
         {

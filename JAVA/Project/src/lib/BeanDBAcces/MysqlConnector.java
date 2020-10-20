@@ -20,16 +20,8 @@ public class MysqlConnector implements DataSource
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public MysqlConnector(String username, String password, String database)
-    {
-        try
-        {
+    public MysqlConnector(String username, String password, String database) throws ClassNotFoundException, SQLException {
             Class driver = Class.forName("com.mysql.cj.jdbc.Driver");
             _con = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+database+"?serverTimezone="+ TimeZone.getDefault().getID(), username, password);
-        }
-        catch (ClassNotFoundException | SQLException e)
-        {
-            e.printStackTrace();
-        }
     }
 }

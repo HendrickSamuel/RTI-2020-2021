@@ -59,7 +59,7 @@ public class Client
         ois=null; oos=null; cliSock = null;
         try
         {
-            cliSock = new Socket("127.0.0.1", 50001);
+            cliSock = new Socket("192.168.1.3", 50001);
             System.out.println(cliSock.getInetAddress().toString());
         }
         catch (UnknownHostException e)

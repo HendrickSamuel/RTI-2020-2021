@@ -8,11 +8,20 @@ package Tests;
 
 import lib.BeanDBAcces.BDMouvements;
 
+import java.sql.SQLException;
+
 public class BDDTEST
 {
     public static void main (String[] args)
     {
-        BDMouvements bdm = new BDMouvements("root","root","bd_mouvements");
+        BDMouvements bdm = null;
+        try {
+            bdm = new BDMouvements("root","root","bd_mouvements");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         boolean ret = bdm.tryLogin("Samuel","superSecurePass123");
 
         if(ret)

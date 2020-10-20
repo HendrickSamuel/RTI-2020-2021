@@ -15,6 +15,7 @@ import javax.swing.*;
 import javax.xml.crypto.Data;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class ServerLayout extends JFrame {
 
@@ -86,17 +87,27 @@ public class ServerLayout extends JFrame {
         if(th1 == null || !th1.isAlive())
         {
             toggleServer1.setText("-- STOP --");
-            textArea1.setText("");
+            textArea1.setText(null);
+
             ConsoleSwing cs = new ConsoleSwing(textArea1);
             MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
             int port = Integer.parseInt(mp.getContent("PORT1"));
-            labelPort1.setText("PORT: " + port);
+
             ListeTaches lt = new ListeTaches();
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
-            DataSource bd = new BDMouvements(USER,PWD,"bd_mouvements");;
-            th1 = new ThreadServer(port, lt, cs, true, "protocolTRAMAP.TraitementTRAMAP", bd);
-            th1.start();
+            DataSource bd = null;
+            try {
+                bd = new BDMouvements(USER,PWD,"bd_mouvements");
+                th1 = new ThreadServer(port, lt, cs, true, "protocolTRAMAP.TraitementTRAMAP", bd);
+                th1.start();
+
+                labelPort1.setText("PORT: " + port);
+            } catch (SQLException |ClassNotFoundException e) {
+                cs.Affiche("Could not find DataBase to start on");
+                toggleServer1.setText("-- START --");
+            }
+
         }
         else
         {
@@ -124,7 +135,15 @@ public class ServerLayout extends JFrame {
             ListeTaches lt = new ListeTaches();
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
-            DataSource bd = new BDMouvements(USER,PWD,"bd_mouvements");;
+            DataSource bd = null;
+            try {
+                bd = new BDMouvements(USER,PWD,"bd_mouvements");
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            ;
             th2 = new ThreadServer(port, lt, cs, true, "protocolTRAMAP.TraitementTRAMAP", bd);
             th2.start();
         }
