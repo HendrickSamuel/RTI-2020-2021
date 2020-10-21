@@ -15,6 +15,8 @@ public class ClientLayout extends JFrame
     /*           Variables          */
     /********************************/
     private boolean _connect;
+    private String _login;
+    private String _pwd;
 
     private JPanel mainPanel;
     private JButton buttonLogin;
@@ -110,7 +112,9 @@ public class ClientLayout extends JFrame
 
         if(isConnect())
         {
-
+            DialogInput input = new DialogInput(this, true);
+            input.setSize(450, 250);
+            input.setVisible(true);
         }
         else
         {
@@ -126,7 +130,9 @@ public class ClientLayout extends JFrame
 
         if(isConnect())
         {
-
+            DialogInputWithout input = new DialogInputWithout(this, true);
+            input.setSize(450, 250);
+            input.setVisible(true);
         }
         else
         {
@@ -158,8 +164,13 @@ public class ClientLayout extends JFrame
 
         if(isConnect())
         {
-
-            setConnect(false);
+            DialogLogout logout = new DialogLogout(this, true, _login, _pwd);
+            logout.setSize(260, 190);
+            logout.setVisible(true);
+            if(logout.isLogout())
+            {
+                setConnect(false);
+            }
         }
         else
         {
@@ -186,6 +197,8 @@ public class ClientLayout extends JFrame
             if(login.getLoginValide())
             {
                 setConnect(true);
+                _pwd = login.getPwd();
+                _login = login.getUtilisateur();
             }
         }
 

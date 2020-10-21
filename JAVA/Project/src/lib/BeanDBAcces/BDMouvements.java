@@ -8,6 +8,7 @@ package lib.BeanDBAcces;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,16 +87,19 @@ public class BDMouvements extends MysqlConnector
     {
         try
         {
-            PreparedStatement ps = _con.prepareStatement("SELECT * FROM parc WHERE etat = 0");
-            ResultSet rs = ps.executeQuery();
+            Statement ps = _con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs = ps.executeQuery("SELECT * FROM parc WHERE etat = 0");
             if(rs.next())
             {
-                rs.updateString("idContainer",idContainer);
+                rs.updateString("idContainer", idContainer);
+                rs.updateInt("etat", 1);
                 rs.updateRow();
                 return rs.getString("x") + "#" + rs.getString("y");
             }
             else
+            {
                 return null;
+            }
         }
         catch (SQLException throwables)
         {
