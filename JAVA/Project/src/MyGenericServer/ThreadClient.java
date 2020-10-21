@@ -31,8 +31,4 @@ public abstract class ThreadClient extends Thread {
     public DataSource get_dataSource() {
         return _dataSource;
     }
-
-    public void set_dataSource(DataSource _dataSource) {
-        this._dataSource = _dataSource;
-    }
 }

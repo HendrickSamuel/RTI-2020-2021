@@ -82,7 +82,6 @@ public class ThreadServer extends Thread
                 o.setNom("Thread n° " + i);
                 o.setTraitement(protocol, this._dataSource);
                 o.set_console(this._console);
-                o.set_dataSource(this._dataSource);
                 o.start();
             }
             catch (IOException | ClassNotFoundException e)
