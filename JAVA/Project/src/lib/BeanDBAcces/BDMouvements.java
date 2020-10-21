@@ -26,7 +26,8 @@ public class BDMouvements extends MysqlConnector
      * @param password
      * @param database
      ******************************/
-    public BDMouvements(String username, String password, String database) throws SQLException, ClassNotFoundException {
+    public BDMouvements(String username, String password, String database) throws SQLException, ClassNotFoundException
+    {
         super(username, password, database);
     }
 
@@ -44,12 +45,15 @@ public class BDMouvements extends MysqlConnector
 
     public synchronized ResultSet getLogin(String username, String password)
     {
-        try {
+        try
+        {
             PreparedStatement ps = _con.prepareStatement("SELECT userpassword FROM logins WHERE UPPER(username) = UPPER(?) ;");
             ps.setString(1, username);
             return ps.executeQuery();
 
-        } catch (SQLException throwables) {
+        }
+        catch (SQLException throwables)
+        {
             throwables.printStackTrace();
             return null;
         }
@@ -57,18 +61,22 @@ public class BDMouvements extends MysqlConnector
 
     public synchronized String getReservation(String numReservation, String idContainer)
     {
-        try {
+        try
+        {
             PreparedStatement ps = _con.prepareStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
             ps.setString(1, idContainer);
             ps.setString(2, numReservation);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
+            if(rs.next())
+            {
                 System.out.println("Trouvé: " + rs.getString("x") + " - " + rs.getString("y"));
                 return rs.getString("x") + "#" + rs.getString("y");
             }
             else
                 return null;
-        } catch (SQLException throwables) {
+        }
+        catch (SQLException throwables)
+        {
             throwables.printStackTrace();
             return null;
         }
@@ -88,7 +96,9 @@ public class BDMouvements extends MysqlConnector
             }
             else
                 return null;
-        } catch (SQLException throwables) {
+        }
+        catch (SQLException throwables)
+        {
             throwables.printStackTrace();
             return null;
         }
@@ -97,7 +107,8 @@ public class BDMouvements extends MysqlConnector
     public synchronized List<String> getListOperationsSociete(Date dateDebut, Date dateFin, String nomSociete)
     {
         ArrayList<String> resultats = new ArrayList<>();
-        try {
+        try
+        {
             PreparedStatement ps = _con.prepareStatement("SELECT * FROM mouvements" +
                     "INNER JOIN containers c on mouvements.idContainer = c.idContainer" +
                     "INNER JOIN societes s on c.idSociete = s.idSociete" +
@@ -115,7 +126,9 @@ public class BDMouvements extends MysqlConnector
             }
 
             return resultats;
-        } catch (SQLException throwables) {
+        }
+        catch (SQLException throwables)
+        {
             throwables.printStackTrace();
             return null;
         }
@@ -124,7 +137,8 @@ public class BDMouvements extends MysqlConnector
     public synchronized List<String> getListOperationsDestiination(Date dateDebut, Date dateFin, String destination)
     {
         ArrayList<String> resultats = new ArrayList<>();
-        try {
+        try
+        {
             PreparedStatement ps = _con.prepareStatement("SELECT * FROM mouvements" +
                     "WHERE UPPER(destination) = UPPER(?)" +
                     "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
@@ -140,10 +154,11 @@ public class BDMouvements extends MysqlConnector
             }
 
             return resultats;
-        } catch (SQLException throwables) {
+        }
+        catch (SQLException throwables)
+        {
             throwables.printStackTrace();
             return null;
         }
     }
-
 }
