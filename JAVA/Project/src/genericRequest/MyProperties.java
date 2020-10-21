@@ -5,7 +5,7 @@
 /*Date de la dernière mise à jour : 10/10/2020             */
 /***********************************************************/
 
-package Tests;
+package genericRequest;
 
 import java.io.*;
 import java.util.*;
@@ -17,7 +17,6 @@ public class MyProperties
     /********************************/
     private Properties _properties;
     private String _fileName;
-
 
     /********************************/
     /*         Constructeurs        */

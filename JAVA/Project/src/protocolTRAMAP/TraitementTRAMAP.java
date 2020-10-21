@@ -8,7 +8,6 @@
 package protocolTRAMAP;
 
 import MyGenericServer.Client;
-import Tests.MyProperties;
 import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
@@ -16,6 +15,8 @@ import MyGenericServer.ConsoleServeur;
 import lib.BeanDBAcces.BDMouvements;
 import lib.BeanDBAcces.DataSource;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class TraitementTRAMAP implements Traitement
@@ -98,23 +99,30 @@ public class TraitementTRAMAP implements Traitement
 
     private Reponse traiteLOGIN(DonneeLogin chargeUtile, Client client)
     {
+        String username = chargeUtile.getUsername();
+        String password = chargeUtile.getPassword();
         if(client.is_loggedIn())
         {
             return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Le client est deja connecte dans le serveur");
         }
 
-        System.out.println("Utilisateur: " + chargeUtile.getUsername());
-        System.out.println("Mot de passe: " + chargeUtile.getPassword());
-        boolean ret = _bd.tryLogin(chargeUtile.getUsername(),chargeUtile.getPassword());
-        if(ret)
-        {
-            client.set_loggedIn(true);
-            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+        ResultSet rs = _bd.getLogin(username, password);
+        try {
+            if(rs!=null && rs.next()){
+                String bddpass = rs.getString("userpassword");
+                if(password.compareTo(bddpass) == 0)
+                {
+                    client.set_loggedIn(true);
+                    return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+                }
+                else {
+                    return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
-        else
-        {
-            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
-        }
+        return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "ERREUR lors du traitement de la requete");
     }
 
     private Reponse traiteINPUTLORY(DonneeInputLory chargeUtile, Client client)
@@ -187,22 +195,30 @@ public class TraitementTRAMAP implements Traitement
 
     private Reponse traiteLOGOUT(DonneeLogout chargeUtile, Client client)
     {
+        String username = chargeUtile.getUsername();
+        String password = chargeUtile.getPassword();
+
         if(!client.is_loggedIn())
         {
             return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Le client n'est pas connecte dans le serveur");
         }
 
-        System.out.println("Utilisateur: " + chargeUtile.getUsername());
-        System.out.println("Mot de passe: " + chargeUtile.getPassword());
-        boolean ret = _bd.tryLogin(chargeUtile.getUsername(),chargeUtile.getPassword());
-        if(ret)
-        {
-            client.set_loggedIn(false);
-            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+        ResultSet rs = _bd.getLogin(username, password);
+        try {
+            if(rs!=null && rs.next()){
+                String bddpass = rs.getString("userpassword");
+                if(password.compareTo(bddpass) == 0)
+                {
+                    client.set_loggedIn(true);
+                    return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+                }
+                else {
+                    return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
-        else
-        {
-            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
-        }
+        return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "ERREUR lors du traitement de la requete");
     }
 }

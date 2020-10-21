@@ -7,14 +7,11 @@ package Mouvement.Serveur;
 
 import MyGenericServer.ListeTaches;
 import MyGenericServer.ThreadServer;
-import Tests.MyProperties;
+import genericRequest.MyProperties;
 import lib.BeanDBAcces.BDMouvements;
 import lib.BeanDBAcces.DataSource;
 
 import javax.swing.*;
-import javax.xml.crypto.Data;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 public class ServerLayout extends JFrame {

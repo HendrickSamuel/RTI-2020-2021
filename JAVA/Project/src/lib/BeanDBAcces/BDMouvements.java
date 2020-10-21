@@ -42,24 +42,16 @@ public class BDMouvements extends MysqlConnector
     /*            Methodes          */
     /********************************/
 
-    public synchronized boolean tryLogin(String username, String password)
+    public synchronized ResultSet getLogin(String username, String password)
     {
         try {
             PreparedStatement ps = _con.prepareStatement("SELECT userpassword FROM logins WHERE UPPER(username) = UPPER(?) ;");
             ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
-            if(rs.next()){
-                String bddpass = rs.getString("userpassword");
-                if(password.compareTo(bddpass) == 0)
-                    return true;
-                else
-                    return false;
-            }
-            return false;
+            return ps.executeQuery();
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-            return false;
+            return null;
         }
     }
 
