@@ -108,18 +108,22 @@ public class TraitementTRAMAP implements Traitement
 
         ResultSet rs = _bd.getLogin(username, password);
         try {
-            if(rs!=null && rs.next()){
+            if(rs!=null && rs.next())
+            {
                 String bddpass = rs.getString("userpassword");
                 if(password.compareTo(bddpass) == 0)
                 {
                     client.set_loggedIn(true);
                     return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
                 }
-                else {
+                else
+                {
                     return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
                 }
             }
-        } catch (SQLException throwables) {
+        }
+        catch (SQLException throwables)
+        {
             throwables.printStackTrace();
         }
         return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "ERREUR lors du traitement de la requete");

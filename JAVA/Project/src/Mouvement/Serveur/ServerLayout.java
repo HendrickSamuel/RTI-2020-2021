@@ -94,13 +94,16 @@ public class ServerLayout extends JFrame {
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
             DataSource bd = null;
-            try {
+            try
+            {
                 bd = new BDMouvements(USER,PWD,"bd_mouvements");
                 th1 = new ThreadServer(port, lt, cs, true, "protocolTRAMAP.TraitementTRAMAP", bd);
                 th1.start();
 
                 labelPort1.setText("PORT: " + port);
-            } catch (SQLException |ClassNotFoundException e) {
+            }
+            catch (SQLException |ClassNotFoundException e)
+            {
                 cs.Affiche("Could not find DataBase to start on");
                 toggleServer1.setText("-- START --");
             }
@@ -110,9 +113,12 @@ public class ServerLayout extends JFrame {
         {
             //th1.interrupt();
             th1.StopServeur();
-            try {
+            try
+            {
                 th1.join();
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
             toggleServer1.setText("-- START --");
@@ -133,11 +139,16 @@ public class ServerLayout extends JFrame {
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
             DataSource bd = null;
-            try {
+            try
+            {
                 bd = new BDMouvements(USER,PWD,"bd_mouvements");
-            } catch (SQLException throwables) {
+            }
+            catch (SQLException throwables)
+            {
                 throwables.printStackTrace();
-            } catch (ClassNotFoundException e) {
+            }
+            catch (ClassNotFoundException e)
+            {
                 e.printStackTrace();
             }
             ;
@@ -148,9 +159,12 @@ public class ServerLayout extends JFrame {
         {
             //th1.interrupt();
             th2.StopServeur();
-            try {
+            try
+            {
                 th2.join();
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
             toggleServer2.setText("-- START --");

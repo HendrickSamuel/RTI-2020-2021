@@ -5,7 +5,7 @@
 
 package Mouvement.Client;
 
-import Tests.MyProperties;
+import genericRequest.MyProperties;
 import genericRequest.DonneeRequete;
 import protocolTRAMAP.DonneeInputLoryWithoutReservation;
 import protocolTRAMAP.ReponseTRAMAP;
