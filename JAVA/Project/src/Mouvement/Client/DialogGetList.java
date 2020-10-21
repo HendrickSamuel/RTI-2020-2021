@@ -5,41 +5,84 @@
 
 package Mouvement.Client;
 
+import genericRequest.DonneeRequete;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 
 public class DialogGetList extends JDialog
 {
     /********************************/
     /*           Variables          */
     /********************************/
+    private JPanel contentPane;
+    private JButton buttonOK;
+    private JButton buttonRetour;
+    private JRadioButton rechercheParSociétéRadioButton;
+    private JRadioButton rechercheParDestinationRadioButton;
+    private JTextField rechercheField;
+    private JTable table;
+    private JPanel datePane;
+
+    private ObjectInputStream ois;
+    private ObjectOutputStream oos;
+    private Socket cliSock;
+    private DonneeRequete dt;
+
+    UtilDateModel model;
+    JDatePanelImpl datePanel;
+    JDatePickerImpl datePicker;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public DialogGetList()
+    {
+        initComponents();
+        setModal(true);
+
+
+       /* model = new UtilDateModel();
+        datePanel = new JDatePanelImpl();
+        datePicker = new JDatePickerImpl();
+
+        datePane.add(datePicker);*/
+    }
+
+    public DialogGetList(java.awt.Frame parent, boolean modal, String nam, String pass)
+    {
+        super(parent, modal);
+        initComponents();
+
+        this.setLocationRelativeTo(null);
+
+        dt = null;
+    }
+
 
     /********************************/
     /*            Getters           */
     /********************************/
 
+
     /********************************/
     /*            Setters           */
     /********************************/
 
+
     /********************************/
     /*            Methodes          */
     /********************************/
-
-    /********************************/
-    /*             Main             */
-    /********************************/
-    private JPanel contentPane;
-    private JButton buttonOK;
-    private JButton buttonRetour;
-
-    public DialogGetList() {
+    private void initComponents()
+    {
         setContentPane(contentPane);
-        setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
@@ -70,17 +113,24 @@ public class DialogGetList extends JDialog
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onOK() {
+    private void onOK()
+    {
         // add your code here
         dispose();
     }
 
-    private void onCancel() {
+    private void onCancel()
+    {
         // add your code here if necessary
         dispose();
     }
 
-    public static void main(String[] args) {
+
+    /********************************/
+    /*             Main             */
+    /********************************/
+    public static void main(String[] args)
+    {
         DialogGetList dialog = new DialogGetList();
         dialog.pack();
         dialog.setVisible(true);

@@ -55,7 +55,7 @@ public class DialogLogout extends JDialog
         _pdw = pass;
         setLogout(false);
 
-        labelText.setText("Bonjour"+ _name + "etes vous sur de vouloir vous deconnecter ?");
+        labelText.setText("Bonjour "+ _name + " etes vous sur de vouloir vous deconnecter ?");
     }
 
 
@@ -81,7 +81,6 @@ public class DialogLogout extends JDialog
     private void initComponents()
     {
         setContentPane(contentPane);
-        setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener()
