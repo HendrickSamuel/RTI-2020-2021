@@ -35,7 +35,7 @@ public class DialogGetList extends JDialog
     /********************************/
     private JPanel contentPane;
     private JButton buttonOK;
-    private JButton buttonCancel;
+    private JButton buttonRetour;
 
     public DialogGetList() {
         setContentPane(contentPane);
@@ -48,7 +48,7 @@ public class DialogGetList extends JDialog
             }
         });
 
-        buttonCancel.addActionListener(new ActionListener() {
+        buttonRetour.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 onCancel();
             }

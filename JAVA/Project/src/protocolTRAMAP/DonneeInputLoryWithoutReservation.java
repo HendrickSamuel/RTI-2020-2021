@@ -19,12 +19,13 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
     private String idContainer;
     private String immatriculation;
 
-/********************************/
+    /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DonneeInputLoryWithoutReservation(String idContainer)
+    public DonneeInputLoryWithoutReservation(String idContainer, String immatriculation)
     {
-        this.idContainer = idContainer;
+        setIdContainer(idContainer);
+        setImmatriculation(immatriculation);
     }
 
 

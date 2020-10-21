@@ -5,8 +5,19 @@
 
 package Mouvement.Client;
 
+import Tests.MyProperties;
+import genericRequest.DonneeRequete;
+import protocolTRAMAP.DonneeInputLoryWithoutReservation;
+import protocolTRAMAP.ReponseTRAMAP;
+import protocolTRAMAP.RequeteTRAMAP;
+
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class DialogInputWithout extends JDialog
 {
@@ -15,10 +26,15 @@ public class DialogInputWithout extends JDialog
     /********************************/
     private JPanel contentPane;
     private JButton buttonOK;
-    private JButton buttonCancel;
+    private JButton buttonRetour;
     private JTextField containerField;
     private JTextField immatriculationField;
     private JLabel labelRetour;
+
+    private ObjectInputStream ois;
+    private ObjectOutputStream oos;
+    private Socket cliSock;
+    private DonneeRequete dt;
 
 
     /********************************/
@@ -37,6 +53,8 @@ public class DialogInputWithout extends JDialog
         initComponents();
 
         this.setLocationRelativeTo(null);
+
+        dt = null;
     }
 
 
@@ -68,13 +86,81 @@ public class DialogInputWithout extends JDialog
     /********************************/
     private void onOK()
     {
-        // add your code here
-        dispose();
+        dt = new DonneeInputLoryWithoutReservation(getContainer(),getImmatriculation());
+        RequeteTRAMAP req = null;
+        req = new RequeteTRAMAP(dt);
+
+        MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
+        String HOST = mp.getContent("IPSERV");
+        int PORT = Integer.parseInt(mp.getContent("PORT1"));
+
+        // Connexion au serveur
+        ois=null; oos=null; cliSock = null;
+        try
+        {
+            cliSock = new Socket(HOST, PORT);
+            System.out.println(cliSock.getInetAddress().toString());
+        }
+        catch (UnknownHostException e)
+        {
+            System.err.println("Erreur ! Host non trouvé [" + e + "]");//TODO:quitter
+            dispose();
+        }
+        catch (IOException e)
+        {
+            System.err.println("Erreur ! Pas de connexion ? [" + e + "]");//TODO:quitter
+            dispose();
+        }
+
+        // Envoie de la requête
+        try
+        {
+            oos = new ObjectOutputStream(cliSock.getOutputStream());
+            oos.writeObject(req);
+            //pour vider le cache
+            oos.flush();
+        }
+        catch (IOException e)
+        {
+            System.err.println("Erreur réseau ? [" + e.getMessage() + "]");//TODO:quitter
+            dispose();
+        }
+        // Lecture de la réponse
+        ReponseTRAMAP rep = null;
+        try
+        {
+            ois = new ObjectInputStream(cliSock.getInputStream());
+            rep = (ReponseTRAMAP)ois.readObject();
+            System.out.println(" *** Reponse reçue : " + rep.getCode());
+            if(rep.getMessage() != null)
+            {
+                System.out.println("Message reçu: " + rep.getMessage());
+            }
+            if(rep.getCode() == 201)
+            {
+                labelRetour.setText(rep.getMessage());
+                //dispose();
+            }
+            else
+            {
+                labelRetour.setText(rep.getMessage());
+            }
+
+        }
+        catch (ClassNotFoundException e)
+        {
+            System.out.println("--- erreur sur la classe = " + e.getMessage());
+            dispose();
+        }
+        catch (IOException e)
+        {
+            System.out.println("--- erreur IO = " + e.getMessage());
+            dispose();
+        }
     }
 
     private void onCancel()
     {
-        // add your code here if necessary
         dispose();
     }
 
@@ -91,7 +177,7 @@ public class DialogInputWithout extends JDialog
             }
         });
 
-        buttonCancel.addActionListener(new ActionListener()
+        buttonRetour.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {

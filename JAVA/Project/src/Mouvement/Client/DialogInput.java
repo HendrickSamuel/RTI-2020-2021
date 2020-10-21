@@ -15,7 +15,7 @@ public class DialogInput extends JDialog
     /********************************/
     private JPanel contentPane;
     private JButton buttonOK;
-    private JButton buttonCancel;
+    private JButton buttonRetour;
     private JTextField containerField;
     private JTextField reservationField;
     private JLabel labelRetour;
@@ -78,7 +78,7 @@ public class DialogInput extends JDialog
             }
         });
 
-        buttonCancel.addActionListener(new ActionListener()
+        buttonRetour.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {

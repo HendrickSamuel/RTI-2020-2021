@@ -24,12 +24,12 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="5723f" class="javax.swing.JButton" binding="buttonCancel">
+              <component id="5723f" class="javax.swing.JButton" binding="buttonRetour">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Cancel"/>
+                  <text value="Retour"/>
                 </properties>
               </component>
             </children>
@@ -73,7 +73,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Immatriculation camion :"/>
+              <text value="Immatriculation du camion :"/>
             </properties>
           </component>
           <component id="d8759" class="javax.swing.JLabel">
@@ -81,7 +81,7 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Identifiant container :"/>
+              <text value="Identifiant du container :"/>
             </properties>
           </component>
         </children>
