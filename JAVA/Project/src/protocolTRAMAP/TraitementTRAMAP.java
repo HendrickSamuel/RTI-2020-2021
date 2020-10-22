@@ -103,7 +103,7 @@ public class TraitementTRAMAP implements Traitement
         String password = chargeUtile.getPassword();
         if(client.is_loggedIn())
         {
-            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Le client est deja connecte dans le serveur");
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Le client est deja connecte dans le serveur");
         }
 
         ResultSet rs = _bd.getLogin(username, password);
@@ -115,11 +115,11 @@ public class TraitementTRAMAP implements Traitement
                 if(password.compareTo(bddpass) == 0)
                 {
                     client.set_loggedIn(true);
-                    return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+                    return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
                 }
                 else
                 {
-                    return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
+                    return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Mot de passe ou nom d'utilisateur erroné");
                 }
             }
         }
@@ -127,7 +127,7 @@ public class TraitementTRAMAP implements Traitement
         {
             throwables.printStackTrace();
         }
-        return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "ERREUR lors du traitement de la requete");
+        return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "ERREUR lors du traitement de la requete");
     }
 
     private Reponse traiteINPUTLORY(DonneeInputLory chargeUtile, Client client)
@@ -140,7 +140,7 @@ public class TraitementTRAMAP implements Traitement
         }
         else
         {
-            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Aucune réservation ne correspond à ce container");
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Aucune réservation ne correspond à ce container");
             //todo: verifier si on attent + si les 2 vont ensemble ?
         }
     }
@@ -205,7 +205,7 @@ public class TraitementTRAMAP implements Traitement
 
         if(!client.is_loggedIn())
         {
-            return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Le client n'est pas connecte dans le serveur");
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Le client n'est pas connecte dans le serveur");
         }
 
         ResultSet rs = _bd.getLogin(username, password);
@@ -217,11 +217,11 @@ public class TraitementTRAMAP implements Traitement
                 if(password.compareTo(bddpass) == 0)
                 {
                     client.set_loggedIn(true);
-                    return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_OK, null, null);
+                    return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
                 }
                 else
                 {
-                    return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "Mot de passe ou nom d'utilisateur erroné");
+                    return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Mot de passe ou nom d'utilisateur erroné");
                 }
             }
         }
@@ -229,6 +229,6 @@ public class TraitementTRAMAP implements Traitement
         {
             throwables.printStackTrace();
         }
-        return new ReponseTRAMAP(ReponseTRAMAP.LOGIN_NOK, null, "ERREUR lors du traitement de la requete");
+        return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "ERREUR lors du traitement de la requete");
     }
 }

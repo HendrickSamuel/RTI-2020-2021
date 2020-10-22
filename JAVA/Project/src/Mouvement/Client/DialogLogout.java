@@ -24,8 +24,7 @@ public class DialogLogout extends JDialog
     private JButton buttonCancel;
     private JLabel labelText;
 
-    private String _name;
-    private String _pdw;
+    private Client _client;
     private boolean _logout;
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
@@ -43,7 +42,7 @@ public class DialogLogout extends JDialog
         initComponents();
     }
 
-    public DialogLogout(java.awt.Frame parent, boolean modal, String nam, String pass)
+    public DialogLogout(java.awt.Frame parent, boolean modal, Client client)
     {
         super(parent, modal);
         initComponents();
@@ -51,11 +50,11 @@ public class DialogLogout extends JDialog
         this.setLocationRelativeTo(null);
 
         dt = null;
-        _name = nam;
-        _pdw = pass;
+
+        _client = client;
         setLogout(false);
 
-        labelText.setText("Bonjour "+ _name + " etes vous sur de vouloir vous deconnecter ?");
+        labelText.setText("Bonjour "+ _client.getLogin() + " etes vous sur de vouloir vous deconnecter ?");
     }
 
 
@@ -119,7 +118,7 @@ public class DialogLogout extends JDialog
 
     private void onOK()
     {
-        dt = new DonneeLogout(_name,_pdw);
+        dt = new DonneeLogout(_client.getLogin(), _client.getPwd());
         RequeteTRAMAP req = null;
         req = new RequeteTRAMAP(dt);
 

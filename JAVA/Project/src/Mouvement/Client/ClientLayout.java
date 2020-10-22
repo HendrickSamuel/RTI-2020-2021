@@ -14,9 +14,7 @@ public class ClientLayout extends JFrame
     /********************************/
     /*           Variables          */
     /********************************/
-    private boolean _connect;
-    private String _login;
-    private String _pwd;
+    private Client _client;
 
     private JPanel mainPanel;
     private JButton buttonLogin;
@@ -39,6 +37,7 @@ public class ClientLayout extends JFrame
 
         initComponents();
 
+        setClient(new Client());
         setConnect(false);
     }
 
@@ -46,17 +45,28 @@ public class ClientLayout extends JFrame
     /********************************/
     /*            Getters           */
     /********************************/
+    public Client getClient()
+    {
+        return _client;
+    }
+
     public boolean isConnect()
     {
-        return _connect;
+        return _client.isConnect();
     }
+
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setClient(Client tmpClient)
+    {
+        _client = tmpClient;
+    }
+
     public void setConnect(boolean tmpConnect)
     {
-        _connect = tmpConnect;
+        _client.setConnect(tmpConnect);
     }
 
     /********************************/
@@ -163,7 +173,7 @@ public class ClientLayout extends JFrame
 
         if(isConnect())
         {
-            DialogLogout logout = new DialogLogout(this, true, _login, _pwd);
+            DialogLogout logout = new DialogLogout(this, true, getClient());
             logout.setSize(260, 190);
             logout.setVisible(true);
             if(logout.isLogout())
@@ -189,15 +199,13 @@ public class ClientLayout extends JFrame
         }
         else
         {
-            DialogLogin login = new DialogLogin(this, true);
+            DialogLogin login = new DialogLogin(this, true, getClient());
             login.setSize(260, 190);
             login.setVisible(true);
 
             if(login.getLoginValide())
             {
                 setConnect(true);
-                _pwd = login.getPwd();
-                _login = login.getUtilisateur();
             }
         }
 

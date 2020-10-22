@@ -24,9 +24,8 @@ public class DialogLogin extends javax.swing.JDialog
     /********************************/
     /*           Variables          */
     /********************************/
+    private Client _client;
     private boolean _loginValide;
-    private String _utilisateur;
-    private String _pwd;
 
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
@@ -55,7 +54,7 @@ public class DialogLogin extends javax.swing.JDialog
         setLoginValide(false);
     }
 
-    public DialogLogin(java.awt.Frame parent, boolean modal)
+    public DialogLogin(java.awt.Frame parent, boolean modal, Client client)
     {
         super(parent, modal);
         initComponents();
@@ -70,14 +69,19 @@ public class DialogLogin extends javax.swing.JDialog
     /********************************/
     /*            Getters           */
     /********************************/
+    public Client getClient()
+    {
+        return _client;
+    }
+
     public String getUtilisateur()
     {
-        return _utilisateur;
+        return getClient().getLogin();
     }
 
     public String getPwd()
     {
-        return _pwd;
+        return getClient().getPwd();
     }
 
     public boolean getLoginValide()
@@ -89,14 +93,19 @@ public class DialogLogin extends javax.swing.JDialog
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setClient(Client tmpClient)
+    {
+        _client = tmpClient;
+    }
+
     public void setUtilisateur(String utilisateur)
     {
-        _utilisateur = utilisateur;
+        getClient().setLogin(utilisateur);
     }
 
     public void setPwd(String pwd)
     {
-        _pwd = pwd;
+        getClient().setPwd(pwd);
     }
 
     public void setLoginValide(boolean val)
