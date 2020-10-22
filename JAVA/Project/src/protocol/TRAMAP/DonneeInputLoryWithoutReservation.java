@@ -21,6 +21,9 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
     private String societe;
     private String destination;
 
+    private int x;
+    private int y;
+
     /********************************/
     /*         Constructeurs        */
     /********************************/
@@ -59,6 +62,15 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
     /********************************/
     /*            Setters           */
     /********************************/
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
     public void setIdContainer(String idContainer)
     {
         this.idContainer = idContainer;

@@ -11,6 +11,7 @@ import genericRequest.DonneeRequete;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class DonneeListOperations implements DonneeRequete, Serializable
 {
@@ -21,6 +22,8 @@ public class DonneeListOperations implements DonneeRequete, Serializable
     private Date dateFin;
     private String nomSociete;
     private String nomDestination;
+
+    private List<Operation> operations;
 
 
     /********************************/

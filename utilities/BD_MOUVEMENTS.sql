@@ -12,8 +12,7 @@ DROP TABLE IF EXISTS Societes;
 DROP TABLE IF EXISTS Logins;
 
 CREATE TABLE Societes (
-idSociete INT AUTO_INCREMENT PRIMARY KEY,
-nom varchar(255),
+nom varchar(255) PRIMARY KEY,
 email varchar(255),
 telephone varchar(255),
 adresse varchar(255)
@@ -29,12 +28,12 @@ distanceRoute FLOAT
 
 CREATE TABLE Containers (
 idContainer varchar(255) PRIMARY KEY,
-idSociete INT,
+idSociete varchar(255),
 contenu varchar(255),
 capacite FLOAT NOT NULL,
 dangers varchar(255),
 poids FLOAT,
-FOREIGN KEY (idSociete) REFERENCES Societes(idSociete)
+FOREIGN KEY (idSociete) REFERENCES Societes(nom)
 );
 
 CREATE TABLE Parc (
@@ -53,10 +52,10 @@ FOREIGN KEY (idContainer) REFERENCES Containers(idContainer)
 
 CREATE TABLE Transporteurs (
 idTransporteur varchar(255) PRIMARY KEY,
-idSociete INT,
+idSociete varchar(255),
 capacite FLOAT NOT NULL,
 caracteristiques varchar(255),
-FOREIGN KEY (idSociete) REFERENCES Societes(idSociete)
+FOREIGN KEY (idSociete) REFERENCES Societes(nom)
 );
 
 CREATE TABLE Mouvements (
@@ -84,7 +83,7 @@ INSERT into Logins (username, userpassword) VALUES ("Samuel","superSecurePass123
 INSERT into Logins (username, userpassword) VALUES ("Kevin","superSecurePass123");
 
 INSERT into Societes (nom, email, telephone, adresse) VALUES ("MaSociete","MonEmail@Email.com","0472/42.16.88","MonAdresse Rue de l'adresse");
-INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES ("blabla", 1, "Xylophones", 200, "Nuisancees sonores", 0.0005);
+INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES ("blabla", "MaSociete", "Xylophones", 200, "Nuisancees sonores", 0.0005);
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
 VALUES ("blabla", 1, 1, 2, NULL, "test", NULL, "Paris","Train");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 

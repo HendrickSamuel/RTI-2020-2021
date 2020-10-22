@@ -133,37 +133,77 @@ public class TraitementTRAMAP implements Traitement
     private Reponse traiteINPUTLORY(DonneeInputLory chargeUtile, Client client)
     {
         System.out.println("traiteINPUTLORY");
-        String ret = _bd.getReservation(chargeUtile.getNumeroReservation(), chargeUtile.getIdContainer());
-        if(ret != null)
-        {
-            return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
+        ResultSet ret = _bd.getReservation(chargeUtile.getNumeroReservation(), chargeUtile.getIdContainer());
+        try {
+            if(ret != null && ret.next())
+            {
+                chargeUtile.setX(ret.getInt("x"));
+                chargeUtile.setY(ret.getInt("y"));
+                return new ReponseTRAMAP(ReponseTRAMAP.OK, chargeUtile, null);
+            }
+            else
+            {
+                return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Aucune réservation ne correspond à ce container");
+                //todo: verifier si on attent + si les 2 vont ensemble ?
+            }
+        } catch (SQLException throwables) {
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Erreur lors de la connection à la base de données");
+
         }
-        else
-        {
-            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Aucune réservation ne correspond à ce container");
-            //todo: verifier si on attent + si les 2 vont ensemble ?
+    }
+
+    private boolean HasRecords(ResultSet rs)
+    {
+        try {
+            return rs.next();
+        } catch (SQLException throwables) {
+            return false;
         }
     }
 
     private Reponse traiteINPUTLORYWITHOUTRESERVATION(DonneeInputLoryWithoutReservation chargeUtile, Client client)
     {
         System.out.println("traiteINPUTLORYWITHOUTRESERVATION");
-        String ret = _bd.getInputWithoutRes(chargeUtile.getImmatriculation(), chargeUtile.getIdContainer());
-        if(ret != null)
+        if(!HasRecords(_bd.getSocieteById(chargeUtile.getSociete())))
         {
-            return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
+            _bd.insertSociete(chargeUtile.getSociete(), "","","");
         }
-        else
+
+        if(!HasRecords(_bd.getContainerById(chargeUtile.getIdContainer())))
         {
-            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
-            //todo: verifier si on attent + si les 2 vont ensemble ?
+            _bd.insertContainer(chargeUtile.getIdContainer(),
+                    chargeUtile.getSociete(),
+                    "Inconnu",
+                    0F,
+                    "Inconnu",
+                    0F);
+        }
+
+        ResultSet ret = _bd.getInputWithoutRes(chargeUtile.getImmatriculation(), chargeUtile.getIdContainer());
+        try {
+            if(ret != null && ret.next())
+            {
+                ret.updateString("idContainer", chargeUtile.getIdContainer());
+                ret.updateInt("etat", 1);
+                ret.updateRow();
+                chargeUtile.setX(ret.getInt("x"));
+                chargeUtile.setY(ret.getInt("y"));
+                return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
+            }
+            else
+            {
+                return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
+                //todo: verifier si on attent + si les 2 vont ensemble ?
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Erreur dans la base de donnée");
         }
     }
 
     private void traiteListe(DonneeListOperations chargeUtile, Client client)
     {
         System.out.println("traiteListe");
-
     }
 
     private Reponse traiteListeSociete(DonneeListOperations chargeUtile)

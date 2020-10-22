@@ -7,7 +7,7 @@ package Mouvement.Client;
 
 import genericRequest.DonneeRequete;
 import genericRequest.MyProperties;
-import protocolTRAMAP.*;
+import protocol.TRAMAP.*;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

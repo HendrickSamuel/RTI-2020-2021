@@ -60,21 +60,14 @@ public class BDMouvements extends MysqlConnector
         }
     }
 
-    public synchronized String getReservation(String numReservation, String idContainer)
+    public synchronized ResultSet getReservation(String numReservation, String idContainer)
     {
         try
         {
             PreparedStatement ps = _con.prepareStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
             ps.setString(1, idContainer);
             ps.setString(2, numReservation);
-            ResultSet rs = ps.executeQuery();
-            if(rs.next())
-            {
-                System.out.println("Trouvé: " + rs.getString("x") + " - " + rs.getString("y"));
-                return rs.getString("x") + "#" + rs.getString("y");
-            }
-            else
-                return null;
+            return ps.executeQuery();
         }
         catch (SQLException throwables)
         {
@@ -83,23 +76,86 @@ public class BDMouvements extends MysqlConnector
         }
     }
 
-    public synchronized String getInputWithoutRes(String immatriculation, String idContainer)
+    public synchronized ResultSet getContainerById(String idContainer)
+    {
+        try
+        {
+            PreparedStatement ps = _con.prepareStatement("SELECT * FROM containers WHERE UPPER(idContainer) = UPPER(?) ");
+            ps.setString(1,idContainer);
+            return ps.executeQuery();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
+    public synchronized boolean insertSociete(String nom, String email, String telephone, String adresse)
+    {
+        try
+        {
+            PreparedStatement ps = _con.
+                    prepareStatement("INSERT into Societes (nom, email, telephone, adresse) VALUES (?,?,?,?);");
+            ps.setString(1,nom);
+            ps.setString(2,email);
+            ps.setString(3,telephone);
+            ps.setString(4,adresse);
+            ps.executeQuery();
+            return true;
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+            return false;
+        }
+    }
+
+    public synchronized boolean insertContainer(String id, String societe, String contenu, Float capacite, String danger, Float poids)
+    {
+        try
+        {
+            PreparedStatement ps = _con.
+                    prepareStatement("INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES (?,?,?,?,?,?);");
+            ps.setString(1, id);
+            ps.setString(2, societe);
+            ps.setString(3, contenu);
+            ps.setFloat(4, capacite);
+            ps.setString(5, danger);
+            ps.setFloat(6, poids);
+
+            ps.executeQuery();
+            return true;
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+            return false;
+        }
+
+    }
+
+    public synchronized ResultSet getSocieteById(String idSociete)
+    {
+        try
+        {
+            PreparedStatement ps = _con.prepareStatement("SELECT * FROM societes WHERE UPPER(idSociete) = UPPER(?) ");
+            ps.setString(1,idSociete);
+            return ps.executeQuery();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
+    public synchronized ResultSet getInputWithoutRes(String immatriculation, String idContainer)
     {
         try
         {
             Statement ps = _con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            ResultSet rs = ps.executeQuery("SELECT * FROM parc WHERE etat = 0");
-            if(rs.next())
-            {
-                rs.updateString("idContainer", idContainer);
-                rs.updateInt("etat", 1);
-                rs.updateRow();
-                return rs.getString("x") + "#" + rs.getString("y");
-            }
-            else
-            {
-                return null;
-            }
+            return ps.executeQuery("SELECT * FROM parc WHERE etat = 0");
         }
         catch (SQLException throwables)
         {

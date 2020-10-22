@@ -19,6 +19,9 @@ public class DonneeInputLory implements DonneeRequete, Serializable
     private String numeroReservation;
     private String idContainer;
 
+    private int x;
+    private int y;
+
 
     /********************************/
     /*         Constructeurs        */
@@ -45,7 +48,18 @@ public class DonneeInputLory implements DonneeRequete, Serializable
 
     /********************************/
     /*            Setters           */
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
     /********************************/
+
+
     public void setNumeroReservation(String numeroReservation)
     {
         this.numeroReservation = numeroReservation;
