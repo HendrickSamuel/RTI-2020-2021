@@ -8,14 +8,12 @@
 package Tests;
 
 import genericRequest.DonneeRequete;
-import genericRequest.Requete;
-import protocolTRAMAP.*;
+import protocol.TRAMAP.*;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.Properties;
 
 public class Client
 {

@@ -9,7 +9,7 @@ import MyGenericServer.ConsoleServeur;
 import MyGenericServer.ServeurGenerique;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
-import protocolTRAMAP.TraitementTRAMAP;
+import protocol.TRAMAP.TraitementTRAMAP;
 
 import java.sql.SQLException;
 
