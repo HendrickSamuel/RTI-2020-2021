@@ -6,9 +6,6 @@
 package Mouvement.Client;
 
 import genericRequest.DonneeRequete;
-import org.jdatepicker.impl.JDatePanelImpl;
-import org.jdatepicker.impl.JDatePickerImpl;
-import org.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
 import java.awt.event.*;
