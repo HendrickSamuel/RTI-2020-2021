@@ -191,7 +191,7 @@ public class TraitementTRAMAP implements Traitement
                 ret.updateRow();
                 chargeUtile.setX(ret.getInt("x"));
                 chargeUtile.setY(ret.getInt("y"));
-                return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
+                return new ReponseTRAMAP(ReponseTRAMAP.OK, chargeUtile, null);
             }
             else
             {

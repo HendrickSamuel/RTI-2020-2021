@@ -127,6 +127,11 @@ public class DialogInputWithout extends JDialog
             {
                 DonneeInputLoryWithoutReservation donnee =(DonneeInputLoryWithoutReservation) rep.getChargeUtile();
                 labelRetour.setText("Vous pouvez mettre le container en place [" + donnee.getX() +"] [" + donnee.getY() + "]");
+                buttonOK.setEnabled(false);
+                societeField.setEnabled(false);
+                containerField.setEnabled(false);
+                destinationField.setEnabled(false);
+                immatriculationField.setEnabled(false);
             }
             else
             {
