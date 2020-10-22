@@ -187,6 +187,7 @@ public class TraitementTRAMAP implements Traitement
             {
                 ret.updateString("idContainer", chargeUtile.getIdContainer());
                 ret.updateInt("etat", 1);
+                ret.updateString("destination",chargeUtile.getDestination());
                 ret.updateRow();
                 chargeUtile.setX(ret.getInt("x"));
                 chargeUtile.setY(ret.getInt("y"));
