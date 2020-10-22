@@ -79,6 +79,9 @@ username varchar(255),
 userpassword varchar(255)
 );
 
+INSERT into Destinations (ville) VALUES ("Paris");
+INSERT into Destinations (ville) VALUES ("Madrid");
+
 INSERT into Logins (username, userpassword) VALUES ("Samuel","superSecurePass123");
 INSERT into Logins (username, userpassword) VALUES ("Kevin","superSecurePass123");
 
