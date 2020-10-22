@@ -1,9 +1,7 @@
-
-JAVA/Serveur_Mouvement.conf
-JAVA/Serveur_Mouvement.conf
+*.conf
+JAVA/Serveur_Mouvement.conf		
 /JAVA-WEB/WebApplicationLoisirs/nbproject/private/
 /JAVA-WEB/WebApplicationLoisirs/build/
-
 
 # Created by https://www.toptal.com/developers/gitignore/api/netbeans
 # Edit at https://www.toptal.com/developers/gitignore?templates=netbeans
@@ -19,3 +17,5 @@ nbdist/
 .nb-gradle/
 
 # End of https://www.toptal.com/developers/gitignore/api/netbeans
+
+JAVA/**/*.conf

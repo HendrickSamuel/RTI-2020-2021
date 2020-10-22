@@ -13,6 +13,10 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+*.conf
+Serveur_Mouvement.conf
+
+
 # Generated files
 .idea/**/contentModel.xml
 

@@ -7,6 +7,7 @@
 
 package MyGenericServer;
 
+import genericRequest.Traitement;
 import lib.BeanDBAcces.DataSource;
 
 import java.io.IOException;
@@ -14,10 +15,24 @@ import java.io.IOException;
 public abstract class ThreadClient extends Thread {
     protected ConsoleServeur _console;
     protected DataSource _dataSource;
+    protected SourceTaches _taches;
+    protected Traitement _traitement;
 
-    void set_taches(SourceTaches _taches){};
-    public void setNom(String nom){};
-    public void setTraitement(String nom, DataSource ds) throws IOException, ClassNotFoundException{};
+    protected int index;
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public void set_taches(SourceTaches _taches)
+    {
+        this._taches = _taches;
+    }
+
+    public void setTraitement(Traitement traitement)
+    {
+        this._traitement = traitement;
+    };
 
     public ConsoleServeur get_console() {
         return _console;

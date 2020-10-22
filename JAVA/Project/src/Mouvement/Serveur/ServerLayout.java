@@ -35,7 +35,7 @@ public class ServerLayout extends JFrame {
     private JTextArea textArea2;
     private JPanel mainPannel;
 
-    private ThreadServer th1;
+    private ServeurMouvement serveur1;
     private ThreadServer th2;
 
     private int port1;
@@ -81,7 +81,7 @@ public class ServerLayout extends JFrame {
 
     private void ToggleServer1(java.awt.event.ActionEvent evt)
     {
-        if(th1 == null || !th1.isAlive())
+        if(serveur1 == null)
         {
             toggleServer1.setText("-- STOP --");
             textArea1.setText(null);
@@ -90,15 +90,14 @@ public class ServerLayout extends JFrame {
             MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
             int port = Integer.parseInt(mp.getContent("PORT1"));
 
-            ListeTaches lt = new ListeTaches();
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
-            DataSource bd = null;
+            BDMouvements bd = null;
             try
             {
                 bd = new BDMouvements(USER,PWD,"bd_mouvements");
-                th1 = new ThreadServer(port, lt, cs, true, "protocolTRAMAP.TraitementTRAMAP", bd);
-                th1.start();
+                serveur1 = new ServeurMouvement(port, true, 3, bd, cs);
+                serveur1.StartServeur();
 
                 labelPort1.setText("PORT: " + port);
             }
@@ -111,63 +110,13 @@ public class ServerLayout extends JFrame {
         }
         else
         {
-            //th1.interrupt();
-            th1.StopServeur();
-            try
-            {
-                th1.join();
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+            serveur1.StopServeur();
             toggleServer1.setText("-- START --");
         }
     }
 
     private void ToggleServer2(java.awt.event.ActionEvent evt)
     {
-        if(th2 == null || !th2.isAlive())
-        {
-            toggleServer2.setText("-- STOP --");
-            textArea2.setText("");
-            ConsoleSwing cs = new ConsoleSwing(textArea2);
-            MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
-            int port = Integer.parseInt(mp.getContent("PORT2"));
-            labelPort2.setText("PORT: " + port);
-            ListeTaches lt = new ListeTaches();
-            String USER = mp.getContent("BDUSER");
-            String PWD = mp.getContent("BDPWD");
-            DataSource bd = null;
-            try
-            {
-                bd = new BDMouvements(USER,PWD,"bd_mouvements");
-            }
-            catch (SQLException throwables)
-            {
-                throwables.printStackTrace();
-            }
-            catch (ClassNotFoundException e)
-            {
-                e.printStackTrace();
-            }
-            ;
-            th2 = new ThreadServer(port, lt, cs, true, "protocolTRAMAP.TraitementTRAMAP", bd);
-            th2.start();
-        }
-        else
-        {
-            //th1.interrupt();
-            th2.StopServeur();
-            try
-            {
-                th2.join();
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-            toggleServer2.setText("-- START --");
-        }
+
     }
 }

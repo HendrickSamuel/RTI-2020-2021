@@ -9,10 +9,7 @@ package MyGenericServer;
 
 import genericRequest.Reponse;
 import genericRequest.Requete;
-import genericRequest.Traitement;
-import lib.BeanDBAcces.DataSource;
 
-import java.beans.Beans;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -23,10 +20,7 @@ public class ThreadClientConnecte extends ThreadClient
     /********************************/
     /*           Variables          */
     /********************************/
-    private SourceTaches _taches;
-    private String nom;
     private Socket tacheEnCours;
-    private Traitement traitement;
 
     private Client _client;
 
@@ -43,37 +37,10 @@ public class ThreadClientConnecte extends ThreadClient
     /********************************/
     /*            Getters           */
     /********************************/
-    public String getNom()
-    {
-        return nom;
-    }
-
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void set_taches(SourceTaches _taches)
-    {
-        this._taches = _taches;
-    }
-
-    public void setNom(String nom)
-    {
-        this.nom = nom;
-    }
-
-    @Override
-    public void setTraitement(String nom, DataSource ds) throws IOException, ClassNotFoundException
-    {
-        traitement = (Traitement)Beans.instantiate(null, nom);
-        traitement.setConsole(this._console);
-        traitement.setDataSource(ds);
-    }
-
-    public void setTacheEnCours(Socket tacheEnCours)
-    {
-        this.tacheEnCours = tacheEnCours;
-    }
 
 
     /********************************/
@@ -82,7 +49,7 @@ public class ThreadClientConnecte extends ThreadClient
     @Override
     public void run()
     {
-        System.out.println("Je suis :" + nom + " et je demarre en tant que Thread");
+        System.out.println("Demarrage du Thread: " + index);
         boolean inCommunication = false;
         while(!isInterrupted())
         {
@@ -108,7 +75,6 @@ public class ThreadClientConnecte extends ThreadClient
             }
             catch (InterruptedException e)
             {
-                System.out.println(nom + " a quitte le truc");
                 inCommunication = false;
             }
 
@@ -120,7 +86,7 @@ public class ThreadClientConnecte extends ThreadClient
                     System.out.println("Requete lue par le serveur, instance de " +
                             req.getClass().getName());
 
-                    Reponse rp = traitement.traiteRequete(req.getChargeUtile(), _client);
+                    Reponse rp = _traitement.traiteRequete(req.getChargeUtile(), _client);
                     oos.writeObject(rp);
                     oos.flush();
                 }

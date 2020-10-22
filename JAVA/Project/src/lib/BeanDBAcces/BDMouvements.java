@@ -91,8 +91,13 @@ public class BDMouvements extends MysqlConnector
             ResultSet rs = ps.executeQuery("SELECT * FROM parc WHERE etat = 0");
             if(rs.next())
             {
+<<<<<<< Updated upstream
                 rs.updateString("idContainer", idContainer);
                 rs.updateInt("etat", 1);
+=======
+                rs.updateString("idContainer",idContainer);
+                rs.updateInt("etat",1);
+>>>>>>> Stashed changes
                 rs.updateRow();
                 return rs.getString("x") + "#" + rs.getString("y");
             }

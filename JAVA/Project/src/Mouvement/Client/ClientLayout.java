@@ -25,7 +25,6 @@ public class ClientLayout extends JFrame
     private JButton buttonOperations;
     private JButton buttonInputLorryWithoutRes;
 
-
     /********************************/
     /*         Constructeurs        */
     /********************************/

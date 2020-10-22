@@ -40,18 +40,6 @@ public class ThreadClientDeconnecte extends ThreadClient
         this._taches = _taches;
     }
 
-    @Override
-    public void setNom(String nom)
-    {
-        this.nom = nom;
-    }
-
-    @Override
-    public void setTraitement(String nom, DataSource ds)
-    {
-
-    }
-
 
     /********************************/
     /*            Methodes          */
