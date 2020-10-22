@@ -95,11 +95,11 @@ public class Client
         }
         catch (UnknownHostException e)
         {
-            System.err.println("Erreur ! Host non trouvé [" + e + "]");//TODO:quitter
+            System.err.println("---connectServ Erreur ! Host non trouvé [" + e + "]");//TODO:quitter
         }
         catch (IOException e)
         {
-            System.err.println("Erreur ! Pas de connexion ? [" + e + "]");//TODO:quitter
+            System.err.println("---connectServ Erreur ! Pas de connexion ? [" + e + "]");//TODO:quitter
         }
     }
 
@@ -115,7 +115,7 @@ public class Client
         }
         catch (IOException e)
         {
-            System.err.println("Erreur réseau ? [" + e.getMessage() + "]");//TODO:quitter
+            System.err.println("---sendReq Erreur réseau ? [" + e.getMessage() + "]");//TODO:quitter
         }
     }
 
@@ -129,11 +129,11 @@ public class Client
         }
         catch (ClassNotFoundException e)
         {
-            System.out.println("--- erreur sur la classe = " + e.getMessage());
+            System.out.println("---readRep erreur sur la classe = " + e.getMessage());
         }
         catch (IOException e)
         {
-            System.out.println("--- erreur IO = " + e.getMessage());
+            System.out.println("---readRep erreur IO = " + e.getMessage());
         }
         return null;
     }
@@ -146,7 +146,7 @@ public class Client
         }
         catch (IOException e)
         {
-            System.out.println("--- erreur IO = " + e.getMessage());
+            System.out.println("---closeSocket erreur IO = " + e.getMessage());
         }
     }
 

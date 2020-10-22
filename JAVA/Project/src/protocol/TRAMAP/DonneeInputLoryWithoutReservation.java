@@ -20,7 +20,6 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
     private String immatriculation;
     private String societe;
     private String destination;
-
     private int x;
     private int y;
 
@@ -59,15 +58,26 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
         return societe;
     }
 
+    public int getX()
+    {
+        return x;
+    }
+
+    public int getY()
+    {
+        return y;
+    }
+
     /********************************/
     /*            Setters           */
     /********************************/
-
-    public void setX(int x) {
+    public void setX(int x)
+    {
         this.x = x;
     }
 
-    public void setY(int y) {
+    public void setY(int y)
+    {
         this.y = y;
     }
 

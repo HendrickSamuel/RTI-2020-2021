@@ -8,6 +8,7 @@ package Mouvement.Client;
 import genericRequest.DonneeRequete;
 import genericRequest.MyProperties;
 import protocol.TRAMAP.DonneeInputLory;
+import protocol.TRAMAP.DonneeInputLoryWithoutReservation;
 import protocol.TRAMAP.ReponseTRAMAP;
 import protocol.TRAMAP.RequeteTRAMAP;
 
@@ -147,8 +148,8 @@ public class DialogInput extends JDialog
 
             if(rep.getCode() == 200)
             {
-                //todo: decoder le message
-                labelRetour.setText(rep.getMessage());
+                DonneeInputLory donnee =(DonneeInputLory) rep.getChargeUtile();
+                labelRetour.setText("Vous pouvez mettre le container en place [" + donnee.getX() +"] [" + donnee.getY() + "]");
             }
             else
             {

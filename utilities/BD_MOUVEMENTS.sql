@@ -83,11 +83,12 @@ INSERT into Logins (username, userpassword) VALUES ("Samuel","superSecurePass123
 INSERT into Logins (username, userpassword) VALUES ("Kevin","superSecurePass123");
 
 INSERT into Societes (nom, email, telephone, adresse) VALUES ("MaSociete","MonEmail@Email.com","0472/42.16.88","MonAdresse Rue de l'adresse");
-INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES ("blabla", "MaSociete", "Xylophones", 200, "Nuisancees sonores", 0.0005);
+INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES ("blabla", "MaSociete", "Xylophones", 200, "Nuisancees sonores", 500);
+INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES ("cont123", "MaSociete", "Xylophones", 200, "Nuisancees sonores", 1000);
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
 VALUES ("blabla", 1, 1, 2, NULL, "test", NULL, "Paris","Train");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
-VALUES (NULL, 1, 2, 0, NULL, "", NULL, "","");
+VALUES ("cont123", 1, 2, 1, NULL, "123456", NULL, "","");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
 VALUES (NULL, 1, 3, 0, NULL, "", NULL, "","");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
@@ -124,6 +125,3 @@ INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, d
 VALUES (NULL, 2, 9, 0, NULL, "", NULL, "","");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
 VALUES (NULL, 2, 10, 0, NULL, "", NULL, "","");
-
-
-

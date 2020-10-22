@@ -125,8 +125,8 @@ public class DialogInputWithout extends JDialog
             }
             if(rep.getCode() == 200)
             {
-                //todo: decoder le message
-                labelRetour.setText(rep.getMessage());
+                DonneeInputLoryWithoutReservation donnee =(DonneeInputLoryWithoutReservation) rep.getChargeUtile();
+                labelRetour.setText("Vous pouvez mettre le container en place [" + donnee.getX() +"] [" + donnee.getY() + "]");
             }
             else
             {

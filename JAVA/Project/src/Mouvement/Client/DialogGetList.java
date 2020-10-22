@@ -6,7 +6,7 @@
 package Mouvement.Client;
 
 import genericRequest.DonneeRequete;
-import protocolTRAMAP.ReponseTRAMAP;
+import protocol.TRAMAP.ReponseTRAMAP;
 
 import javax.swing.*;
 import java.awt.event.*;
