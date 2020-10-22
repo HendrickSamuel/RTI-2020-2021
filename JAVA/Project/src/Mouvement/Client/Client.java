@@ -7,11 +7,10 @@ package Mouvement.Client;
 
 import genericRequest.DonneeRequete;
 import genericRequest.MyProperties;
-import protocolTRAMAP.DonneeLogin;
-import protocolTRAMAP.ReponseTRAMAP;
-import protocolTRAMAP.RequeteTRAMAP;
+import protocol.TRAMAP.DonneeLogin;
+import protocol.TRAMAP.ReponseTRAMAP;
+import protocol.TRAMAP.RequeteTRAMAP;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

@@ -5,62 +5,38 @@
 /*Date de la dernière mise à jour : 10/10/2020             */
 /***********************************************************/
 
-package protocolTRAMAP;
+package protocol.TRAMAP;
 
 import genericRequest.DonneeRequete;
-import genericRequest.Reponse;
-import java.io.Serializable;
-import java.util.Properties;
+import genericRequest.Requete;
 
-public class ReponseTRAMAP implements Reponse, Serializable
+import java.io.Serializable;
+
+
+public class RequeteTRAMAP implements Requete, Serializable
 {
     /********************************/
-    /*           Variables          */
+    /*          Variables           */
     /********************************/
-    public static int OK = 200;
-    public static int NOK = 400;
-    public static int REQUEST_NOT_FOUND = 404;
-
-    private int codeRetour;
-    private String message;
     private DonneeRequete chargeUtile;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ReponseTRAMAP(int c, DonneeRequete chu, String msg)
+    public RequeteTRAMAP(DonneeRequete chu)
     {
-        codeRetour = c;
-        setChargeUtile(chu);
-        message = msg;
+        chargeUtile = chu;
+
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
-    public int getCode()
-    {
-        return codeRetour;
-    }
-
+    @Override
     public DonneeRequete getChargeUtile()
     {
         return chargeUtile;
-    }
-
-    public String getMessage()
-    {
-        return message;
-    }
-
-
-    /********************************/
-    /*            Setters           */
-    /********************************/
-    public void setChargeUtile(DonneeRequete chargeUtile)
-    {
-        this.chargeUtile = chargeUtile;
     }
 }

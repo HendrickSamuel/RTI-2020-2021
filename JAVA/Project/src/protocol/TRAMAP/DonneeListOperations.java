@@ -5,7 +5,7 @@
 /*Date de la dernière mise à jour : 10/10/2020             */
 /***********************************************************/
 
-package protocolTRAMAP;
+package protocol.TRAMAP;
 
 import genericRequest.DonneeRequete;
 

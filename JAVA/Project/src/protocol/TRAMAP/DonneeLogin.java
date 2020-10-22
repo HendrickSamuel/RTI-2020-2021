@@ -5,16 +5,16 @@
 /*Date de la dernière mise à jour : 10/10/2020             */
 /***********************************************************/
 
-package protocolTRAMAP;
+package protocol.TRAMAP;
 
 import genericRequest.DonneeRequete;
 
 import java.io.Serializable;
 
-public class DonneeLogout implements DonneeRequete, Serializable
+public class DonneeLogin implements DonneeRequete, Serializable
 {
     /********************************/
-    /*          Variables           */
+    /*           Variables          */
     /********************************/
     private String username;
     private String password;
@@ -23,10 +23,10 @@ public class DonneeLogout implements DonneeRequete, Serializable
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DonneeLogout(String username, String password)
+    public DonneeLogin(String username, String password)
     {
-        setUsername(username);
-        setPassword(password);
+        this.username = username;
+        this.password = password;
     }
 
 
@@ -42,6 +42,7 @@ public class DonneeLogout implements DonneeRequete, Serializable
     {
         return password;
     }
+
 
     /********************************/
     /*            Setters           */
