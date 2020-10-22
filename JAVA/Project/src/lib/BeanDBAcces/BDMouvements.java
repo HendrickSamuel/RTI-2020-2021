@@ -164,7 +164,7 @@ public class BDMouvements extends MysqlConnector
         }
     }
 
-    public synchronized List<String> getListOperationsSociete(Date dateDebut, Date dateFin, String nomSociete)
+    public synchronized ResultSet getListOperationsSociete(Date dateDebut, Date dateFin, String nomSociete)
     {
         ArrayList<String> resultats = new ArrayList<>();
         try
@@ -178,14 +178,8 @@ public class BDMouvements extends MysqlConnector
             ps.setDate(2, java.sql.Date.valueOf(dateDebut.toString()));
             ps.setDate(3, java.sql.Date.valueOf(dateFin.toString()));
 
-            ResultSet rs = ps.executeQuery();
-            while (rs.next())
-            {
-                String row = rs.getInt("id") + "#" + rs.getString("c.idSsociete"); //todo ajouter le reste des champs
-                resultats.add(row);
-            }
+            return ps.executeQuery();
 
-            return resultats;
         }
         catch (SQLException throwables)
         {
@@ -194,9 +188,8 @@ public class BDMouvements extends MysqlConnector
         }
     }
 
-    public synchronized List<String> getListOperationsDestination(Date dateDebut, Date dateFin, String destination)
+    public synchronized ResultSet getListOperationsDestination(Date dateDebut, Date dateFin, String destination)
     {
-        ArrayList<String> resultats = new ArrayList<>();
         try
         {
             PreparedStatement ps = _con.prepareStatement("SELECT * FROM mouvements" +
@@ -206,14 +199,7 @@ public class BDMouvements extends MysqlConnector
             ps.setDate(2, java.sql.Date.valueOf(dateDebut.toString()));
             ps.setDate(3, java.sql.Date.valueOf(dateFin.toString()));
 
-            ResultSet rs = ps.executeQuery();
-            while (rs.next())
-            {
-                String row = rs.getInt("id") + "#" + rs.getString("c.idSsociete"); //todo ajouter le reste des champs
-                resultats.add(row);
-            }
-
-            return resultats;
+            return ps.executeQuery();
         }
         catch (SQLException throwables)
         {
