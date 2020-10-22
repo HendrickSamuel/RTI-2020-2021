@@ -18,14 +18,18 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
     /********************************/
     private String idContainer;
     private String immatriculation;
+    private String societe;
+    private String destination;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DonneeInputLoryWithoutReservation(String idContainer, String immatriculation)
+    public DonneeInputLoryWithoutReservation(String idContainer, String immatriculation, String societe, String destination)
     {
         setIdContainer(idContainer);
         setImmatriculation(immatriculation);
+        setDestination(destination);
+        setSociete(societe);
     }
 
 
@@ -37,8 +41,19 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
         return idContainer;
     }
 
-    public String getImmatriculation() {
+    public String getImmatriculation()
+    {
         return immatriculation;
+    }
+
+    public String getDestination()
+    {
+        return destination;
+    }
+
+    public String getSociete()
+    {
+        return societe;
     }
 
     /********************************/
@@ -49,7 +64,18 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
         this.idContainer = idContainer;
     }
 
-    public void setImmatriculation(String immatriculation) {
+    public void setImmatriculation(String immatriculation)
+    {
         this.immatriculation = immatriculation;
+    }
+
+    public void setDestination(String destination)
+    {
+        this.destination = destination;
+    }
+
+    public void setSociete(String societe)
+    {
+        this.societe = societe;
     }
 }

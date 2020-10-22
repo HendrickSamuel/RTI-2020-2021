@@ -25,8 +25,8 @@ public class DonneeLogout implements DonneeRequete, Serializable
     /********************************/
     public DonneeLogout(String username, String password)
     {
-        this.username = username;
-        this.password = password;
+        setUsername(username);
+        setPassword(password);
     }
 
 

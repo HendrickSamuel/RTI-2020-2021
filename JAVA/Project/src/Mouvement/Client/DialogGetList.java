@@ -29,15 +29,13 @@ public class DialogGetList extends JDialog
     private JTextField rechercheField;
     private JTable table;
     private JPanel datePane;
+    private JTextField dateDebutField;
+    private JTextField dateFinField;
 
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
     private Socket cliSock;
     private DonneeRequete dt;
-
-    UtilDateModel model;
-    JDatePanelImpl datePanel;
-    JDatePickerImpl datePicker;
 
 
     /********************************/
@@ -47,13 +45,6 @@ public class DialogGetList extends JDialog
     {
         initComponents();
         setModal(true);
-
-
-       /* model = new UtilDateModel();
-        datePanel = new JDatePanelImpl();
-        datePicker = new JDatePickerImpl();
-
-        datePane.add(datePicker);*/
     }
 
     public DialogGetList(java.awt.Frame parent, boolean modal, String nam, String pass)
@@ -115,13 +106,11 @@ public class DialogGetList extends JDialog
 
     private void onOK()
     {
-        // add your code here
-        dispose();
+
     }
 
     private void onCancel()
     {
-        // add your code here if necessary
         dispose();
     }
 

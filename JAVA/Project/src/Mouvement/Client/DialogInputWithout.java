@@ -24,12 +24,14 @@ public class DialogInputWithout extends JDialog
     /********************************/
     /*           Variables          */
     /********************************/
+    private JLabel labelRetour;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonRetour;
+    private JTextField societeField;
     private JTextField containerField;
+    private JTextField destinationField;
     private JTextField immatriculationField;
-    private JLabel labelRetour;
 
     private ObjectInputStream ois;
     private ObjectOutputStream oos;
@@ -71,7 +73,17 @@ public class DialogInputWithout extends JDialog
         return immatriculationField.getText();
     }
 
-    
+    public String getSociete()
+    {
+        return societeField.getText();
+    }
+
+    public String getDestination()
+    {
+        return destinationField.getText();
+    }
+
+
     /********************************/
     /*            Setters           */
     /********************************/
@@ -86,7 +98,7 @@ public class DialogInputWithout extends JDialog
     /********************************/
     private void onOK()
     {
-        dt = new DonneeInputLoryWithoutReservation(getContainer(),getImmatriculation());
+        dt = new DonneeInputLoryWithoutReservation(getContainer(),getImmatriculation(), getSociete(), getDestination());
         RequeteTRAMAP req = null;
         req = new RequeteTRAMAP(dt);
 

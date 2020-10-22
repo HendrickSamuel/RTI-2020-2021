@@ -42,7 +42,7 @@ public class Client
             {
                 case 1: dt = new DonneeLogin("Sam","superSecurePass123"); break;
                 case 2: dt = new DonneeInputLory("test","blabla"); break;
-                case 3: dt = new DonneeInputLoryWithoutReservation("Container", "immatriculation"); break;
+                case 3: dt = new DonneeInputLoryWithoutReservation("Container", "immatriculation", "societe", "destination"); break;
                 case 4: dt = new DonneeListOperations(new Date(), new Date(), "Societe", "Destination"); break;
                 case 5: dt = new DonneeLogout("SamOut","SamP"); break;
             }
