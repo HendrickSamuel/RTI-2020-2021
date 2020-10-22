@@ -181,7 +181,7 @@ public class TraitementTRAMAP implements Traitement
 
     private Reponse traiteListeDestination(DonneeListOperations chargeUtile)
     {
-        List<String> ret = _bd.getListOperationsDestiination(chargeUtile.getDateDebut(), chargeUtile.getDateFin(), chargeUtile.getNomDestination());
+        List<String> ret = _bd.getListOperationsDestination(chargeUtile.getDateDebut(), chargeUtile.getDateFin(), chargeUtile.getNomDestination());
         if(ret != null)
         {
             return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);

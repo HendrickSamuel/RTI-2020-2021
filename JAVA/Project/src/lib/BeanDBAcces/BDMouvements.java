@@ -138,7 +138,7 @@ public class BDMouvements extends MysqlConnector
         }
     }
 
-    public synchronized List<String> getListOperationsDestiination(Date dateDebut, Date dateFin, String destination)
+    public synchronized List<String> getListOperationsDestination(Date dateDebut, Date dateFin, String destination)
     {
         ArrayList<String> resultats = new ArrayList<>();
         try

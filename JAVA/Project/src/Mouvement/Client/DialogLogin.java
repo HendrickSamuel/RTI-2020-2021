@@ -27,11 +27,6 @@ public class DialogLogin extends javax.swing.JDialog
     private Client _client;
     private boolean _loginValide;
 
-    private ObjectInputStream ois;
-    private ObjectOutputStream oos;
-    private Socket cliSock;
-    private DonneeRequete dt;
-
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -62,7 +57,7 @@ public class DialogLogin extends javax.swing.JDialog
         this.setLocationRelativeTo(null);
         setLoginValide(false);
 
-        dt = null;
+        setClient(client);
     }
 
 
@@ -164,77 +159,23 @@ public class DialogLogin extends javax.swing.JDialog
     {
         setUtilisateur(loginField.getText());
         setPwd(passwordField.getText());
-        dt = new DonneeLogin(getUtilisateur(),getPwd());
-        RequeteTRAMAP req = null;
-        req = new RequeteTRAMAP(dt);
 
-        MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
-        String HOST = mp.getContent("IPSERV");
-        int PORT = Integer.parseInt(mp.getContent("PORT1"));
+        ReponseTRAMAP rep = getClient().sendLogin();
 
-        // Connexion au serveur
-        ois=null; oos=null; cliSock = null;
-        try
+        System.out.println(" *** Reponse reçue : " + rep.getCode());
+        if(rep.getMessage() != null)
         {
-            cliSock = new Socket(HOST, PORT);
-            System.out.println(cliSock.getInetAddress().toString());
+            System.out.println("Message reçu: " + rep.getMessage());
         }
-        catch (UnknownHostException e)
+        if(rep.getCode() == 200)
         {
-            System.err.println("Erreur ! Host non trouvé [" + e + "]");//TODO:quitter
+            labelError.setText("");
+            setLoginValide(true);
             dispose();
         }
-        catch (IOException e)
+        else
         {
-            System.err.println("Erreur ! Pas de connexion ? [" + e + "]");//TODO:quitter
-            dispose();
-        }
-
-        // Envoie de la requête
-        try
-        {
-            oos = new ObjectOutputStream(cliSock.getOutputStream());
-            oos.writeObject(req);
-            //pour vider le cache
-            oos.flush();
-        }
-        catch (IOException e)
-        {
-            System.err.println("Erreur réseau ? [" + e.getMessage() + "]");//TODO:quitter
-            dispose();
-        }
-        // Lecture de la réponse
-        ReponseTRAMAP rep = null;
-        try
-        {
-            ois = new ObjectInputStream(cliSock.getInputStream());
-            rep = (ReponseTRAMAP)ois.readObject();
-            System.out.println(" *** Reponse reçue : " + rep.getCode());
-            if(rep.getMessage() != null)
-            {
-                System.out.println("Message reçu: " + rep.getMessage());
-            }
-            if(rep.getCode() == 201)
-            {
-                labelError.setText("");
-                setLoginValide(true);
-                dispose();
-            }
-            else
-            {
-                labelError.setText("Login ou mot de passe incorrect !");
-            }
-
-        }
-        catch (ClassNotFoundException e)
-        {
-            System.out.println("--- erreur sur la classe = " + e.getMessage());
-            dispose();
-        }
-        catch (IOException e)
-        {
-            System.out.println("--- erreur IO = " + e.getMessage());
-            dispose();
+            labelError.setText(rep.getMessage() + " !");
         }
     }
 

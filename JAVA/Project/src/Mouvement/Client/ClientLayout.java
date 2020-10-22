@@ -121,7 +121,7 @@ public class ClientLayout extends JFrame
 
         if(isConnect())
         {
-            DialogInput input = new DialogInput(this, true);
+            DialogInput input = new DialogInput(this, true, getClient());
             input.setSize(450, 250);
             input.setVisible(true);
         }
@@ -139,7 +139,7 @@ public class ClientLayout extends JFrame
 
         if(isConnect())
         {
-            DialogInputWithout input = new DialogInputWithout(this, true);
+            DialogInputWithout input = new DialogInputWithout(this, true, getClient());
             input.setSize(450, 250);
             input.setVisible(true);
         }
@@ -157,7 +157,9 @@ public class ClientLayout extends JFrame
 
         if(isConnect())
         {
-
+            DialogGetList getList = new DialogGetList(this, true, getClient());
+            getList.setSize(500, 500);
+            getList.setVisible(true);
         }
         else
         {
@@ -200,7 +202,7 @@ public class ClientLayout extends JFrame
         else
         {
             DialogLogin login = new DialogLogin(this, true, getClient());
-            login.setSize(260, 190);
+            login.setSize(320, 210);
             login.setVisible(true);
 
             if(login.getLoginValide())

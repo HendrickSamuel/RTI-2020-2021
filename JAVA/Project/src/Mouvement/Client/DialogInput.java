@@ -24,17 +24,14 @@ public class DialogInput extends JDialog
     /********************************/
     /*           Variables          */
     /********************************/
+    private Client _client;
+
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonRetour;
     private JTextField containerField;
     private JTextField reservationField;
     private JLabel labelRetour;
-
-    private ObjectInputStream ois;
-    private ObjectOutputStream oos;
-    private Socket cliSock;
-    private DonneeRequete dt;
 
 
     /********************************/
@@ -47,20 +44,25 @@ public class DialogInput extends JDialog
         initComponents();
     }
 
-    public DialogInput(java.awt.Frame parent, boolean modal)
+    public DialogInput(java.awt.Frame parent, boolean modal, Client client)
     {
         super(parent, modal);
         initComponents();
 
         this.setLocationRelativeTo(null);
 
-        dt = null;
+        setClient(client);
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public Client getClient()
+    {
+        return _client;
+    }
+
     public String getContainer()
     {
         return containerField.getText();
@@ -77,6 +79,11 @@ public class DialogInput extends JDialog
     public void setRetour(String message)
     {
         labelRetour.setText(message);
+    }
+
+    public void setClient(Client tmpClient)
+    {
+        _client = tmpClient;
     }
 
     /********************************/
@@ -121,78 +128,32 @@ public class DialogInput extends JDialog
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
+
     private void onOK()
     {
-        dt = new DonneeInputLory(getReservation(), getContainer());
-        RequeteTRAMAP req = null;
-        req = new RequeteTRAMAP(dt);
+        ReponseTRAMAP rep = getClient().sendInputLorry(getReservation(), getContainer());
 
-        MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
-        String HOST = mp.getContent("IPSERV");
-        int PORT = Integer.parseInt(mp.getContent("PORT1"));
-
-        // Connexion au serveur
-        ois=null; oos=null; cliSock = null;
-        try
+        if(rep == null)
         {
-            cliSock = new Socket(HOST, PORT);
-            System.out.println(cliSock.getInetAddress().toString());
+            labelRetour.setText("Problème de connexion avec le serveur");
         }
-        catch (UnknownHostException e)
+        else
         {
-            System.err.println("Erreur ! Host non trouvé [" + e + "]");//TODO:quitter
-            dispose();
-        }
-        catch (IOException e)
-        {
-            System.err.println("Erreur ! Pas de connexion ? [" + e + "]");//TODO:quitter
-            dispose();
-        }
-
-        // Envoie de la requête
-        try
-        {
-            oos = new ObjectOutputStream(cliSock.getOutputStream());
-            oos.writeObject(req);
-            //pour vider le cache
-            oos.flush();
-        }
-        catch (IOException e)
-        {
-            System.err.println("Erreur réseau ? [" + e.getMessage() + "]");//TODO:quitter
-            dispose();
-        }
-        // Lecture de la réponse
-        ReponseTRAMAP rep = null;
-        try
-        {
-            ois = new ObjectInputStream(cliSock.getInputStream());
-            rep = (ReponseTRAMAP)ois.readObject();
             System.out.println(" *** Reponse reçue : " + rep.getCode());
             if(rep.getMessage() != null)
             {
                 System.out.println("Message reçu: " + rep.getMessage());
             }
-            if(rep.getCode() == 201)
+
+            if(rep.getCode() == 200)
             {
+                //todo: decoder le message
                 labelRetour.setText(rep.getMessage());
-                //dispose();
             }
             else
             {
                 labelRetour.setText(rep.getMessage());
             }
-
-        }
-        catch (ClassNotFoundException e)
-        {
-            System.out.println("--- erreur sur la classe = " + e.getMessage());
-            dispose();
-        }
-        catch (IOException e)
-        {
-            System.out.println("--- erreur IO = " + e.getMessage());
-            dispose();
         }
     }
 

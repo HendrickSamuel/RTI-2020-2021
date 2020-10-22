@@ -7,9 +7,7 @@ package Mouvement.Client;
 
 import genericRequest.DonneeRequete;
 import genericRequest.MyProperties;
-import protocolTRAMAP.DonneeLogin;
-import protocolTRAMAP.ReponseTRAMAP;
-import protocolTRAMAP.RequeteTRAMAP;
+import protocolTRAMAP.*;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -17,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 public class Client
 {
@@ -140,18 +139,133 @@ public class Client
         return null;
     }
 
+    private void closeSocket()
+    {
+        try
+        {
+            cliSock.close();
+        }
+        catch (IOException e)
+        {
+            System.out.println("--- erreur IO = " + e.getMessage());
+        }
+    }
 
     public ReponseTRAMAP sendLogin()
     {
-        dt = new DonneeLogin(getLogin(),getPwd());
         RequeteTRAMAP req = null;
+        ReponseTRAMAP rep = null;
+
+        dt = new DonneeLogin(getLogin(),getPwd());
         req = new RequeteTRAMAP(dt);
 
         connectServ();
 
         sendReq(req);
 
-        return readRep();
+        rep = readRep();
+
+        closeSocket();
+
+        return rep;
     }
 
+    public ReponseTRAMAP sendInputLorry(String numeroReservation, String idContainer)
+    {
+        RequeteTRAMAP req = null;
+        ReponseTRAMAP rep = null;
+
+        dt = new DonneeLogin(getLogin(),getPwd());
+        req = new RequeteTRAMAP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200)
+        {
+            dt = new DonneeInputLory(numeroReservation, idContainer);
+            req = new RequeteTRAMAP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponseTRAMAP sendInputLorryWithoutReservation(String idContainer, String immatriculation, String societe, String destination)
+    {
+        RequeteTRAMAP req = null;
+        ReponseTRAMAP rep = null;
+
+        dt = new DonneeLogin(getLogin(),getPwd());
+        req = new RequeteTRAMAP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200)
+        {
+            dt = new DonneeInputLoryWithoutReservation(idContainer, immatriculation, societe, destination);
+            req = new RequeteTRAMAP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponseTRAMAP sendGetList(Date dateDebut, Date dateFin, String nomSociete, String nomDestination)
+    {
+        RequeteTRAMAP req = null;
+        ReponseTRAMAP rep = null;
+
+        dt = new DonneeLogin(getLogin(),getPwd());
+        req = new RequeteTRAMAP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200)
+        {
+            dt = new DonneeListOperations(dateDebut, dateFin, nomSociete, nomDestination);
+            req = new RequeteTRAMAP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
 }
