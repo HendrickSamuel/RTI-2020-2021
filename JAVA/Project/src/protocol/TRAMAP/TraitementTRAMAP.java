@@ -69,6 +69,8 @@ public class TraitementTRAMAP implements Traitement
     @Override
     public Reponse traiteRequete(DonneeRequete Requete, Client client) throws ClassCastException
     {
+        System.out.println("HERE");
+        System.out.println(Requete);
         if(Requete instanceof DonneeLogin)
             return traiteLOGIN((DonneeLogin)Requete, client);
         else if(Requete instanceof DonneeInputLory)
@@ -78,7 +80,7 @@ public class TraitementTRAMAP implements Traitement
         else if(Requete instanceof DonneeListOperations)
             traiteListe( (DonneeListOperations)Requete, client);
         else if(Requete instanceof  DonneeLogout)
-            traiteLOGOUT( (DonneeLogout)Requete, client);
+            return traiteLOGOUT( (DonneeLogout)Requete, client);
         else
             return traite404();
 
@@ -196,8 +198,9 @@ public class TraitementTRAMAP implements Traitement
                 //todo: verifier si on attent + si les 2 vont ensemble ?
             }
         } catch (SQLException throwables) {
+            System.out.println("Erreur" + throwables.getSQLState() + " | " + throwables.getErrorCode());
             throwables.printStackTrace();
-            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Erreur dans la base de donnée");
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Erreur de la requete");
         }
     }
 

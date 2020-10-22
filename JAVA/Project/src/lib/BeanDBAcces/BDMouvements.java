@@ -101,7 +101,7 @@ public class BDMouvements extends MysqlConnector
             ps.setString(2,email);
             ps.setString(3,telephone);
             ps.setString(4,adresse);
-            ps.executeQuery();
+            ps.execute();
             return true;
         }
         catch (SQLException throwables)
@@ -124,7 +124,7 @@ public class BDMouvements extends MysqlConnector
             ps.setString(5, danger);
             ps.setFloat(6, poids);
 
-            ps.executeQuery();
+            ps.execute();
             return true;
         }
         catch (SQLException throwables)
@@ -139,7 +139,7 @@ public class BDMouvements extends MysqlConnector
     {
         try
         {
-            PreparedStatement ps = _con.prepareStatement("SELECT * FROM societes WHERE UPPER(idSociete) = UPPER(?) ");
+            PreparedStatement ps = _con.prepareStatement("SELECT * FROM societes WHERE UPPER(nom) = UPPER(?) ");
             ps.setString(1,idSociete);
             return ps.executeQuery();
         }

@@ -10,6 +10,7 @@ package MyGenericServer;
 import genericRequest.Reponse;
 import genericRequest.Requete;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -51,30 +52,18 @@ public class ThreadClientConnecte extends ThreadClient
     {
         System.out.println("Demarrage du Thread: " + index);
         boolean inCommunication = false;
+        ObjectInputStream ois=null;
+        ObjectOutputStream oos=null;
+        Requete req = null;
+
         while(!isInterrupted())
         {
-            ObjectInputStream ois=null;
-            ObjectOutputStream oos=null;
-            Requete req = null;
-
-            try
-            {
+            try {
                 tacheEnCours = _taches.getTache();
                 _client = new Client(); //nouveau client par connection
                 inCommunication = true;
-
-                try
-                {
-                    ois = new ObjectInputStream(tacheEnCours.getInputStream());
-                    oos = new ObjectOutputStream(tacheEnCours.getOutputStream());
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            catch (InterruptedException e)
-            {
+            } catch (InterruptedException e) {
+                e.printStackTrace();
                 inCommunication = false;
             }
 
@@ -82,9 +71,12 @@ public class ThreadClientConnecte extends ThreadClient
             {
                 try
                 {
+                    ois = new ObjectInputStream(tacheEnCours.getInputStream());
+                    oos = new ObjectOutputStream(tacheEnCours.getOutputStream());
+
                     req = (Requete)ois.readObject();
                     System.out.println("Requete lue par le serveur, instance de " +
-                            req.getClass().getName());
+                            req.getClass().getName() + " et " + req.getChargeUtile().getClass().getName());
 
                     Reponse rp = _traitement.traiteRequete(req.getChargeUtile(), _client);
                     oos.writeObject(rp);
@@ -94,8 +86,16 @@ public class ThreadClientConnecte extends ThreadClient
                 {
                     System.err.println("Erreur de def de classe [" + e.getMessage() + "]");
                 } catch (IOException e) {
-                    inCommunication = false;
-                    System.out.println("Le client s'est deconnecte");
+                    if(e instanceof EOFException)
+                    {
+                        inCommunication = false;
+                        System.out.println("Le client s'est deconnecte");
+                    }
+                    else
+                    {
+                        inCommunication = false;
+                        e.printStackTrace();
+                    }
                 }
             }
         }
