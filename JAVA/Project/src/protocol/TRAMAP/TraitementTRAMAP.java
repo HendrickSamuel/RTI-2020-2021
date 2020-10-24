@@ -57,13 +57,6 @@ public class TraitementTRAMAP implements Traitement
         this._cs = cs;
     }
 
-    @Override
-    public void setDataSource(DataSource ds) throws ClassCastException {
-        _bd = (BDMouvements)ds;
-        if(_bd == null)
-            throw new ClassCastException();
-    }
-
     /********************************/
     /*            Methodes          */
     /********************************/

@@ -18,5 +18,4 @@ public interface Traitement
     public Reponse traiteRequete(DonneeRequete Requete, Client client) throws ClassCastException;
     public void AfficheTraitement(String message);
     public void setConsole(ConsoleServeur cs);
-    public void setDataSource(DataSource ds) throws ClassCastException;
 }
