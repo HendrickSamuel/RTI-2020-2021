@@ -1,17 +1,13 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 13/10/2020
+//Date de la création : 24/10/2020
 
-package Mouvement.Serveur;
+package protocol.IOBREP;
 
-import MyGenericServer.ConsoleServeur;
+import genericRequest.DonneeRequete;
 
-import javax.swing.*;
-
-public class ConsoleSwing implements ConsoleServeur {
-
-    JTextArea jta;
+public class DonneeEndContainerIn implements DonneeRequete {
 
     /********************************/
     /*           Variables          */
@@ -20,9 +16,7 @@ public class ConsoleSwing implements ConsoleServeur {
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ConsoleSwing(JTextArea jta) {
-        this.jta = jta;
-    }
+
     /********************************/
     /*            Getters           */
     /********************************/
@@ -34,10 +28,5 @@ public class ConsoleSwing implements ConsoleServeur {
     /********************************/
     /*            Methodes          */
     /********************************/
-
-    @Override
-    public void Affiche(String message) {
-        jta.append(message+"\n");
-    }
 
 }

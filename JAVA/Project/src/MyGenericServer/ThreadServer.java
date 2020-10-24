@@ -11,6 +11,7 @@ import lib.BeanDBAcces.DataSource;
 
 import java.beans.Beans;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -45,11 +46,12 @@ public class ThreadServer extends Thread
         try
         {
             SSocket = new ServerSocket(_port);
-            this.AfficheServeur("Demarrage du serveur : "+SSocket.getLocalSocketAddress());
+            this.AfficheServeur("Demarrage du serveur : "+ InetAddress.getLocalHost().getHostAddress() + ":" + _port);
         }
         catch (IOException e)
         {
             e.printStackTrace();
+            //todo: arreter
         }
 
         Socket CSocket = null;
@@ -63,11 +65,7 @@ public class ThreadServer extends Thread
             }
             catch (IOException e)
             {
-                //e.printStackTrace();
-                //this.AfficheServeur("> test");
                 System.out.println(isInterrupted());
-
-                //break;
             }
         }
 
@@ -85,6 +83,5 @@ public class ThreadServer extends Thread
             System.err.println("-- Le serveur n'a pas de console dédiée pour ce message -- " + message);
         }
     }
-
 
 }

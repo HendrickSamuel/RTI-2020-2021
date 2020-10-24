@@ -3,21 +3,12 @@
 //Projet : R.T.I.
 //Date de la création : 13/10/2020
 
-package Mouvement.Client;
+package Serveurs.Mouvement.Client;
 
-import genericRequest.MyProperties;
-import genericRequest.DonneeRequete;
-import protocol.TRAMAP.DonneeLogin;
 import protocol.TRAMAP.ReponseTRAMAP;
-import protocol.TRAMAP.RequeteTRAMAP;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class DialogLogin extends javax.swing.JDialog
 {
@@ -44,7 +35,7 @@ public class DialogLogin extends javax.swing.JDialog
     {
         initComponents();
 
-        this.setTitle("Login Mouvement");
+        this.setTitle("Login Serveurs.Mouvement");
         this.setLocationRelativeTo(null);
         setLoginValide(false);
     }

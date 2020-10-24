@@ -1,21 +1,16 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 22/10/2020
+//Date de la création : 24/10/2020
 
-package Mouvement.Serveur;
+package Serveurs.Bateaux;
 
 import MyGenericServer.ConsoleServeur;
 import MyGenericServer.ServeurGenerique;
 import genericRequest.Traitement;
-import lib.BeanDBAcces.BDMouvements;
-import protocol.TRAMAP.TraitementTRAMAP;
+import protocol.IOBREP.TraitementIOBREP;
 
-import java.sql.SQLException;
-
-public class ServeurMouvement extends ServeurGenerique {
-
-    private BDMouvements _bdMouvements;
+public class ServeurBateaux extends ServeurGenerique {
 
     /********************************/
     /*           Variables          */
@@ -24,9 +19,8 @@ public class ServeurMouvement extends ServeurGenerique {
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ServeurMouvement(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, ConsoleServeur cs) {
+    public ServeurBateaux(int port, boolean connecte, int NbThreads, ConsoleServeur cs) {
         super(port, connecte, NbThreads, cs);
-        this._bdMouvements = _bdMouvements;
     }
 
     /********************************/
@@ -36,27 +30,14 @@ public class ServeurMouvement extends ServeurGenerique {
     /********************************/
     /*            Setters           */
     /********************************/
-    public boolean CreateDataBase(String user, String password, String database)
-    {
-        try {
-            _bdMouvements = new BDMouvements(user,password,database);
-            return true;
-        } catch (SQLException | ClassNotFoundException throwables) {
-            throwables.printStackTrace();
-            return false;
-        }
-    }
-
 
     /********************************/
     /*            Methodes          */
     /********************************/
+
     @Override
     public Traitement CreationTraitement() {
-        TraitementTRAMAP tt = new TraitementTRAMAP();
-        tt.setConsole(this._console);
-        tt.setDataSource(this._bdMouvements);
-        return tt;
+        return new TraitementIOBREP(null, null);
     }
 
 }

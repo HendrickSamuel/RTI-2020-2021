@@ -17,6 +17,7 @@ import lib.BeanDBAcces.DataSource;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TraitementTRAMAP implements Traitement
@@ -56,13 +57,6 @@ public class TraitementTRAMAP implements Traitement
         this._cs = cs;
     }
 
-    @Override
-    public void setDataSource(DataSource ds) throws ClassCastException {
-        _bd = (BDMouvements)ds;
-        if(_bd == null)
-            throw new ClassCastException();
-    }
-
     /********************************/
     /*            Methodes          */
     /********************************/
@@ -78,13 +72,11 @@ public class TraitementTRAMAP implements Traitement
         else if(Requete instanceof DonneeInputLoryWithoutReservation)
             return traiteINPUTLORYWITHOUTRESERVATION( (DonneeInputLoryWithoutReservation)Requete, client);
         else if(Requete instanceof DonneeListOperations)
-            traiteListe( (DonneeListOperations)Requete, client);
+            return traiteListe( (DonneeListOperations)Requete, client);
         else if(Requete instanceof  DonneeLogout)
             return traiteLOGOUT( (DonneeLogout)Requete, client);
         else
             return traite404();
-
-        return null;
     }
 
     @Override
@@ -205,17 +197,53 @@ public class TraitementTRAMAP implements Traitement
         }
     }
 
-    private void traiteListe(DonneeListOperations chargeUtile, Client client)
+    private Reponse traiteListe(DonneeListOperations chargeUtile, Client client)
     {
-        System.out.println("traiteListe");
+        try {
+            if(chargeUtile.getNomSociete() != null && chargeUtile.getNomDestination() == null)
+            {
+                    return traiteListeSociete(chargeUtile);
+            }
+            else
+            {
+                    return traiteListeDestination(chargeUtile);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec la base de données");
+        }
+
     }
 
-    private Reponse traiteListeSociete(DonneeListOperations chargeUtile)
-    {
-        List<String> ret = _bd.getListOperationsSociete(chargeUtile.getDateDebut(), chargeUtile.getDateFin(), chargeUtile.getNomSociete());
-        if(ret != null)
+    private Reponse traiteListeSociete(DonneeListOperations chargeUtile) throws SQLException {
+        ResultSet res = _bd.getListOperationsSociete(chargeUtile.getDateDebut(), chargeUtile.getDateFin(), chargeUtile.getNomSociete());
+        if(res != null)
         {
-            return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
+            ArrayList<Operation> liste = new ArrayList<Operation>();
+            while(res.next())
+            {
+                Operation op = new Operation();
+                op.set_id(res.getInt("id"));
+                op.set_container(res.getString("idContainer"));
+                op.set_transporteurEntrant(res.getString("transporteurEntrant"));
+                op.set_dateArrivee(res.getDate("dateArrivee"));
+                op.set_transporteurSortant(res.getString("transporteurSortant"));
+                op.set_poidsTotal(res.getFloat("poidsTotal"));
+                op.set_dateDepart(res.getDate("dateDepart"));
+                op.set_destination(res.getString("destination"));
+                liste.add(op);
+            }
+
+            if(liste.size() > 0)
+            {
+                chargeUtile.setOperations(liste);
+                return new ReponseTRAMAP(ReponseTRAMAP.OK, chargeUtile, null);
+            }
+            else
+            {
+                return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Aucune correspondance");
+            }
+
         }
         else
         {
@@ -223,12 +251,34 @@ public class TraitementTRAMAP implements Traitement
         }
     }
 
-    private Reponse traiteListeDestination(DonneeListOperations chargeUtile)
-    {
-        List<String> ret = _bd.getListOperationsDestination(chargeUtile.getDateDebut(), chargeUtile.getDateFin(), chargeUtile.getNomDestination());
-        if(ret != null)
+    private Reponse traiteListeDestination(DonneeListOperations chargeUtile) throws SQLException {
+        ResultSet res = _bd.getListOperationsDestination(chargeUtile.getDateDebut(), chargeUtile.getDateFin(), chargeUtile.getNomDestination());
+        if(res != null)
         {
-            return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
+            ArrayList<Operation> liste = new ArrayList<Operation>();
+            while(res.next())
+            {
+                Operation op = new Operation();
+                op.set_id(res.getInt("id"));
+                op.set_container(res.getString("idContainer"));
+                op.set_transporteurEntrant(res.getString("transporteurEntrant"));
+                op.set_dateArrivee(res.getDate("dateArrivee"));
+                op.set_transporteurSortant(res.getString("transporteurSortant"));
+                op.set_poidsTotal(res.getFloat("poidsTotal"));
+                op.set_dateDepart(res.getDate("dateDepart"));
+                op.set_destination(res.getString("destination"));
+                liste.add(op);
+            }
+
+            if(liste.size() > 0)
+            {
+                chargeUtile.setOperations(liste);
+                return new ReponseTRAMAP(ReponseTRAMAP.OK, chargeUtile, null);
+            }
+            else
+            {
+                return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Aucune correspondance");
+            }
         }
         else
         {

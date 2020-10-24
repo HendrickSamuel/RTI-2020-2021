@@ -3,49 +3,51 @@
 //Projet : R.T.I.
 //Date de la création : 13/10/2020
 
-package Mouvement.Client;
+package Serveurs.Mouvement.Client;
 
 import genericRequest.DonneeRequete;
-import genericRequest.MyProperties;
-import protocol.TRAMAP.DonneeInputLory;
 import protocol.TRAMAP.DonneeInputLoryWithoutReservation;
 import protocol.TRAMAP.ReponseTRAMAP;
-import protocol.TRAMAP.RequeteTRAMAP;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
-public class DialogInput extends JDialog
+public class DialogInputWithout extends JDialog
 {
     /********************************/
     /*           Variables          */
     /********************************/
     private Client _client;
 
+    private JLabel labelRetour;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonRetour;
+    private JTextField societeField;
     private JTextField containerField;
-    private JTextField reservationField;
-    private JLabel labelRetour;
+    private JTextField destinationField;
+    private JTextField immatriculationField;
+
+    private ObjectInputStream ois;
+    private ObjectOutputStream oos;
+    private Socket cliSock;
+    private DonneeRequete dt;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DialogInput()
+    public DialogInputWithout()
     {
         setModal(true);
 
         initComponents();
     }
 
-    public DialogInput(java.awt.Frame parent, boolean modal, Client client)
+    public DialogInputWithout(java.awt.Frame parent, boolean modal, Client client)
     {
         super(parent, modal);
         initComponents();
@@ -69,31 +71,80 @@ public class DialogInput extends JDialog
         return containerField.getText();
     }
 
-    public String getReservation()
+    public String getImmatriculation()
     {
-        return reservationField.getText();
+        return immatriculationField.getText();
     }
+
+    public String getSociete()
+    {
+        return societeField.getText();
+    }
+
+    public String getDestination()
+    {
+        return destinationField.getText();
+    }
+
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void setRetour(String message)
-    {
-        labelRetour.setText(message);
-    }
-
     public void setClient(Client tmpClient)
     {
         _client = tmpClient;
     }
 
+    public void setMessage(String retour)
+    {
+        labelRetour.setText(retour);
+    }
+
+
     /********************************/
     /*            Methodes          */
     /********************************/
+    private void onOK()
+    {
+        ReponseTRAMAP rep = getClient().sendInputLorryWithoutReservation(getContainer(),getImmatriculation(), getSociete(), getDestination());
+
+        if(rep == null)
+        {
+            labelRetour.setText("Problème de connexion avec le serveur");
+        }
+        else
+        {
+            System.out.println(" *** Reponse reçue : " + rep.getCode());
+            if(rep.getMessage() != null)
+            {
+                System.out.println("Message reçu: " + rep.getMessage());
+            }
+            if(rep.getCode() == 200)
+            {
+                DonneeInputLoryWithoutReservation donnee =(DonneeInputLoryWithoutReservation) rep.getChargeUtile();
+                labelRetour.setText("Vous pouvez mettre le container en place [" + donnee.getX() +"] [" + donnee.getY() + "]");
+                buttonOK.setEnabled(false);
+                societeField.setEnabled(false);
+                containerField.setEnabled(false);
+                destinationField.setEnabled(false);
+                immatriculationField.setEnabled(false);
+            }
+            else
+            {
+                labelRetour.setText(rep.getMessage());
+            }
+
+        }
+    }
+
+    private void onCancel()
+    {
+        dispose();
+    }
+
     private void initComponents()
     {
         setContentPane(contentPane);
-        setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener()
@@ -130,49 +181,12 @@ public class DialogInput extends JDialog
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onOK()
-    {
-        ReponseTRAMAP rep = getClient().sendInputLorry(getReservation(), getContainer());
-
-        if(rep == null)
-        {
-            labelRetour.setText("Problème de connexion avec le serveur");
-        }
-        else
-        {
-            System.out.println(" *** Reponse reçue : " + rep.getCode());
-            if(rep.getMessage() != null)
-            {
-                System.out.println("Message reçu: " + rep.getMessage());
-            }
-
-            if(rep.getCode() == 200)
-            {
-                DonneeInputLory donnee =(DonneeInputLory) rep.getChargeUtile();
-                labelRetour.setText("Vous pouvez mettre le container en place [" + donnee.getX() +"] [" + donnee.getY() + "]");
-                buttonOK.setEnabled(false);
-                reservationField.setEnabled(false);
-                containerField.setEnabled(false);
-            }
-            else
-            {
-                labelRetour.setText(rep.getMessage());
-            }
-        }
-    }
-
-    private void onCancel()
-    {
-        dispose();
-    }
-
-
     /********************************/
     /*             Main             */
     /********************************/
     public static void main(String[] args)
     {
-        DialogInput dialog = new DialogInput();
+        DialogInputWithout dialog = new DialogInputWithout();
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);

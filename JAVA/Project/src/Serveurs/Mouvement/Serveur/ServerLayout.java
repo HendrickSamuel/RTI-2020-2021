@@ -3,13 +3,11 @@
 //Projet : R.T.I.                                 
 //Date de la création : 13/10/2020
 
-package Mouvement.Serveur;
+package Serveurs.Mouvement.Serveur;
 
-import MyGenericServer.ListeTaches;
 import MyGenericServer.ThreadServer;
 import genericRequest.MyProperties;
 import lib.BeanDBAcces.BDMouvements;
-import lib.BeanDBAcces.DataSource;
 
 import javax.swing.*;
 import java.sql.SQLException;
@@ -47,7 +45,7 @@ public class ServerLayout extends JFrame {
 
     public ServerLayout()
     {
-        super("Serveur Mouvement");
+        super("Serveur Serveurs.Mouvement");
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //this.setExtendedState(JFrame.MAXIMIZED_VERT);

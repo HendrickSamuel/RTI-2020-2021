@@ -85,4 +85,7 @@ public class DonneeListOperations implements DonneeRequete, Serializable
         this.nomDestination = nomDestination;
     }
 
+    public void setOperations(List<Operation> operations) {
+        this.operations = operations;
+    }
 }

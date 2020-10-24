@@ -1,18 +1,7 @@
-package Mouvement.Client;
-
-import genericRequest.DonneeRequete;
-import genericRequest.MyProperties;
-import protocol.TRAMAP.DonneeLogout;
-import protocol.TRAMAP.ReponseTRAMAP;
-import protocol.TRAMAP.RequeteTRAMAP;
+package Serveurs.Mouvement.Client;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class DialogLogout extends JDialog
 {

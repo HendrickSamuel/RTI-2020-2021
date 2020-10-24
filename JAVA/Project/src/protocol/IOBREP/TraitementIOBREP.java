@@ -10,6 +10,8 @@ import MyGenericServer.ConsoleServeur;
 import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
+import lib.BeanDBAcces.BDCompta;
+import lib.BeanDBAcces.BDMouvements;
 import lib.BeanDBAcces.DataSource;
 
 public class TraitementIOBREP implements Traitement {
@@ -18,9 +20,16 @@ public class TraitementIOBREP implements Traitement {
     /*           Variables          */
     /********************************/
 
+    private BDMouvements _bdMouvement;
+    private BDCompta _bdCompta;
+
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public TraitementIOBREP(BDMouvements _bdMouvement, BDCompta _bdCompta) {
+        this._bdMouvement = _bdMouvement;
+        this._bdCompta = _bdCompta;
+    }
 
     /********************************/
     /*            Getters           */
@@ -35,9 +44,12 @@ public class TraitementIOBREP implements Traitement {
 
     }
 
-    @Override
-    public void setDataSource(DataSource ds) throws ClassCastException {
+    public void set_bdMouvement(BDMouvements _bdMouvement) {
+        this._bdMouvement = _bdMouvement;
+    }
 
+    public void set_bdCompta(BDCompta _bdCompta) {
+        this._bdCompta = _bdCompta;
     }
 
     /********************************/

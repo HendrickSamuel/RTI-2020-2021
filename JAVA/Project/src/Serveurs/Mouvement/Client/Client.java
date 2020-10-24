@@ -3,7 +3,7 @@
 //Projet : R.T.I.                                 
 //Date de la création : 13/10/2020
 
-package Mouvement.Client;
+package Serveurs.Mouvement.Client;
 
 import genericRequest.DonneeRequete;
 import genericRequest.MyProperties;
