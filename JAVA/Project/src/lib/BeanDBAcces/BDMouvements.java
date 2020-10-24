@@ -22,11 +22,6 @@ public class BDMouvements extends MysqlConnector
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    /**
-     * @param username
-     * @param password
-     * @param database
-     ******************************/
     public BDMouvements(String username, String password, String database) throws SQLException, ClassNotFoundException
     {
         super(username, password, database);

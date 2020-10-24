@@ -217,7 +217,7 @@ public class ClientLayout extends JFrame
     private void showError(String message)
     {
         DialogErreur erreur = new DialogErreur(this, true, message);
-        erreur.setSize(260, 190);
+        erreur.setSize(350, 210);
         erreur.setVisible(true);
     }
 

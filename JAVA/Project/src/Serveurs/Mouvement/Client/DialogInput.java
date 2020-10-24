@@ -141,6 +141,9 @@ public class DialogInput extends JDialog
             {
                 DonneeInputLory donnee =(DonneeInputLory) rep.getChargeUtile();
                 labelRetour.setText("Vous pouvez mettre le container en place [" + donnee.getX() +"] [" + donnee.getY() + "]");
+                buttonOK.setEnabled(false);
+                reservationField.setEnabled(false);
+                containerField.setEnabled(false);
             }
             else
             {
