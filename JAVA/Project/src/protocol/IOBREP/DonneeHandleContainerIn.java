@@ -7,7 +7,9 @@ package protocol.IOBREP;
 
 import genericRequest.DonneeRequete;
 
-public class DonneeHandleContainerIn implements DonneeRequete {
+import java.io.Serializable;
+
+public class DonneeHandleContainerIn implements DonneeRequete, Serializable {
 
     /********************************/
     /*           Variables          */

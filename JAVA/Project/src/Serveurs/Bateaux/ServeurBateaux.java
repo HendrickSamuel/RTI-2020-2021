@@ -8,6 +8,7 @@ package Serveurs.Bateaux;
 import MyGenericServer.ConsoleServeur;
 import MyGenericServer.ServeurGenerique;
 import genericRequest.Traitement;
+import lib.BeanDBAcces.BDMouvements;
 import protocol.IOBREP.TraitementIOBREP;
 
 public class ServeurBateaux extends ServeurGenerique {
@@ -15,6 +16,7 @@ public class ServeurBateaux extends ServeurGenerique {
     /********************************/
     /*           Variables          */
     /********************************/
+    private BDMouvements _bdMouvement;
 
     /********************************/
     /*         Constructeurs        */
@@ -30,14 +32,17 @@ public class ServeurBateaux extends ServeurGenerique {
     /********************************/
     /*            Setters           */
     /********************************/
-
+    public void set_bdMouvement(BDMouvements _bdMouvement) {
+        this._bdMouvement = _bdMouvement;
+    }
     /********************************/
     /*            Methodes          */
     /********************************/
 
     @Override
     public Traitement CreationTraitement() {
-        return new TraitementIOBREP(null, null);
+
+        return new TraitementIOBREP(_bdMouvement, null);
     }
 
 }

@@ -7,20 +7,34 @@ package protocol.IOBREP;
 
 import genericRequest.DonneeRequete;
 
-public class DonneeLogin implements DonneeRequete {
+import java.io.Serializable;
+
+public class DonneeLogin implements DonneeRequete, Serializable {
 
     /********************************/
     /*           Variables          */
     /********************************/
+    private String username;
+    private String password;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public DonneeLogin(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public String getUsername() {
+        return username;
+    }
 
+    public String getPassword() {
+        return password;
+    }
     /********************************/
     /*            Setters           */
     /********************************/

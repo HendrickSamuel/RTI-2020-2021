@@ -8,11 +8,17 @@ package protocol.IOBREP;
 import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 
-public class ReponseIOBREP implements Reponse {
+import java.io.Serializable;
+
+public class ReponseIOBREP implements Reponse, Serializable {
 
     /********************************/
     /*           Variables          */
     /********************************/
+
+    public static int OK = 200;
+    public static int NOK = 400;
+    public static int REQUEST_NOT_FOUND = 404;
 
     private int _code;
     private DonneeRequete _chargeUtile;

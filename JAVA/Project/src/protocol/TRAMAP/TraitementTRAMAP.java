@@ -63,7 +63,6 @@ public class TraitementTRAMAP implements Traitement
     @Override
     public Reponse traiteRequete(DonneeRequete Requete, Client client) throws ClassCastException
     {
-        System.out.println("HERE");
         System.out.println(Requete);
         if(Requete instanceof DonneeLogin)
             return traiteLOGIN((DonneeLogin)Requete, client);
@@ -286,12 +285,6 @@ public class TraitementTRAMAP implements Traitement
         }
     }
 
-    private Reponse traite404()
-    {
-        System.out.println("traite404 Request not found");
-        return new ReponseTRAMAP(ReponseTRAMAP.REQUEST_NOT_FOUND, null, "request could not be exeuted due to unsopported version.");
-    }
-
     private Reponse traiteLOGOUT(DonneeLogout chargeUtile, Client client)
     {
         String username = chargeUtile.getUsername();
@@ -324,5 +317,11 @@ public class TraitementTRAMAP implements Traitement
             throwables.printStackTrace();
         }
         return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "ERREUR lors du traitement de la requete");
+    }
+
+    private Reponse traite404()
+    {
+        System.out.println("traite404 Request not found");
+        return new ReponseTRAMAP(ReponseTRAMAP.REQUEST_NOT_FOUND, null, "request could not be exeuted due to unsopported version.");
     }
 }

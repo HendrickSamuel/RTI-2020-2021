@@ -7,14 +7,10 @@
 
 package MyGenericServer;
 
-import lib.BeanDBAcces.DataSource;
-
-import java.beans.Beans;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
 
 public class ThreadServer extends Thread
 {
@@ -68,7 +64,6 @@ public class ThreadServer extends Thread
                 System.out.println(isInterrupted());
             }
         }
-
         this.AfficheServeur("Le serveur se coupe");
     }
 

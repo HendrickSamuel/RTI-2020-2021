@@ -60,6 +60,42 @@ public class BDMouvements extends MysqlConnector
         }
     }
 
+    public synchronized ResultSet getAllFrom(String table)
+    {
+        try
+        {
+            PreparedStatement ps = _con.prepareStatement("SELECT * FROM ? ;");
+            ps.setString(1, table);
+            return ps.executeQuery();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
+    public synchronized ResultSet getContainers(String moyen, String destination, boolean tri)
+    {
+        try
+        {
+            PreparedStatement ps = _con.prepareStatement("SELECT * FROM parc WHERE upper(moyenTransport) = upper(?) AND upper(destination) = upper(?) ORDER BY ?;");
+            ps.setString(1, moyen);
+            ps.setString(2, destination);
+            if(tri)
+                ps.setString(3, "RAND()");
+            else
+                ps.setString(3, "dateArrivee");
+
+            return ps.executeQuery();
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+            return null;
+        }
+    }
+
     public synchronized ResultSet getReservation(String numReservation, String idContainer)
     {
         try
