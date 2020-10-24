@@ -3,7 +3,7 @@
 //Projet : R.T.I.                                 
 //Date de la création : 13/10/2020
 
-package Mouvement.Client;
+package Serveurs.Mouvement.Client;
 
 
 import javax.swing.*;
@@ -28,7 +28,7 @@ public class ClientLayout extends JFrame
     /********************************/
     public ClientLayout()
     {
-        super("Client Mouvement");
+        super("Client Serveurs.Mouvement");
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(this.mainPanel);

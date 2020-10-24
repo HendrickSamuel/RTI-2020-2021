@@ -3,7 +3,7 @@
 //Projet : R.T.I.                                 
 //Date de la création : 13/10/2020
 
-package Mouvement.Serveur;
+package Serveurs.Mouvement.Serveur;
 
 import MyGenericServer.ConsoleServeur;
 

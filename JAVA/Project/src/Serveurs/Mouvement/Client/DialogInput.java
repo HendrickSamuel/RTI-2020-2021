@@ -3,57 +3,40 @@
 //Projet : R.T.I.
 //Date de la création : 13/10/2020
 
-package Mouvement.Client;
+package Serveurs.Mouvement.Client;
 
-import genericRequest.DonneeRequete;
+import protocol.TRAMAP.DonneeInputLory;
 import protocol.TRAMAP.ReponseTRAMAP;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-public class DialogGetList extends JDialog
+public class DialogInput extends JDialog
 {
     /********************************/
     /*           Variables          */
     /********************************/
     private Client _client;
-    private String _dateDebut;
-    private String _dateFin;
 
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonRetour;
-    private JRadioButton rechercheParSociétéRadioButton;
-    private JRadioButton rechercheParDestinationRadioButton;
-    private JTextField rechercheField;
-    private JTable table;
-    private JPanel datePane;
-    private JTextField dateDebutField;
-    private JTextField dateFinField;
+    private JTextField containerField;
+    private JTextField reservationField;
     private JLabel labelRetour;
-
-    private ObjectInputStream ois;
-    private ObjectOutputStream oos;
-    private Socket cliSock;
-    private DonneeRequete dt;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DialogGetList()
+    public DialogInput()
     {
-        initComponents();
         setModal(true);
+
+        initComponents();
     }
 
-    public DialogGetList(java.awt.Frame parent, boolean modal, Client client)
+    public DialogInput(java.awt.Frame parent, boolean modal, Client client)
     {
         super(parent, modal);
         initComponents();
@@ -72,26 +55,24 @@ public class DialogGetList extends JDialog
         return _client;
     }
 
-    public String getRecherche()
+    public String getContainer()
     {
-        return rechercheField.getText();
+        return containerField.getText();
     }
 
-    public String getDateDebut()
+    public String getReservation()
     {
-        _dateDebut = dateDebutField.getText();
-        return _dateDebut;
-    }
-
-    public String getDateFin()
-    {
-        _dateFin = dateFinField.getText();
-        return _dateFin;
+        return reservationField.getText();
     }
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setRetour(String message)
+    {
+        labelRetour.setText(message);
+    }
+
     public void setClient(Client tmpClient)
     {
         _client = tmpClient;
@@ -103,16 +84,21 @@ public class DialogGetList extends JDialog
     private void initComponents()
     {
         setContentPane(contentPane);
+        setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonOK.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
                 onOK();
             }
         });
 
-        buttonRetour.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonRetour.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
                 onCancel();
             }
         });
@@ -126,8 +112,10 @@ public class DialogGetList extends JDialog
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        contentPane.registerKeyboardAction(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
@@ -135,30 +123,7 @@ public class DialogGetList extends JDialog
 
     private void onOK()
     {
-        ReponseTRAMAP rep = null;
-
-        Date dateDebut = null;
-        Date dateFin = null;
-
-        try
-        {
-            dateDebut = new SimpleDateFormat("dd/MM/yyyy").parse(getDateDebut());
-            dateFin = new SimpleDateFormat("dd/MM/yyyy").parse(getDateFin());
-        }
-        catch (ParseException e)
-        {
-            e.printStackTrace();
-        }
-
-
-        if(rechercheParSociétéRadioButton.isSelected())
-        {
-            rep = getClient().sendGetList(dateDebut, dateFin, getRecherche(), null);
-        }
-        else
-        {
-            rep = getClient().sendGetList(dateDebut, dateFin, null, getRecherche());
-        }
+        ReponseTRAMAP rep = getClient().sendInputLorry(getReservation(), getContainer());
 
         if(rep == null)
         {
@@ -171,16 +136,16 @@ public class DialogGetList extends JDialog
             {
                 System.out.println("Message reçu: " + rep.getMessage());
             }
+
             if(rep.getCode() == 200)
             {
-                //todo: decoder le message
-                labelRetour.setText(rep.getMessage());
+                DonneeInputLory donnee =(DonneeInputLory) rep.getChargeUtile();
+                labelRetour.setText("Vous pouvez mettre le container en place [" + donnee.getX() +"] [" + donnee.getY() + "]");
             }
             else
             {
                 labelRetour.setText(rep.getMessage());
             }
-
         }
     }
 
@@ -195,7 +160,7 @@ public class DialogGetList extends JDialog
     /********************************/
     public static void main(String[] args)
     {
-        DialogGetList dialog = new DialogGetList();
+        DialogInput dialog = new DialogInput();
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);

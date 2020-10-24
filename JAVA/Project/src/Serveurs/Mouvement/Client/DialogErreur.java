@@ -3,7 +3,7 @@
 //Projet : R.T.I.
 //Date de la création : 13/10/2020
 
-package Mouvement.Client;
+package Serveurs.Mouvement.Client;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -34,7 +34,7 @@ public class DialogErreur extends JDialog
         super(parent, modal);
         initComponents();
 
-        this.setTitle("Erreur Mouvement");
+        this.setTitle("Erreur Serveurs.Mouvement");
         this.setLocationRelativeTo(null);
 
         setMessage(message);

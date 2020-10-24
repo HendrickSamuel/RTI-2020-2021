@@ -1,90 +1,60 @@
-//Auteurs : HENDRICK Samuel et DELAVAL Kevin
-//Groupe : 2302
-//Projet : R.T.I.
-//Date de la création : 13/10/2020
-
-package Mouvement.Client;
-
-import genericRequest.DonneeRequete;
-import genericRequest.MyProperties;
-import protocol.TRAMAP.DonneeInputLory;
-import protocol.TRAMAP.DonneeInputLoryWithoutReservation;
-import protocol.TRAMAP.ReponseTRAMAP;
-import protocol.TRAMAP.RequeteTRAMAP;
+package Serveurs.Mouvement.Client;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
-public class DialogInput extends JDialog
+public class DialogLogout extends JDialog
 {
     /********************************/
     /*           Variables          */
     /********************************/
-    private Client _client;
-
     private JPanel contentPane;
     private JButton buttonOK;
-    private JButton buttonRetour;
-    private JTextField containerField;
-    private JTextField reservationField;
-    private JLabel labelRetour;
+    private JButton buttonCancel;
+    private JLabel labelText;
+
+    private Client _client;
+    private boolean _logout;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DialogInput()
+    public DialogLogout()
     {
         setModal(true);
 
         initComponents();
     }
 
-    public DialogInput(java.awt.Frame parent, boolean modal, Client client)
+    public DialogLogout(java.awt.Frame parent, boolean modal, Client client)
     {
         super(parent, modal);
         initComponents();
 
         this.setLocationRelativeTo(null);
 
-        setClient(client);
+        _client = client;
+        setLogout(false);
+
+        labelText.setText("Bonjour "+ _client.getLogin() + " etes vous sur de vouloir vous deconnecter ?");
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
-    public Client getClient()
+    public boolean isLogout()
     {
-        return _client;
-    }
-
-    public String getContainer()
-    {
-        return containerField.getText();
-    }
-
-    public String getReservation()
-    {
-        return reservationField.getText();
+        return _logout;
     }
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void setRetour(String message)
+    public void setLogout(boolean log)
     {
-        labelRetour.setText(message);
-    }
-
-    public void setClient(Client tmpClient)
-    {
-        _client = tmpClient;
+        _logout = log;
     }
 
     /********************************/
@@ -93,7 +63,6 @@ public class DialogInput extends JDialog
     private void initComponents()
     {
         setContentPane(contentPane);
-        setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener()
@@ -104,7 +73,7 @@ public class DialogInput extends JDialog
             }
         });
 
-        buttonRetour.addActionListener(new ActionListener()
+        buttonCancel.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -132,30 +101,8 @@ public class DialogInput extends JDialog
 
     private void onOK()
     {
-        ReponseTRAMAP rep = getClient().sendInputLorry(getReservation(), getContainer());
-
-        if(rep == null)
-        {
-            labelRetour.setText("Problème de connexion avec le serveur");
-        }
-        else
-        {
-            System.out.println(" *** Reponse reçue : " + rep.getCode());
-            if(rep.getMessage() != null)
-            {
-                System.out.println("Message reçu: " + rep.getMessage());
-            }
-
-            if(rep.getCode() == 200)
-            {
-                DonneeInputLory donnee =(DonneeInputLory) rep.getChargeUtile();
-                labelRetour.setText("Vous pouvez mettre le container en place [" + donnee.getX() +"] [" + donnee.getY() + "]");
-            }
-            else
-            {
-                labelRetour.setText(rep.getMessage());
-            }
-        }
+        setLogout(true);
+        dispose();
     }
 
     private void onCancel()
@@ -169,7 +116,7 @@ public class DialogInput extends JDialog
     /********************************/
     public static void main(String[] args)
     {
-        DialogInput dialog = new DialogInput();
+        DialogLogout dialog = new DialogLogout();
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);
