@@ -235,6 +235,7 @@ public class TraitementTRAMAP implements Traitement
                 return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
 
         } catch (SQLException throwables) {
+            throwables.printStackTrace();
             return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec la base de données");
         }
 
@@ -256,7 +257,7 @@ public class TraitementTRAMAP implements Traitement
     private ResultSet traiteListeSociete(DonneeListOperations chargeUtile) throws SQLException {
         PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements" +
                 "INNER JOIN containers c on mouvements.idContainer = c.idContainer" +
-                "INNER JOIN societes s on c.idSociete = s.idSociete" +
+                "INNER JOIN societes s on c.idSociete = s.nom" +
                 "WHERE UPPER(s.nom) = UPPER(?)" +
                 "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
         ps.setString(1, chargeUtile.getNomSociete());
