@@ -6,6 +6,8 @@
 package Tests;
 
 import genericRequest.DonneeRequete;
+import protocol.IOBREP.Container;
+import protocol.IOBREP.DonneeGetContainers;
 import protocol.IOBREP.ReponseIOBREP;
 import protocol.IOBREP.RequeteIOBREP;
 import protocol.TRAMAP.*;
@@ -23,7 +25,6 @@ public class ClientBateau {
         ObjectOutputStream oos;
         Socket cliSock;
 
-
         DonneeRequete dt = new protocol.IOBREP.DonneeGetContainers("Paris","RAND");
 
 
@@ -34,7 +35,7 @@ public class ClientBateau {
         ois=null; oos=null; cliSock = null;
         try
         {
-            cliSock = new Socket("192.168.23.1", 5000);
+            cliSock = new Socket("169.254.60.97", 5000);
             System.out.println(cliSock.getInetAddress().toString());
         }
         catch (UnknownHostException e)
@@ -62,11 +63,11 @@ public class ClientBateau {
             ois = new ObjectInputStream(cliSock.getInputStream());
             rep = (ReponseIOBREP)ois.readObject();
             System.out.println(" *** Reponse reçue : " + rep.getCode());
-            /*if(rep.getMessage() != null)
+            DonneeGetContainers charge = (DonneeGetContainers)rep.get_chargeUtile();
+            for(Container cont : charge.get_containers())
             {
-                System.out.println("Message reçu: " + rep.getMessage());
+                System.out.println(cont.getX() + " - " + cont.getY() + " : " + cont.getId());
             }
-             */
         }
         catch (ClassNotFoundException e)
         {

@@ -8,10 +8,6 @@ package lib.BeanDBAcces;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class BDMouvements extends MysqlConnector
 {
@@ -38,74 +34,6 @@ public class BDMouvements extends MysqlConnector
     /********************************/
     /*            Methodes          */
     /********************************/
-
-    public synchronized ResultSet getLogin(String username, String password)
-    {
-        try
-        {
-            PreparedStatement ps = _con.prepareStatement("SELECT userpassword FROM logins WHERE UPPER(username) = UPPER(?) ;");
-            ps.setString(1, username);
-            return ps.executeQuery();
-
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-            return null;
-        }
-    }
-
-    public synchronized ResultSet getAllFrom(String table)
-    {
-        try
-        {
-            PreparedStatement ps = _con.prepareStatement("SELECT * FROM ? ;");
-            ps.setString(1, table);
-            return ps.executeQuery();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-            return null;
-        }
-    }
-
-    public synchronized ResultSet getContainers(String moyen, String destination, boolean tri)
-    {
-        try
-        {
-            PreparedStatement ps = _con.prepareStatement("SELECT * FROM parc WHERE upper(moyenTransport) = upper(?) AND upper(destination) = upper(?) ORDER BY ?;");
-            ps.setString(1, moyen);
-            ps.setString(2, destination);
-            if(tri)
-                ps.setString(3, "RAND()");
-            else
-                ps.setString(3, "dateArrivee");
-
-            return ps.executeQuery();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-            return null;
-        }
-    }
-
-    public synchronized ResultSet getReservation(String numReservation, String idContainer)
-    {
-        try
-        {
-            PreparedStatement ps = _con.prepareStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
-            ps.setString(1, idContainer);
-            ps.setString(2, numReservation);
-            return ps.executeQuery();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-            return null;
-        }
-    }
 
     public synchronized ResultSet getContainerById(String idContainer)
     {
@@ -181,61 +109,4 @@ public class BDMouvements extends MysqlConnector
         }
     }
 
-    public synchronized ResultSet getInputWithoutRes(String immatriculation, String idContainer)
-    {
-        try
-        {
-            Statement ps = _con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            return ps.executeQuery("SELECT * FROM parc WHERE etat = 0");
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-            return null;
-        }
-    }
-
-    public synchronized ResultSet getListOperationsSociete(Date dateDebut, Date dateFin, String nomSociete)
-    {
-        ArrayList<String> resultats = new ArrayList<>();
-        try
-        {
-            PreparedStatement ps = _con.prepareStatement("SELECT * FROM mouvements" +
-                    "INNER JOIN containers c on mouvements.idContainer = c.idContainer" +
-                    "INNER JOIN societes s on c.idSociete = s.idSociete" +
-                    "WHERE UPPER(s.nom) = UPPER(?)" +
-                    "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
-            ps.setString(1, nomSociete);
-            ps.setDate(2, java.sql.Date.valueOf(dateDebut.toString()));
-            ps.setDate(3, java.sql.Date.valueOf(dateFin.toString()));
-
-            return ps.executeQuery();
-
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-            return null;
-        }
-    }
-
-    public synchronized ResultSet getListOperationsDestination(Date dateDebut, Date dateFin, String destination)
-    {
-        try
-        {
-            PreparedStatement ps = _con.prepareStatement("SELECT * FROM mouvements" +
-                    "WHERE UPPER(destination) = UPPER(?)" +
-                    "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
-            ps.setString(1, destination);
-            ps.setDate(2, java.sql.Date.valueOf(dateDebut.toString()));
-            ps.setDate(3, java.sql.Date.valueOf(dateFin.toString()));
-
-            return ps.executeQuery();
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-            return null;
-        }
-    }
 }

@@ -15,6 +15,7 @@ import MyGenericServer.ConsoleServeur;
 import lib.BeanDBAcces.BDMouvements;
 import lib.BeanDBAcces.DataSource;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -72,8 +73,6 @@ public class TraitementTRAMAP implements Traitement
             return traiteINPUTLORYWITHOUTRESERVATION( (DonneeInputLoryWithoutReservation)Requete, client);
         else if(Requete instanceof DonneeListOperations)
             return traiteListe( (DonneeListOperations)Requete, client);
-        else if(Requete instanceof  DonneeLogout)
-            return traiteLOGOUT( (DonneeLogout)Requete, client);
         else
             return traite404();
     }
@@ -99,9 +98,10 @@ public class TraitementTRAMAP implements Traitement
             return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Le client est deja connecte dans le serveur");
         }
 
-        ResultSet rs = _bd.getLogin(username, password);
-        try
-        {
+        try {
+            PreparedStatement ps = _bd.getPreparedStatement("SELECT userpassword FROM logins WHERE UPPER(username) = UPPER(?) ;");
+            ps.setString(1, username);
+            ResultSet rs = _bd.ExecuteQuery(ps);
             if(rs!=null && rs.next())
             {
                 String bddpass = rs.getString("userpassword");
@@ -115,19 +115,27 @@ public class TraitementTRAMAP implements Traitement
                     return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Mot de passe ou nom d'utilisateur erroné");
                 }
             }
-        }
-        catch (SQLException throwables)
-        {
+
+        } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "ERREUR lors du traitement de la requete");
+
     }
 
     private Reponse traiteINPUTLORY(DonneeInputLory chargeUtile, Client client)
     {
         System.out.println("traiteINPUTLORY");
-        ResultSet ret = _bd.getReservation(chargeUtile.getNumeroReservation(), chargeUtile.getIdContainer());
+        if(!client.is_loggedIn())
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Le client n'est pas connecte dans le serveur");
+        }
+
         try {
+            PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
+            ps.setString(1, chargeUtile.getNumeroReservation());
+            ps.setString(2, chargeUtile.getIdContainer());
+            ResultSet ret = _bd.ExecuteQuery(ps);
             if(ret != null && ret.next())
             {
                 chargeUtile.setX(ret.getInt("x"));
@@ -141,7 +149,6 @@ public class TraitementTRAMAP implements Traitement
             }
         } catch (SQLException throwables) {
             return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Erreur lors de la connection à la base de données");
-
         }
     }
 
@@ -157,6 +164,11 @@ public class TraitementTRAMAP implements Traitement
     private Reponse traiteINPUTLORYWITHOUTRESERVATION(DonneeInputLoryWithoutReservation chargeUtile, Client client)
     {
         System.out.println("traiteINPUTLORYWITHOUTRESERVATION");
+        if(!client.is_loggedIn())
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Le client n'est pas connecte dans le serveur");
+        }
+
         if(!HasRecords(_bd.getSocieteById(chargeUtile.getSociete())))
         {
             _bd.insertSociete(chargeUtile.getSociete(), "","","");
@@ -172,8 +184,8 @@ public class TraitementTRAMAP implements Traitement
                     0F);
         }
 
-        ResultSet ret = _bd.getInputWithoutRes(chargeUtile.getImmatriculation(), chargeUtile.getIdContainer());
         try {
+            ResultSet ret = _bd.ExecuteQuery(_bd.CreateUpdatableStatement(), "SELECT * FROM parc WHERE etat = 0");
             if(ret != null && ret.next())
             {
                 ret.updateString("idContainer", chargeUtile.getIdContainer());
@@ -187,11 +199,9 @@ public class TraitementTRAMAP implements Traitement
             else
             {
                 return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
-                //todo: verifier si on attent + si les 2 vont ensemble ?
             }
         } catch (SQLException throwables) {
             System.out.println("Erreur" + throwables.getSQLState() + " | " + throwables.getErrorCode());
-            throwables.printStackTrace();
             return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Erreur de la requete");
         }
     }
@@ -199,124 +209,72 @@ public class TraitementTRAMAP implements Traitement
     private Reponse traiteListe(DonneeListOperations chargeUtile, Client client)
     {
         try {
+            ResultSet resultat;
             if(chargeUtile.getNomSociete() != null && chargeUtile.getNomDestination() == null)
+                    resultat = traiteListeSociete(chargeUtile);
+            else
+                    resultat = traiteListeDestination(chargeUtile);
+
+            if(resultat != null)
             {
-                    return traiteListeSociete(chargeUtile);
+                ArrayList<Operation> liste = new ArrayList<Operation>();
+                while(resultat.next())
+                {
+                    liste.add(CreateOperation(resultat));
+                }
+
+                if(liste.size() > 0)
+                {
+                    chargeUtile.setOperations(liste);
+                    return new ReponseTRAMAP(ReponseTRAMAP.OK, chargeUtile, null);
+                }
+                else
+                    return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Aucune correspondance");
             }
             else
-            {
-                    return traiteListeDestination(chargeUtile);
-            }
+                return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
+
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
             return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec la base de données");
         }
 
     }
 
-    private Reponse traiteListeSociete(DonneeListOperations chargeUtile) throws SQLException {
-        ResultSet res = _bd.getListOperationsSociete(chargeUtile.getDateDebut(), chargeUtile.getDateFin(), chargeUtile.getNomSociete());
-        if(res != null)
-        {
-            ArrayList<Operation> liste = new ArrayList<Operation>();
-            while(res.next())
-            {
-                Operation op = new Operation();
-                op.set_id(res.getInt("id"));
-                op.set_container(res.getString("idContainer"));
-                op.set_transporteurEntrant(res.getString("transporteurEntrant"));
-                op.set_dateArrivee(res.getDate("dateArrivee"));
-                op.set_transporteurSortant(res.getString("transporteurSortant"));
-                op.set_poidsTotal(res.getFloat("poidsTotal"));
-                op.set_dateDepart(res.getDate("dateDepart"));
-                op.set_destination(res.getString("destination"));
-                liste.add(op);
-            }
-
-            if(liste.size() > 0)
-            {
-                chargeUtile.setOperations(liste);
-                return new ReponseTRAMAP(ReponseTRAMAP.OK, chargeUtile, null);
-            }
-            else
-            {
-                return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Aucune correspondance");
-            }
-
-        }
-        else
-        {
-            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
-        }
+    private Operation CreateOperation(ResultSet res) throws SQLException {
+        Operation op = new Operation();
+        op.set_id(res.getInt("id"));
+        op.set_container(res.getString("idContainer"));
+        op.set_transporteurEntrant(res.getString("transporteurEntrant"));
+        op.set_dateArrivee(res.getDate("dateArrivee"));
+        op.set_transporteurSortant(res.getString("transporteurSortant"));
+        op.set_poidsTotal(res.getFloat("poidsTotal"));
+        op.set_dateDepart(res.getDate("dateDepart"));
+        op.set_destination(res.getString("destination"));
+        return op;
     }
 
-    private Reponse traiteListeDestination(DonneeListOperations chargeUtile) throws SQLException {
-        ResultSet res = _bd.getListOperationsDestination(chargeUtile.getDateDebut(), chargeUtile.getDateFin(), chargeUtile.getNomDestination());
-        if(res != null)
-        {
-            ArrayList<Operation> liste = new ArrayList<Operation>();
-            while(res.next())
-            {
-                Operation op = new Operation();
-                op.set_id(res.getInt("id"));
-                op.set_container(res.getString("idContainer"));
-                op.set_transporteurEntrant(res.getString("transporteurEntrant"));
-                op.set_dateArrivee(res.getDate("dateArrivee"));
-                op.set_transporteurSortant(res.getString("transporteurSortant"));
-                op.set_poidsTotal(res.getFloat("poidsTotal"));
-                op.set_dateDepart(res.getDate("dateDepart"));
-                op.set_destination(res.getString("destination"));
-                liste.add(op);
-            }
+    private ResultSet traiteListeSociete(DonneeListOperations chargeUtile) throws SQLException {
+        PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements" +
+                "INNER JOIN containers c on mouvements.idContainer = c.idContainer" +
+                "INNER JOIN societes s on c.idSociete = s.idSociete" +
+                "WHERE UPPER(s.nom) = UPPER(?)" +
+                "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
+        ps.setString(1, chargeUtile.getNomSociete());
+        ps.setDate(2, java.sql.Date.valueOf(chargeUtile.getDateDebut().toString()));
+        ps.setDate(3, java.sql.Date.valueOf(chargeUtile.getDateFin().toString()));
 
-            if(liste.size() > 0)
-            {
-                chargeUtile.setOperations(liste);
-                return new ReponseTRAMAP(ReponseTRAMAP.OK, chargeUtile, null);
-            }
-            else
-            {
-                return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Aucune correspondance");
-            }
-        }
-        else
-        {
-            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
-        }
+        return _bd.ExecuteQuery(ps);
     }
 
-    private Reponse traiteLOGOUT(DonneeLogout chargeUtile, Client client)
-    {
-        String username = chargeUtile.getUsername();
-        String password = chargeUtile.getPassword();
+    private ResultSet traiteListeDestination(DonneeListOperations chargeUtile) throws SQLException {
+        PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements" +
+                "WHERE UPPER(destination) = UPPER(?)" +
+                "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
+        ps.setString(1, chargeUtile.getNomDestination());
+        ps.setDate(2, java.sql.Date.valueOf(chargeUtile.getDateDebut().toString()));
+        ps.setDate(3, java.sql.Date.valueOf(chargeUtile.getDateFin().toString()));
 
-        if(!client.is_loggedIn())
-        {
-            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Le client n'est pas connecte dans le serveur");
-        }
-
-        ResultSet rs = _bd.getLogin(username, password);
-        try
-        {
-            if(rs!=null && rs.next())
-            {
-                String bddpass = rs.getString("userpassword");
-                if(password.compareTo(bddpass) == 0)
-                {
-                    client.set_loggedIn(true);
-                    return new ReponseTRAMAP(ReponseTRAMAP.OK, null, null);
-                }
-                else
-                {
-                    return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Mot de passe ou nom d'utilisateur erroné");
-                }
-            }
-        }
-        catch (SQLException throwables)
-        {
-            throwables.printStackTrace();
-        }
-        return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "ERREUR lors du traitement de la requete");
+        return _bd.ExecuteQuery(ps);
     }
 
     private Reponse traite404()
