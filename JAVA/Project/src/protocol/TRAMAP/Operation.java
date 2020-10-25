@@ -5,9 +5,10 @@
 
 package protocol.TRAMAP;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Operation
+public class Operation implements Serializable
 {
 
     /********************************/

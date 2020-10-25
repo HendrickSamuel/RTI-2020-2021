@@ -117,8 +117,6 @@ public class ClientLayout extends JFrame
 
     private void onInputLorry(java.awt.event.ActionEvent evt)
     {
-        this.setVisible(false);
-
         if(isConnect())
         {
             DialogInput input = new DialogInput(this, true, getClient());
@@ -129,14 +127,10 @@ public class ClientLayout extends JFrame
         {
             showError("Vous n'etes pas connecte");
         }
-
-        this.setVisible(true);
     }
 
     private void onInputLorryWithoutRes(java.awt.event.ActionEvent evt)
     {
-        this.setVisible(false);
-
         if(isConnect())
         {
             DialogInputWithout input = new DialogInputWithout(this, true, getClient());
@@ -147,14 +141,10 @@ public class ClientLayout extends JFrame
         {
             showError("Vous n'etes pas connecte");
         }
-
-        this.setVisible(true);
     }
 
     private void onOperations(java.awt.event.ActionEvent evt)
     {
-        this.setVisible(false);
-
         if(isConnect())
         {
             DialogGetList getList = new DialogGetList(this, true, getClient());
@@ -165,14 +155,10 @@ public class ClientLayout extends JFrame
         {
             showError("Vous n'etes pas connecte");
         }
-
-        this.setVisible(true);
     }
 
     private void onLogout(java.awt.event.ActionEvent evt)
     {
-        this.setVisible(false);
-
         if(isConnect())
         {
             DialogLogout logout = new DialogLogout(this, true, getClient());
@@ -187,14 +173,10 @@ public class ClientLayout extends JFrame
         {
             showError("Vous n'etes pas connecte");
         }
-
-        this.setVisible(true);
     }
 
     private void onLogin(java.awt.event.ActionEvent evt)
     {
-        this.setVisible(false);
-
         if(isConnect())
         {
             showError("Vous etes deja connecte");
@@ -210,8 +192,6 @@ public class ClientLayout extends JFrame
                 setConnect(true);
             }
         }
-
-        this.setVisible(true);
     }
 
     private void showError(String message)

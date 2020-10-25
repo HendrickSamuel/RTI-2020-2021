@@ -6,6 +6,8 @@
 package Serveurs.Mouvement.Client;
 
 import genericRequest.DonneeRequete;
+import protocol.TRAMAP.DonneeListOperations;
+import protocol.TRAMAP.Operation;
 import protocol.TRAMAP.ReponseTRAMAP;
 
 import javax.swing.*;
@@ -17,6 +19,8 @@ import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 public class DialogGetList extends JDialog
 {
@@ -169,6 +173,8 @@ public class DialogGetList extends JDialog
             rep = getClient().sendGetList(dateDebut, dateFin, null, getRecherche());
         }
 
+        deleteAllRows((DefaultTableModel) table.getModel());
+
         if(rep == null)
         {
             labelRetour.setText("Problème de connexion avec le serveur");
@@ -176,14 +182,29 @@ public class DialogGetList extends JDialog
         else
         {
             System.out.println(" *** Reponse reçue : " + rep.getCode());
-            if(rep.getMessage() != null)
-            {
-                System.out.println("Message reçu: " + rep.getMessage());
-            }
+
             if(rep.getCode() == 200)
             {
                 //todo: decoder le message
-                labelRetour.setText(rep.getMessage());
+                List<Operation> liste = ((DonneeListOperations) rep.getChargeUtile()).getOperations();
+
+                Vector ligne;
+                DefaultTableModel dtm = (DefaultTableModel) table.getModel();
+
+                for( int i = 0 ; i < liste.size() ; i++ )
+                {
+                    ligne = new Vector();
+                    ligne.add(liste.get(i).get_container());
+                    ligne.add(liste.get(i).get_transporteurEntrant());
+                    ligne.add(liste.get(i).get_dateArrivee());
+                    ligne.add(liste.get(i).get_transporteurSortant());
+                    ligne.add(liste.get(i).get_poidsDepart());
+                    ligne.add(liste.get(i).get_destination());
+
+                    dtm.addRow(ligne);
+                }
+
+                labelRetour.setText("");
             }
             else
             {
@@ -196,6 +217,14 @@ public class DialogGetList extends JDialog
     private void onCancel()
     {
         dispose();
+    }
+
+    private void deleteAllRows(DefaultTableModel model)
+    {
+        for(int i = model.getRowCount() - 1; i >= 0 ; i-- )
+        {
+            model.removeRow(i);
+        }
     }
 
 

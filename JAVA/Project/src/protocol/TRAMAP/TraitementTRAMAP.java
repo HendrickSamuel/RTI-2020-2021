@@ -257,10 +257,10 @@ public class TraitementTRAMAP implements Traitement
 
     private ResultSet traiteListeSociete(DonneeListOperations chargeUtile) throws SQLException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements" +
-                "INNER JOIN containers c on mouvements.idContainer = c.idContainer" +
-                "INNER JOIN societes s on c.idSociete = s.nom" +
-                "WHERE UPPER(s.nom) = UPPER(?)" +
+        PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements " +
+                "INNER JOIN containers c on mouvements.idContainer = c.idContainer " +
+                "INNER JOIN societes s on c.idSociete = s.nom " +
+                "WHERE UPPER(s.nom) = UPPER(?) " +
                 "AND (dateArrivee BETWEEN ? AND ? OR (dateDepart BETWEEN ? AND ?));");
         ps.setString(1, chargeUtile.getNomSociete());
         ps.setString(2, formatter.format(chargeUtile.getDateDebut()));
@@ -274,7 +274,7 @@ public class TraitementTRAMAP implements Traitement
     private ResultSet traiteListeDestination(DonneeListOperations chargeUtile) throws SQLException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements" +
+        PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements " +
                 "WHERE UPPER(destination) = UPPER(?)" +
                 "AND (dateArrivee BETWEEN ? AND ? OR (dateDepart BETWEEN ? AND ?));");
         ps.setString(1, chargeUtile.getNomDestination());
@@ -282,6 +282,8 @@ public class TraitementTRAMAP implements Traitement
         ps.setString(3, formatter.format(chargeUtile.getDateFin()));
         ps.setString(4, formatter.format(chargeUtile.getDateDebut()));
         ps.setString(5, formatter.format(chargeUtile.getDateFin()));
+
+        System.out.println(ps);
 
         return _bd.ExecuteQuery(ps);
     }

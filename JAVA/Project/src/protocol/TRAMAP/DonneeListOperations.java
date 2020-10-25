@@ -61,6 +61,10 @@ public class DonneeListOperations implements DonneeRequete, Serializable
         return nomDestination;
     }
 
+    public List<Operation> getOperations()
+    {
+        return operations;
+    }
 
     /********************************/
     /*            Setters           */

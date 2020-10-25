@@ -56,6 +56,8 @@ public class ReponseTRAMAP implements Reponse, Serializable
     }
 
 
+
+
     /********************************/
     /*            Setters           */
     /********************************/
