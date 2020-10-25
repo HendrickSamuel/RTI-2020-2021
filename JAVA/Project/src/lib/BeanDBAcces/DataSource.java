@@ -5,5 +5,6 @@
 
 package lib.BeanDBAcces;
 
-public interface DataSource {
+public interface DataSource
+{
 }

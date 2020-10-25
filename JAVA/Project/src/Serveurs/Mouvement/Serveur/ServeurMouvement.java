@@ -13,7 +13,8 @@ import protocol.TRAMAP.TraitementTRAMAP;
 
 import java.sql.SQLException;
 
-public class ServeurMouvement extends ServeurGenerique {
+public class ServeurMouvement extends ServeurGenerique
+{
 
     private BDMouvements _bdMouvements;
 
@@ -24,7 +25,8 @@ public class ServeurMouvement extends ServeurGenerique {
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ServeurMouvement(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, ConsoleServeur cs) {
+    public ServeurMouvement(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, ConsoleServeur cs)
+    {
         super(port, connecte, NbThreads, cs);
         this._bdMouvements = _bdMouvements;
     }
@@ -38,10 +40,13 @@ public class ServeurMouvement extends ServeurGenerique {
     /********************************/
     public boolean CreateDataBase(String user, String password, String database)
     {
-        try {
+        try
+        {
             _bdMouvements = new BDMouvements(user,password,database);
             return true;
-        } catch (SQLException | ClassNotFoundException throwables) {
+        }
+        catch (SQLException | ClassNotFoundException throwables)
+        {
             throwables.printStackTrace();
             return false;
         }
@@ -52,11 +57,11 @@ public class ServeurMouvement extends ServeurGenerique {
     /*            Methodes          */
     /********************************/
     @Override
-    public Traitement CreationTraitement() {
+    public Traitement CreationTraitement()
+    {
         TraitementTRAMAP tt = new TraitementTRAMAP();
         tt.setConsole(this._console);
         tt.set_bd(this._bdMouvements);
         return tt;
     }
-
 }

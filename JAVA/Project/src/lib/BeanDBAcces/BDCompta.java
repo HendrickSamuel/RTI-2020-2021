@@ -7,7 +7,8 @@ package lib.BeanDBAcces;
 
 import java.sql.SQLException;
 
-public class BDCompta extends MysqlConnector {
+public class BDCompta extends MysqlConnector
+{
 
     /********************************/
     /*           Variables          */
@@ -17,7 +18,8 @@ public class BDCompta extends MysqlConnector {
     /*         Constructeurs        */
     /********************************/
 
-    public BDCompta(String username, String password, String database) throws ClassNotFoundException, SQLException {
+    public BDCompta(String username, String password, String database) throws ClassNotFoundException, SQLException
+    {
         super(username, password, database);
     }
 
