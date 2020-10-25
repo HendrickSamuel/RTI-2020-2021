@@ -18,6 +18,7 @@ import lib.BeanDBAcces.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -235,6 +236,7 @@ public class TraitementTRAMAP implements Traitement
                 return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
 
         } catch (SQLException throwables) {
+            throwables.printStackTrace();
             return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec la base de données");
         }
 
@@ -254,25 +256,28 @@ public class TraitementTRAMAP implements Traitement
     }
 
     private ResultSet traiteListeSociete(DonneeListOperations chargeUtile) throws SQLException {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd,MM,yyyy");
         PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements" +
                 "INNER JOIN containers c on mouvements.idContainer = c.idContainer" +
-                "INNER JOIN societes s on c.idSociete = s.idSociete" +
+                "INNER JOIN societes s on c.idSociete = s.nom" +
                 "WHERE UPPER(s.nom) = UPPER(?)" +
                 "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
         ps.setString(1, chargeUtile.getNomSociete());
-        ps.setDate(2, new java.sql.Date(chargeUtile.getDateDebut().getTime()));
-        ps.setDate(3, new java.sql.Date(chargeUtile.getDateFin().getTime()));
+        ps.setString(2, formatter.format(chargeUtile.getDateDebut()));
+        ps.setString(3, formatter.format(chargeUtile.getDateDebut()));
 
         return _bd.ExecuteQuery(ps);
     }
 
     private ResultSet traiteListeDestination(DonneeListOperations chargeUtile) throws SQLException {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd,MM,yyyy");
+
         PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements" +
                 "WHERE UPPER(destination) = UPPER(?)" +
-                "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
+                "AND dateDepart >= STR_TO_DATE(?, \"%d,%m,%Y\") AND (dateArrivee <= STR_TO_DATE(?, \"%d,%m,%Y\") OR dateArrivee IS NULL);");
         ps.setString(1, chargeUtile.getNomDestination());
-        ps.setDate(2, new java.sql.Date(chargeUtile.getDateDebut().getTime()));
-        ps.setDate(3, new java.sql.Date(chargeUtile.getDateFin().getTime()));
+        ps.setString(2, formatter.format(chargeUtile.getDateDebut()));
+        ps.setString(3, formatter.format(chargeUtile.getDateDebut()));
 
         return _bd.ExecuteQuery(ps);
     }
