@@ -260,8 +260,8 @@ public class TraitementTRAMAP implements Traitement
                 "WHERE UPPER(s.nom) = UPPER(?)" +
                 "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
         ps.setString(1, chargeUtile.getNomSociete());
-        ps.setDate(2, java.sql.Date.valueOf(chargeUtile.getDateDebut().toString()));
-        ps.setDate(3, java.sql.Date.valueOf(chargeUtile.getDateFin().toString()));
+        ps.setDate(2, new java.sql.Date(chargeUtile.getDateDebut().getTime()));
+        ps.setDate(3, new java.sql.Date(chargeUtile.getDateFin().getTime()));
 
         return _bd.ExecuteQuery(ps);
     }
