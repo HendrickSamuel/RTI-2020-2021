@@ -86,16 +86,21 @@ INSERT into Logins (username, userpassword) VALUES ("Samuel","superSecurePass123
 INSERT into Logins (username, userpassword) VALUES ("Kevin","superSecurePass123");
 
 INSERT into Societes (nom, email, telephone, adresse) VALUES ("MaSociete","MonEmail@Email.com","0472/42.16.88","MonAdresse Rue de l'adresse");
+INSERT into Societes (nom, email, telephone, adresse) VALUES ("La_Panthere_rose","Rose@Email.com","0000/12.12.12","MonAdresse Rue de l'adresse");
+
 INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES ("blabla", "MaSociete", "Xylophones", 200, "Nuisancees sonores", 500);
-INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES ("cont123", "MaSociete", "Xylophones", 200, "Nuisancees sonores", 1000);
+INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES ("cont123", "La_Panthere_rose", "Xylophones", 200, "Nuisancees sonores", 1000);
+INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES ("Test2", "MaSociete", NULL, 200, "Nuisancees odorantes", 250);
+INSERT into Containers (idContainer,idSociete, contenu, capacite, dangers, poids) VALUES ("Test4", "La_Panthere_rose", "Rats", 200, NULL, 360);
+
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
-VALUES ("blabla", 1, 1, 2, NULL, "test", NULL, "Paris","Train");
+VALUES ("blabla", 1, 1, 2, STR_TO_DATE("15,10,2020", "%d,%m,%Y"), "test", STR_TO_DATE("25,10,2020", "%d,%m,%Y"), "Paris","Train");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
-VALUES ("cont123", 1, 2, 1, NULL, "123456", NULL, "","");
+VALUES ("cont123", 1, 2, 1, STR_TO_DATE("02,09,2020", "%d,%m,%Y"), "123456",STR_TO_DATE("10,09,2020", "%d,%m,%Y"), "","");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
-VALUES (NULL, 1, 3, 0, NULL, "", NULL, "","");
+VALUES ("Test2", 1, 3, 2, NULL, "", STR_TO_DATE("12,10,2020", "%d,%m,%Y"), "Madrid","");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
-VALUES (NULL, 1, 4, 0, NULL, "", NULL, "","");
+VALUES ("Test4", 1, 4, 2, NULL, "",STR_TO_DATE("23,10,2020", "%d,%m,%Y"), "Paris","");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
 VALUES (NULL, 1, 5, 0, NULL, "", NULL, "","");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
@@ -128,3 +133,13 @@ INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, d
 VALUES (NULL, 2, 9, 0, NULL, "", NULL, "","");
 INSERT into Parc (idContainer, x, y, etat, dateReservation, numeroReservation, dateArrivee, destination, moyenTransport) 
 VALUES (NULL, 2, 10, 0, NULL, "", NULL, "","");
+
+INSERT into Transporteurs (idTransporteur, idSociete, capacite, caracteristiques) VALUES ("Trans1", "MaSociete", 20, NULL);
+INSERT into Transporteurs (idTransporteur, idSociete, capacite, caracteristiques) VALUES ("Trans2", "La_Panthere_rose", 10, NULL);
+
+INSERT into Mouvements (id, idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination)
+VALUES (NULL, "blabla", "Trans1", STR_TO_DATE("25,10,2020", "%d,%m,%Y"), NULL, 500, NULL, "Paris");
+INSERT into Mouvements (id, idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination)
+VALUES (NULL, "Test2", "Trans2", STR_TO_DATE("12,10,2020", "%d,%m,%Y"), NULL, 250, NULL, "Madrid");
+INSERT into Mouvements (id, idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination)
+VALUES (NULL, "Test4", "Trans1", STR_TO_DATE("23,10,2020", "%d,%m,%Y"), NULL, 360, NULL, "Paris");
