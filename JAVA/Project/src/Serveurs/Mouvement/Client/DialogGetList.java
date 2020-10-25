@@ -9,6 +9,7 @@ import genericRequest.DonneeRequete;
 import protocol.TRAMAP.ReponseTRAMAP;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -25,6 +26,7 @@ public class DialogGetList extends JDialog
     private Client _client;
     private String _dateDebut;
     private String _dateFin;
+
 
     private JPanel contentPane;
     private JButton buttonOK;
@@ -102,6 +104,11 @@ public class DialogGetList extends JDialog
     /********************************/
     private void initComponents()
     {
+        table.setModel(new DefaultTableModel(
+            null,
+            new String [] {"Id Container", "Transporteur entrant", "Date d'arrivée", "Transporteur sortant", "Date de départ", "Destination"}
+        ));
+
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonOK);
 
@@ -131,6 +138,8 @@ public class DialogGetList extends JDialog
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        pack();
     }
 
     private void onOK()
