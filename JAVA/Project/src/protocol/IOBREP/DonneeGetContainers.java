@@ -8,6 +8,7 @@ package protocol.IOBREP;
 import genericRequest.DonneeRequete;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class DonneeGetContainers implements DonneeRequete, Serializable {
 
@@ -17,6 +18,8 @@ public class DonneeGetContainers implements DonneeRequete, Serializable {
 
     private String destination;
     private String selection; //FIRST RANDOM
+
+    private List<Container> _containers;
 
     /********************************/
     /*         Constructeurs        */
@@ -36,6 +39,10 @@ public class DonneeGetContainers implements DonneeRequete, Serializable {
         return selection;
     }
 
+    public List<Container> get_containers() {
+        return _containers;
+    }
+
     /********************************/
     /*            Setters           */
     /********************************/
@@ -45,6 +52,10 @@ public class DonneeGetContainers implements DonneeRequete, Serializable {
 
     public void setSelection(String selection) {
         this.selection = selection;
+    }
+
+    public void set_containers(List<Container> _containers) {
+        this._containers = _containers;
     }
 
     /********************************/
