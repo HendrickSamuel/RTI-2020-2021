@@ -256,28 +256,32 @@ public class TraitementTRAMAP implements Traitement
     }
 
     private ResultSet traiteListeSociete(DonneeListOperations chargeUtile) throws SQLException {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd,MM,yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements" +
                 "INNER JOIN containers c on mouvements.idContainer = c.idContainer" +
                 "INNER JOIN societes s on c.idSociete = s.nom" +
                 "WHERE UPPER(s.nom) = UPPER(?)" +
-                "AND dateDepart >= ? AND (dateArrivee <= ? OR dateArrivee IS NULL);");
+                "AND (dateArrivee BETWEEN ? AND ? OR (dateDepart BETWEEN ? AND ?));");
         ps.setString(1, chargeUtile.getNomSociete());
         ps.setString(2, formatter.format(chargeUtile.getDateDebut()));
-        ps.setString(3, formatter.format(chargeUtile.getDateDebut()));
+        ps.setString(3, formatter.format(chargeUtile.getDateFin()));
+        ps.setString(4, formatter.format(chargeUtile.getDateDebut()));
+        ps.setString(5, formatter.format(chargeUtile.getDateFin()));
 
         return _bd.ExecuteQuery(ps);
     }
 
     private ResultSet traiteListeDestination(DonneeListOperations chargeUtile) throws SQLException {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd,MM,yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM mouvements" +
                 "WHERE UPPER(destination) = UPPER(?)" +
-                "AND dateDepart >= STR_TO_DATE(?, \"%d,%m,%Y\") AND (dateArrivee <= STR_TO_DATE(?, \"%d,%m,%Y\") OR dateArrivee IS NULL);");
+                "AND (dateArrivee BETWEEN ? AND ? OR (dateDepart BETWEEN ? AND ?));");
         ps.setString(1, chargeUtile.getNomDestination());
         ps.setString(2, formatter.format(chargeUtile.getDateDebut()));
-        ps.setString(3, formatter.format(chargeUtile.getDateDebut()));
+        ps.setString(3, formatter.format(chargeUtile.getDateFin()));
+        ps.setString(4, formatter.format(chargeUtile.getDateDebut()));
+        ps.setString(5, formatter.format(chargeUtile.getDateFin()));
 
         return _bd.ExecuteQuery(ps);
     }
