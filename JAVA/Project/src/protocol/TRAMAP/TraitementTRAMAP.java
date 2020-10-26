@@ -136,7 +136,6 @@ public class TraitementTRAMAP implements Traitement
             PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
             ps.setString(1, chargeUtile.getIdContainer());
             ps.setString(2, chargeUtile.getNumeroReservation());
-            System.out.println(ps);
             ResultSet ret = _bd.ExecuteQuery(ps);
             if(ret != null && ret.next())
             {
