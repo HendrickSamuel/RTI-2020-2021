@@ -14,7 +14,6 @@ import genericRequest.Traitement;
 import MyGenericServer.ConsoleServeur;
 import lib.BeanDBAcces.BDMouvements;
 import lib.BeanDBAcces.DataSource;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

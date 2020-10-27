@@ -1,47 +1,66 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 24/10/2020
+//Date de la création : 27/10/2020
 
-package protocol.IOBREP;
+package protocol.PLAMAP;
 
 import genericRequest.DonneeRequete;
-
 import java.io.Serializable;
+import java.util.List;
 
-public class DonneeLogin implements DonneeRequete, Serializable
+public class DonneeSignalDep implements DonneeRequete, Serializable
 {
-
+    //todo: MAKE_BILL partie 4 avec le serveur compta en réponse au signal_dep
     /********************************/
     /*           Variables          */
     /********************************/
-    private String username;
-    private String password;
+    private String idTransporteur;
+    private List<String> ListIdCont;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DonneeLogin(String username, String password)
+    public DonneeSignalDep()
     {
-        this.username = username;
-        this.password = password;
+
     }
+
+    public DonneeSignalDep(String idTransporteur, List<String> listIdCont)
+    {
+        this.idTransporteur = idTransporteur;
+        ListIdCont = listIdCont;
+    }
+
 
     /********************************/
     /*            Getters           */
     /********************************/
-    public String getUsername()
+    public String getIdTransporteur()
     {
-        return username;
+        return idTransporteur;
     }
 
-    public String getPassword()
+    public List<String> getListIdCont()
     {
-        return password;
+        return ListIdCont;
     }
+
+
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setIdTransporteur(String idTransporteur)
+    {
+        this.idTransporteur = idTransporteur;
+    }
+
+    public void setListIdCont(List<String> listIdCont)
+    {
+        ListIdCont = listIdCont;
+    }
+
 
     /********************************/
     /*            Methodes          */

@@ -1,50 +1,67 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 24/10/2020
+//Date de la création : 27/10/2020
 
-package Serveurs.Bateaux;
+package protocol.PLAMAP;
 
-import MyGenericServer.ConsoleServeur;
-import MyGenericServer.ServeurGenerique;
-import genericRequest.Traitement;
-import lib.BeanDBAcces.BDMouvements;
-import protocol.IOBREP.TraitementIOBREP;
+import genericRequest.DonneeRequete;
+import java.io.Serializable;
 
-public class ServeurBateaux extends ServeurGenerique
+public class DonneeLoginCont implements DonneeRequete, Serializable
 {
-
     /********************************/
     /*           Variables          */
     /********************************/
-    private BDMouvements _bdMouvement;
+    private String username;
+    private String password;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ServeurBateaux(int port, boolean connecte, int NbThreads, ConsoleServeur cs)
+    public DonneeLoginCont()
     {
-        super(port, connecte, NbThreads, cs);
+
     }
+
+    public DonneeLoginCont(String username, String password)
+    {
+        this.username = username;
+        this.password = password;
+    }
+
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
+
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void set_bdMouvement(BDMouvements _bdMouvement)
+    public void setUsername(String username)
     {
-        this._bdMouvement = _bdMouvement;
+        this.username = username;
     }
+
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+
+
     /********************************/
     /*            Methodes          */
     /********************************/
 
-    @Override
-    public Traitement CreationTraitement()
-    {
-        return new TraitementIOBREP(_bdMouvement, null);
-    }
 }

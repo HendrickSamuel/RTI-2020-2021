@@ -1,32 +1,47 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 25/10/2020
+//Date de la création : 27/10/2020
 
-package protocol.IOBREP;
+package protocol.PLAMAP;
 
+import genericRequest.DonneeRequete;
 import java.io.Serializable;
 
-public class Container implements Serializable {
-
+public class DonneeSendWeight implements DonneeRequete, Serializable
+{
     /********************************/
     /*           Variables          */
     /********************************/
-
-    private String id;
+    private String idContainer;
     private int x;
     private int y;
+    private float poids;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public DonneeSendWeight()
+    {
+
+    }
+
+    public DonneeSendWeight(String idContainer, int x, int y, float poids)
+    {
+        this.idContainer = idContainer;
+        this.x = x;
+        this.y = y;
+        this.poids = poids;
+    }
+
 
     /********************************/
     /*            Getters           */
     /********************************/
-    public String getId()
+    public String getIdContainer()
     {
-        return id;
+        return idContainer;
     }
 
     public int getX()
@@ -39,13 +54,18 @@ public class Container implements Serializable {
         return y;
     }
 
+    public float getPoids()
+    {
+        return poids;
+    }
+
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void setId(String id)
+    public void setIdContainer(String idContainer)
     {
-        this.id = id;
+        this.idContainer = idContainer;
     }
 
     public void setX(int x)
@@ -56,6 +76,11 @@ public class Container implements Serializable {
     public void setY(int y)
     {
         this.y = y;
+    }
+
+    public void setPoids(float poids)
+    {
+        this.poids = poids;
     }
 
 

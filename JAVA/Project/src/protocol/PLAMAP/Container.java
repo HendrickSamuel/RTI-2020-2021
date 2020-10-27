@@ -1,25 +1,37 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 25/10/2020
+//Date de la création : 27/10/2020
 
-package protocol.IOBREP;
+package protocol.PLAMAP;
 
 import java.io.Serializable;
 
-public class Container implements Serializable {
-
+public class Container implements Serializable
+{
     /********************************/
     /*           Variables          */
     /********************************/
-
     private String id;
     private int x;
     private int y;
 
+
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public Container()
+    {
+
+    }
+
+    public Container(String id, int x, int y)
+    {
+        this.id = id;
+        this.x = x;
+        this.y = y;
+    }
+
 
     /********************************/
     /*            Getters           */
@@ -62,5 +74,13 @@ public class Container implements Serializable {
     /********************************/
     /*            Methodes          */
     /********************************/
-
+    @Override
+    public String toString()
+    {
+        return "Container{" +
+                "id='" + id + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }
