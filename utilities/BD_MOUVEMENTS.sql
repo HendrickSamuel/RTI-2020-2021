@@ -86,6 +86,7 @@ INSERT into Destinations (ville) VALUES ("Madrid");
 
 INSERT into Logins (username, userpassword) VALUES ("Samuel","superSecurePass123");
 INSERT into Logins (username, userpassword) VALUES ("Kevin","superSecurePass123");
+INSERT into Logins (username, userpassword) VALUES ("ServeurContainer","password");
 
 INSERT into Societes (nom, email, telephone, adresse) VALUES ("MaSociete","MonEmail@Email.com","0472/42.16.88","MonAdresse Rue de l'adresse");
 INSERT into Societes (nom, email, telephone, adresse) VALUES ("La_Panthere_rose","Rose@Email.com","0000/12.12.12","MonAdresse Rue de l'adresse");
