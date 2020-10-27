@@ -11,7 +11,8 @@ import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
 import protocol.IOBREP.TraitementIOBREP;
 
-public class ServeurBateaux extends ServeurGenerique {
+public class ServeurBateaux extends ServeurGenerique
+{
 
     /********************************/
     /*           Variables          */
@@ -21,7 +22,8 @@ public class ServeurBateaux extends ServeurGenerique {
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ServeurBateaux(int port, boolean connecte, int NbThreads, ConsoleServeur cs) {
+    public ServeurBateaux(int port, boolean connecte, int NbThreads, ConsoleServeur cs)
+    {
         super(port, connecte, NbThreads, cs);
     }
 
@@ -32,7 +34,8 @@ public class ServeurBateaux extends ServeurGenerique {
     /********************************/
     /*            Setters           */
     /********************************/
-    public void set_bdMouvement(BDMouvements _bdMouvement) {
+    public void set_bdMouvement(BDMouvements _bdMouvement)
+    {
         this._bdMouvement = _bdMouvement;
     }
     /********************************/
@@ -40,8 +43,12 @@ public class ServeurBateaux extends ServeurGenerique {
     /********************************/
 
     @Override
+<<<<<<< Updated upstream
     public Traitement CreationTraitement() {
+=======
+    public Traitement CreationTraitement()
+    {
+>>>>>>> Stashed changes
         return new TraitementIOBREP(_bdMouvement, null);
     }
-
 }
