@@ -41,7 +41,6 @@ public class ServeurBateaux extends ServeurGenerique {
 
     @Override
     public Traitement CreationTraitement() {
-
         return new TraitementIOBREP(_bdMouvement, null);
     }
 

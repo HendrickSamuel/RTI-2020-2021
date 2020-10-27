@@ -1,4 +1,5 @@
-/*CREATE DATABASE IF NOT EXISTS BD_MOUVEMENTS;
+/*
+CREATE DATABASE IF NOT EXISTS BD_MOUVEMENTS;
 USE BD_MOUVEMENTS;
 */
 SET storage_engine=INNODB;
@@ -55,6 +56,7 @@ idTransporteur varchar(255) PRIMARY KEY,
 idSociete varchar(255),
 capacite FLOAT NOT NULL,
 caracteristiques varchar(255),
+present boolean DEFAULT(true),
 FOREIGN KEY (idSociete) REFERENCES Societes(nom)
 );
 

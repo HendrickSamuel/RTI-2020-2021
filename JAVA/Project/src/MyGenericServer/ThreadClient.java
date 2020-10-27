@@ -17,6 +17,15 @@ public abstract class ThreadClient extends Thread {
     protected DataSource _dataSource;
     protected SourceTaches _taches;
     protected Traitement _traitement;
+    protected boolean _javaObjectsCommunication = true;
+
+    public boolean is_javaObjectsCommunication() {
+        return _javaObjectsCommunication;
+    }
+
+    public void set_javaObjectsCommunication(boolean _javaObjectsCommunication) {
+        this._javaObjectsCommunication = _javaObjectsCommunication;
+    }
 
     protected int index;
 

@@ -185,7 +185,6 @@ public class DialogGetList extends JDialog
 
             if(rep.getCode() == 200)
             {
-                //todo: decoder le message
                 List<Operation> liste = ((DonneeListOperations) rep.getChargeUtile()).getOperations();
 
                 Vector ligne;
