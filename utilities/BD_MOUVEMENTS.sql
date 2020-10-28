@@ -56,7 +56,7 @@ idTransporteur varchar(255) PRIMARY KEY,
 idSociete varchar(255),
 capacite FLOAT NOT NULL,
 caracteristiques varchar(255),
-present boolean DEFAULT(true),
+present boolean DEFAULT(false),
 FOREIGN KEY (idSociete) REFERENCES Societes(nom)
 );
 

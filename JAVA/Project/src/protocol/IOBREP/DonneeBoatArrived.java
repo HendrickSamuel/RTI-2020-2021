@@ -14,18 +14,28 @@ public class DonneeBoatArrived implements DonneeRequete, Serializable {
     /********************************/
     /*           Variables          */
     /********************************/
+    private String idContainer;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public DonneeBoatArrived(String idContainer) {
+        this.idContainer = idContainer;
+    }
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public String getIdContainer() {
+        return idContainer;
+    }
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setIdContainer(String idContainer) {
+        this.idContainer = idContainer;
+    }
 
     /********************************/
     /*            Methodes          */

@@ -66,6 +66,10 @@ public class TraitementIOBREP implements Traitement {
             return traiteLOGIN((protocol.IOBREP.DonneeLogin) donnee, client);
         if(donnee instanceof protocol.IOBREP.DonneeGetContainers)
             return traiteGetContainers((protocol.IOBREP.DonneeGetContainers) donnee, client);
+        if(donnee instanceof protocol.IOBREP.DonneeBoatArrived)
+            return traiteBoatArrived((protocol.IOBREP.DonneeBoatArrived) donnee, client);
+        if(donnee instanceof protocol.IOBREP.DoneeBoatLeft)
+            return traiteBoatLeft((protocol.IOBREP.DoneeBoatLeft) donnee, client);
         else
             return traite404();
     }
@@ -112,7 +116,6 @@ public class TraitementIOBREP implements Traitement {
 
     private Reponse traiteGetContainers(DonneeGetContainers chargeUtile, Client client)
     {
-
         try{
             PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM parc WHERE upper(moyenTransport) = upper(?) AND upper(destination) = upper(?) ORDER BY ?;");
             ps.setString(1, "Bateau");
@@ -142,6 +145,52 @@ public class TraitementIOBREP implements Traitement {
         }
         return new ReponseIOBREP(ReponseIOBREP.NOK, null, "ERREUR lors du traitement de la requete");
 
+    }
+
+    private Reponse traiteBoatArrived(DonneeBoatArrived chargeUtile, Client client)
+    {
+        try {
+            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM transporteurs WHERE upper(idTransporteur) = upper(?);");
+            ps.setString(1, chargeUtile.getIdContainer());
+            ResultSet rs = _bdMouvement.ExecuteQuery(ps);
+            if(rs != null && rs.next())
+            {
+                rs.updateBoolean("present",true);
+                _bdMouvement.UpdateResult(rs);
+                return new ReponseIOBREP(ReponseIOBREP.OK ,chargeUtile, null);
+            }
+            else
+            {
+                return new ReponseIOBREP(ReponseIOBREP.NOK ,null, "Aucun bateau ne correspond à cet identifiant");
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return new ReponseIOBREP(ReponseIOBREP.NOK ,null, "Erreur lors de l'execution de la requete");
+        }
+    }
+
+    private Reponse traiteBoatLeft(DoneeBoatLeft chargeUtile, Client client)
+    {
+        try {
+            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM transporteurs WHERE upper(idTransporteur) = upper(?);");
+            ps.setString(1, chargeUtile.getIdContainer());
+            ResultSet rs = _bdMouvement.ExecuteQuery(ps);
+            if(rs != null && rs.next())
+            {
+                rs.updateBoolean("present",false);
+                _bdMouvement.UpdateResult(rs);
+                return new ReponseIOBREP(ReponseIOBREP.OK ,chargeUtile, null);
+            }
+            else
+            {
+                return new ReponseIOBREP(ReponseIOBREP.NOK ,null, "Aucun bateau ne correspond à cet identifiant");
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return new ReponseIOBREP(ReponseIOBREP.NOK ,null, "Erreur lors de l'execution de la requete");
+        }
     }
 
     private Reponse traite404()

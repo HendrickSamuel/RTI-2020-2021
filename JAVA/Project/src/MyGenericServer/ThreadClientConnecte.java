@@ -24,8 +24,6 @@ public class ThreadClientConnecte extends ThreadClient
 
     private Client _client;
 
-
-
     /********************************/
     /*         Constructeurs        */
     /********************************/
@@ -35,7 +33,6 @@ public class ThreadClientConnecte extends ThreadClient
         _client = new Client();
     }
 
-
     /********************************/
     /*            Getters           */
     /********************************/
@@ -43,7 +40,6 @@ public class ThreadClientConnecte extends ThreadClient
     /********************************/
     /*            Setters           */
     /********************************/
-
 
     /********************************/
     /*            Methodes          */
@@ -174,6 +170,8 @@ public class ThreadClientConnecte extends ThreadClient
 
     public DonneeRequete parseString(String message)
     {
-        return new DonneeBoatArrived();// todo: stuff
+        //return new DonneeBoatArrived();
+        // todo: stuff
+        return null;
     }
 }

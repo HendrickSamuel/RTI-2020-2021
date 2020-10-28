@@ -7,6 +7,8 @@
 
 package lib.BeanDBAcces;
 
+import com.mysql.cj.xdevapi.UpdateResult;
+
 import java.sql.*;
 import java.util.TimeZone;
 
@@ -62,7 +64,12 @@ public class MysqlConnector implements DataSource
     }
 
     public synchronized PreparedStatement getPreparedStatement(String request) throws SQLException {
-        return _con.prepareStatement(request);
+        return _con.prepareStatement(request, ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
+    }
+
+    public synchronized void UpdateResult(ResultSet rs) throws SQLException {
+        rs.updateRow();
     }
 
     public synchronized ResultSet ExecuteQuery(PreparedStatement statement) throws SQLException {
@@ -76,4 +83,6 @@ public class MysqlConnector implements DataSource
     public synchronized ResultSet ExecuteQuery(Statement statement, String query) throws SQLException {
         return statement.executeQuery(query);
     }
+
+
 }
