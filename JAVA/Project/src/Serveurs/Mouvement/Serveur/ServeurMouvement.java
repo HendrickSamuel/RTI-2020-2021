@@ -7,8 +7,10 @@ package Serveurs.Mouvement.Serveur;
 
 import MyGenericServer.ConsoleServeur;
 import MyGenericServer.ServeurGenerique;
+import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
+import protocol.TRAMAP.ReponseTRAMAP;
 import protocol.TRAMAP.TraitementTRAMAP;
 
 import java.sql.SQLException;
@@ -27,7 +29,12 @@ public class ServeurMouvement extends ServeurGenerique
     /********************************/
     public ServeurMouvement(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, ConsoleServeur cs)
     {
-        super(port, connecte, NbThreads, cs);
+        super(port, connecte, NbThreads, cs, true);
+        this._bdMouvements = _bdMouvements;
+    }
+    public ServeurMouvement(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, ConsoleServeur cs, boolean isJavaCommunication)
+    {
+        super(port, connecte, NbThreads, cs, isJavaCommunication);
         this._bdMouvements = _bdMouvements;
     }
 
@@ -63,5 +70,10 @@ public class ServeurMouvement extends ServeurGenerique
         tt.setConsole(this._console);
         tt.set_bd(this._bdMouvements);
         return tt;
+    }
+
+    @Override
+    public Reponse CreateBusyResponse() {
+        return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Plus de ressource disponible");
     }
 }

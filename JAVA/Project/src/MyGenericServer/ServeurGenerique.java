@@ -5,6 +5,7 @@
 
 package MyGenericServer;
 
+import genericRequest.Reponse;
 import genericRequest.Traitement;
 
 import java.beans.Beans;
@@ -26,11 +27,13 @@ public abstract class ServeurGenerique
     protected LinkedList<ThreadClient> listeThreadsEnfants;
     protected ThreadServer _threadServer;
 
+    protected boolean isJavaCommunication;
+
     /********************************/
     /*         Constructeurs        */
     /********************************/
 
-    public ServeurGenerique(int port, boolean connecte, int NbThreads, ConsoleServeur cs)
+    public ServeurGenerique(int port, boolean connecte, int NbThreads, ConsoleServeur cs, boolean isJavaCommunication)
     {
         this._console = cs;
         this._port = port;
@@ -44,6 +47,7 @@ public abstract class ServeurGenerique
         this._nbMaxConnections = NbThreads;
 
         this._sourceTaches = new ListeTaches();
+        this.isJavaCommunication = isJavaCommunication;
     }
 
     /********************************/
@@ -60,7 +64,9 @@ public abstract class ServeurGenerique
 
     public void StartServeur()
     {
-        _threadServer = new ThreadServer(this._port, this._sourceTaches, this._console);
+        _threadServer = new ThreadServer(this._port, this._sourceTaches, this._console, this.CreateBusyResponse());
+        _threadServer.set_javaObjectsCommunication(this.isJavaCommunication);
+
         CreationPoolThreads(this._sourceTaches);
 
         _threadServer.start();
@@ -84,6 +90,7 @@ public abstract class ServeurGenerique
                 o.setIndex(i);
                 o.setTraitement(CreationTraitement());
                 o.set_console(this._console);
+                o.set_javaObjectsCommunication(this.isJavaCommunication);
 
                 listeThreadsEnfants.add(o);
                 o.start();
@@ -96,5 +103,6 @@ public abstract class ServeurGenerique
     }
 
     public abstract Traitement CreationTraitement();
+    public abstract Reponse CreateBusyResponse();
 
 }

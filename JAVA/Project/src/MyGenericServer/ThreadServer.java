@@ -7,7 +7,11 @@
 
 package MyGenericServer;
 
+import genericRequest.Reponse;
+
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -21,17 +25,36 @@ public class ThreadServer extends Thread
     private SourceTaches _sourceTaches;
     private ConsoleServeur _console;
     private ServerSocket SSocket = null;
+    private Reponse _errorResponse;
+    protected boolean _javaObjectsCommunication = true;
 
     //todo: Ajouts d'evenements pour le plantage
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ThreadServer(int p, SourceTaches st, ConsoleServeur cs)
+    public ThreadServer(int p, SourceTaches st, ConsoleServeur cs, Reponse errorResponse)
     {
         this._port = p;
         this._sourceTaches = st;
         this._console = cs;
+        this._errorResponse = errorResponse;
+    }
+
+    /********************************/
+    /*         Getters              */
+    /********************************/
+
+    public boolean is_javaObjectsCommunication() {
+        return _javaObjectsCommunication;
+    }
+
+    /********************************/
+    /*         Setters              */
+    /********************************/
+
+    public void set_javaObjectsCommunication(boolean _javaObjectsCommunication) {
+        this._javaObjectsCommunication = _javaObjectsCommunication;
     }
 
     /********************************/
@@ -46,8 +69,8 @@ public class ThreadServer extends Thread
         }
         catch (IOException e)
         {
-            e.printStackTrace();
-            //todo: arreter
+            this.AfficheServeur("Demarrage du serveur impossible : "+ e.getMessage());
+            this.interrupt();
         }
 
         Socket CSocket = null;
@@ -77,6 +100,31 @@ public class ThreadServer extends Thread
         {
             System.err.println("-- Le serveur n'a pas de console dédiée pour ce message -- " + message);
         }
+    }
+
+    private void ReponseResourceOccupee(Socket sock, Reponse reponse)
+    {
+        try
+        {
+            if(this.is_javaObjectsCommunication())
+                ReponseJavaObjects(sock, reponse);
+            else
+                ReponseBytes(sock, reponse);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void ReponseJavaObjects(Socket sock, Reponse reponse) throws IOException {
+        ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
+        oos.writeObject(reponse);
+        oos.flush();
+    }
+
+    private void ReponseBytes(Socket sock, Reponse reponse) throws IOException {
+        DataOutputStream dos = new DataOutputStream(sock.getOutputStream());
+        dos.write(reponse.toString().getBytes());
+        dos.flush();
     }
 
 }

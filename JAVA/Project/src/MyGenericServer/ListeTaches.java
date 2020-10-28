@@ -45,9 +45,15 @@ public class ListeTaches implements SourceTaches
     }
 
     @Override
-    public synchronized void addTache(Socket r)
+    public synchronized boolean addTache(Socket r)
     {
-        _listeTaches.add(r);
-        notify();
+        if(_waitingThreads > 0)
+        {
+            _listeTaches.add(r);
+            notify();
+            return true;
+        }
+        else
+            return false;
     }
 }
