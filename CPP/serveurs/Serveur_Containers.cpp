@@ -79,7 +79,7 @@ void* fctThread(void *param);
 void InitCle();
 void freePTMess();
 void destructeur(void *p);
-void switchThread(protocole &proto);
+void switchThread(protocole &proto, SocketsClient &socketMouv);
 
 
 /********************************/
@@ -231,8 +231,10 @@ void freePTMess()
 
 
 //Fonction qui traite le protocole reçu par réseau dans le switch
-void switchThread(protocole &proto)
+void switchThread(protocole &proto, SocketsClient &socketMouv)
 {
+    char* retour = NULL;
+
     S_THREAD *PT = NULL;
 	
 	PT = (S_THREAD*)pthread_getspecific(cle);
@@ -287,31 +289,50 @@ void switchThread(protocole &proto)
 
             case InputTruck:
                 {
-                    parcAcces fich_parc("FICH_PARC.dat");
-                    
-                    //recherche si emplacement libre
-                    pthread_mutex_lock(&mutexFichParc);
-                    if(fich_parc.searchPlace(&(PT->tmpContaineur)))
-                    {
+                    //Construction du message
+                    int tail = strlen("protocol.PLAMAP.DonneeGetXY#societe=#immatriculationCamion=#idContainer=") + 1 + strlen(proto.donnees.inputTruck.idContainer) + strlen(proto.donnees.inputTruck.imCamion) + strlen(proto.donnees.inputTruck.societe);
+                    char * mes = (char*)malloc(tail);
+                    strcpy(mes, "protocol.PLAMAP.DonneeGetXY#societe=");
+                    strcat(mes, proto.donnees.inputTruck.societe);
+                    strcat(mes, "#immatriculationCamion=");
+                    strcat(mes, proto.donnees.inputTruck.imCamion);
+                    strcat(mes, "#idContainer=");
+                    strcat(mes, proto.donnees.inputTruck.idContainer);
+                    mes[tail-1] = '\n';
+
+
+                    socketMouv.sendString(mes, tail);
+
+                    retour = socketMouv.receiveString(MTU, '#', '%');
+
+                    //verification si la requete est OK
+                    if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0)
+                    {               
+
                         strcpy(PT->tmpContaineur.id, proto.donnees.inputTruck.idContainer);
                         PT->tmpContaineur.flagemplacement = 1;
                         
-                        //enregistrement dans FICH_PARC
-                        fich_parc.updateRecord(PT->tmpContaineur);
-                        pthread_mutex_unlock(&mutexFichParc);
+                        char* coord = ParcourChaine::getMessage(retour);
 
-                        proto.donnees.reponse.x = PT->tmpContaineur.x;
-                        proto.donnees.reponse.y = PT->tmpContaineur.y;
+                        int coo[2];
+
+                        ParcourChaine::getCoordonees(coord, coo);
+
+                        PT->tmpContaineur.x = coo[0];
+                        PT->tmpContaineur.y = coo[1];
+
+                        proto.donnees.reponse.x = coo[0];
+                        proto.donnees.reponse.y = coo[1];
                         strcpy(proto.donnees.reponse.message, "Voice la place reservee en ");
 
                         freePTMess();
                         PT->message = new char[strlen("2#true#XXX/YYY#%")+1];
                         strcpy(PT->message, "2#true#");
                         char xy [10];
-                        sprintf(xy, "%d", PT->tmpContaineur.x);
+                        sprintf(xy, "%d", proto.donnees.reponse.x);
                         strcat(PT->message, xy);
                         strcat(PT->message, "/");
-                        sprintf(xy, "%d", PT->tmpContaineur.y);
+                        sprintf(xy, "%d", proto.donnees.reponse.y);
                         strcat(PT->message, xy);
                         strcat(PT->message, "#%");
                     }
@@ -320,16 +341,14 @@ void switchThread(protocole &proto)
                         pthread_mutex_unlock(&mutexFichParc);
                         PT->dernOpp = Init;
                         freePTMess();
-                        PT->message = new char[strlen("2#false#Pas d'emplacements libres#%")+1];
-                        strcpy(PT->message, "2#false#Pas d'emplacements libres#%");        
+                        PT->message = new char[strlen("2#false#Un des renseignements envoyés ne correspond pas#%")+1];
+                        strcpy(PT->message, "2#false#Un des renseignements envoyés ne correspond pas#%");        
                     }
                 }
                 break;
 
             case InputDone:
-                {  
-                    parcAcces fich_parc("FICH_PARC.dat");
-                    
+                {                     
                     if(proto.donnees.inputDone.etat == true)
                     {
                         //verif si le poids du container est OK
@@ -337,24 +356,47 @@ void switchThread(protocole &proto)
                         {
                             
                             PT->tmpContaineur.poids = proto.donnees.inputDone.poids;
-                            //enregistrement dans FICH_PARC
-                            pthread_mutex_lock(&mutexFichParc);
-                            fich_parc.updateRecord(PT->tmpContaineur);
-                            pthread_mutex_unlock(&mutexFichParc);
 
-                            freePTMess();
-                            PT->message = new char[strlen("3#true#Container enregistre#%")+1];
-                            strcpy(PT->message, "3#true#Container enregistre#%");
+                            char x1 [10];
+                            sprintf(x1, "%d", PT->tmpContaineur.x);
+                            char y2 [10];
+                            sprintf(y2, "%d", PT->tmpContaineur.y);
+                            char poi [10];
+                            sprintf(poi, "%f", proto.donnees.inputDone.poids);
+                            
+                            //Construction du message
+                            int tail = strlen("protocol.PLAMAP.DonneeSendWeight#idContainer=#x=#y=#poids=") + 1 + strlen(PT->tmpContaineur.id) + strlen(x1) + strlen(y2) + strlen(poi);
+                            char * mes = (char*)malloc(tail);
+                            strcpy(mes, "protocol.PLAMAP.DonneeSendWeight#idContainer=");
+                            strcat(mes, PT->tmpContaineur.id);
+                            strcat(mes, "#x=");
+                            strcat(mes, x1);
+                            strcat(mes, "#y=");
+                            strcat(mes, y2);
+                            strcat(mes, "#poids=");
+                            strcat(mes, poi);
+                            mes[tail-1] = '\n';
+
+                            socketMouv.sendString(mes, tail);
+
+                            retour = socketMouv.receiveString(MTU, '#', '%');
+
+                            if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0)
+                            {               
+                                freePTMess();
+                                PT->message = new char[strlen("3#true#Container enregistre#%")+1];
+                                strcpy(PT->message, "3#true#Container enregistre#%");
+                            }
+                            else
+                            {
+                                freePTMess();
+                                PT->message = new char[strlen("3#false#Container non conforme#%")+1];
+                                strcpy(PT->message, "3#false#Container non conforme#%");
+                                PT->dernOpp = Init; 
+                            }
                         }
                         else
                         {
-                            PT->tmpContaineur.flagemplacement = 0;
-                            
-                            //libere la place dans FICH_PARC
-                            pthread_mutex_lock(&mutexFichParc);
-                            fich_parc.updateRecord(PT->tmpContaineur);
-                            pthread_mutex_unlock(&mutexFichParc);                       
-                            
                             freePTMess();
                             PT->message = new char[strlen("3#false#Container non conforme#%")+1];
                             strcpy(PT->message, "3#false#Container non conforme#%");
@@ -362,20 +404,11 @@ void switchThread(protocole &proto)
                         }
                     }
                     else
-                    {
-                        PT->tmpContaineur.flagemplacement = 0;
-                        
-                        //libere la place dans FICH_PARC
-                        pthread_mutex_lock(&mutexFichParc);
-                        fich_parc.updateRecord(PT->tmpContaineur);
-                        pthread_mutex_unlock(&mutexFichParc);
-                        
-                        freePTMess();
-                        PT->message = new char[strlen("3#false##%")+strlen(PT->nom)+1];
-                        strcpy(PT->message, "3#false#");
-                        strcat(PT->message, PT->nom);
-                        strcat(PT->message, "#%");
-                        PT->dernOpp = Init;
+                    {   
+                            freePTMess();
+                            PT->message = new char[strlen("3#false#Container non conforme#%")+1];
+                            strcpy(PT->message, "3#false#Container non conforme#%");
+                            PT->dernOpp = Init;
                     }
                 }
                 break;
@@ -559,7 +592,7 @@ void * fctThread(void * param)
 
     char* msgConfirmation = NULL;
     msgConfirmation = (char*)malloc(255);
-    strcpy(msgConfirmation, "0#true#Mise en place de la connection#%");
+    strcpy(msgConfirmation, "0#true#Mise en place de la connexion#%");
 
     portMouv = Configurator::getProperty("test.conf","MOUVEMENT-PORT");
     adresseMouv = Configurator::getProperty("test.conf","MOUVEMENT-ADRESS");
@@ -580,7 +613,7 @@ void * fctThread(void * param)
         exit(0);
     }
     
-
+    //Récupération du login et du mdp pour le login au serveur mouvement 
     pwdMouv = Configurator::getProperty("test.conf","SERVEUR-PASSWORD");
     loginMouv = Configurator::getProperty("test.conf","SERVEUR-NAME");
     if(pwdMouv == NULL || loginMouv == NULL)
@@ -588,7 +621,7 @@ void * fctThread(void * param)
         exit(0);
     }
 
-    
+    //Construction du message
     int tail = strlen("protocol.PLAMAP.DonneeLoginCont#username=#password=") + 1 + strlen(pwdMouv) + strlen(loginMouv);
     char * mes = (char*)malloc(tail);
     strcpy(mes, "protocol.PLAMAP.DonneeLoginCont#username=");
@@ -597,13 +630,22 @@ void * fctThread(void * param)
     strcat(mes, pwdMouv);
     mes[tail-1] = '\n';
 
-    cout << mes << " : est le message envoyé" << endl;
 
     socketMouv.sendString(mes, tail);
 
     retour = socketMouv.receiveString(MTU, '#', '%');
 
-    cout << "message recu : " << retour << endl;
+    //verification si la connexion est OK
+    if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0)
+    {
+        cout << "Connexion avec le serveur mouvement" << endl;
+    }
+    else
+    {
+        cout << "Erreur de connexion avec le serveur mouvement" << endl;
+        exit(-1);
+    }
+    
     
 
     while(true)
@@ -632,7 +674,7 @@ void * fctThread(void * param)
                 /*condition pour voir si le login à deja été effectué*/
                 if(PT->connect == true || proto.type == 1)
                 {
-                    switchThread(proto);
+                    switchThread(proto, socketMouv);
                 }
                 else
                 {

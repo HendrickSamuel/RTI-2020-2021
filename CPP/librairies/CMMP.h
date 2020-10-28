@@ -38,6 +38,7 @@ struct inputTruck
 {
 	char imCamion[10];
 	char idContainer[18];
+	char societe[50];
 };
 
 
@@ -45,7 +46,7 @@ struct inputTruck
 struct inputDone
 {
 	bool etat; // false = KO et true = OK
-	int  poids;
+	float  poids;
 };
 
 

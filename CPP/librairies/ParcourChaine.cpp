@@ -38,6 +38,16 @@ char* ParcourChaine::getSucces(char *retour)
     return pch;
 }
 
+//Fonction qui retourne la "validite" de la requête hors de la trame
+char* ParcourChaine::getSuccesServeur(char *retour)
+{
+    char *pch;
+    int place = 0;
+
+    pch = myTokenizer(retour, '#', &place);
+    return pch;
+}
+
 
 //Fonction qui retourne le message de la trame (peut contenir des données)
 char* ParcourChaine::getMessage(char *retour)

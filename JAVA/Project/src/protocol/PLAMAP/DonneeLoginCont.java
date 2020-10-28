@@ -73,6 +73,6 @@ public class DonneeLoginCont implements DonneeRequete, Serializable
     @Override
     public String toString()
     {
-        return  getType() + "";
+        return  getType() + "#";
     }
 }

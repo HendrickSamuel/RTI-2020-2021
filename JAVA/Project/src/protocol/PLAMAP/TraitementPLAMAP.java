@@ -11,6 +11,7 @@ import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
+import protocol.TRAMAP.ReponseTRAMAP;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -106,7 +107,36 @@ public class TraitementPLAMAP implements Traitement
     {
         System.out.println("traiteLOGINCONT");
         System.out.println(chargeUtile.toString());
-        return null;
+
+        String username = chargeUtile.getUsername();
+        String password = chargeUtile.getPassword();
+        if(client.is_loggedIn())
+        {
+            return new ReponsePLAMAP(ReponsePLAMAP.NOK, "Le client est deja connecte dans le serveur", null);
+        }
+
+        try {
+            PreparedStatement ps = _bd.getPreparedStatement("SELECT userpassword FROM logins WHERE UPPER(username) = UPPER(?) ;");
+            ps.setString(1, username);
+            ResultSet rs = _bd.ExecuteQuery(ps);
+            if(rs!=null && rs.next())
+            {
+                String bddpass = rs.getString("userpassword");
+                if(password.compareTo(bddpass) == 0)
+                {
+                    client.set_loggedIn(true);
+                    return new ReponsePLAMAP(ReponsePLAMAP.OK, null, chargeUtile);
+                }
+                else
+                {
+                    return new ReponsePLAMAP(ReponsePLAMAP.NOK, "Mot de passe ou nom d'utilisateur erroné", null);
+                }
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new ReponsePLAMAP(ReponsePLAMAP.NOK, "ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGETXY(DonneeGetXY chargeUtile, Client client)

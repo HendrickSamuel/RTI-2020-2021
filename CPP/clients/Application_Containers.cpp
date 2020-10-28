@@ -202,6 +202,8 @@ void switchSend(int choix, struct protocole &proto)
                 cin >> proto.donnees.inputTruck.imCamion;
                 cout << "\tEntrez l'identifiant du container : ";
                 cin >> proto.donnees.inputTruck.idContainer;
+                cout << "\tEntrez le nom de la societe : ";
+                cin >> proto.donnees.inputTruck.societe;
             }
             break;
 

@@ -40,6 +40,8 @@ class ParcourChaine
         static void getData(char *retour, int *type, char **succes, char **message);
         static char* myTokenizer(char *tampon, char token, int *place);
         static void createListe(char *donnees, Liste<Output> &listeOut);
+
+		static char* getSuccesServeur(char *retour);
 };
 
 #endif //PARCOURCHAINE_H

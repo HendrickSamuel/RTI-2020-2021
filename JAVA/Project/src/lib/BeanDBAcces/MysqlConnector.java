@@ -7,8 +7,6 @@
 
 package lib.BeanDBAcces;
 
-import com.mysql.cj.xdevapi.UpdateResult;
-
 import java.sql.*;
 import java.util.TimeZone;
 
