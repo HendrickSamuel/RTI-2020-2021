@@ -104,26 +104,36 @@ public class TraitementPLAMAP implements Traitement
 
     private Reponse traiteLOGINCONT(DonneeLoginCont chargeUtile, Client client)
     {
+        System.out.println("traiteLOGINCONT");
+        System.out.println(chargeUtile.toString());
         return null;
     }
 
     private Reponse traiteGETXY(DonneeGetXY chargeUtile, Client client)
     {
+        System.out.println("traiteGETXY");
+        System.out.println(chargeUtile.toString());
         return null;
     }
 
     private Reponse traiteGETLISTE(DonneeGetList chargeUtile, Client client)
     {
+        System.out.println("traiteGETLISTE");
+        System.out.println(chargeUtile.toString());
         return null;
     }
 
     private Reponse traiteSENDWEIGHT(DonneeSendWeight chargeUtile, Client client)
     {
+        System.out.println("traiteSENDWEIGHT");
+        System.out.println(chargeUtile.toString());
         return null;
     }
 
     private Reponse traiteSIGNALDEP(DonneeSignalDep chargeUtile, Client client)
     {
+        System.out.println("traiteSIGNALDEP");
+        System.out.println(chargeUtile.toString());
         return null;
     }
 
