@@ -13,10 +13,10 @@
 #include <iostream>
 #include <string.h>
 #include "iterateur.h"
+#include "Configurator.h"
 #include "ParcourChaine.h"
 #include "SocketsClient.h"
 #include "BaseException.h"
-#include "Configurator.h"
 
 #define MTU 5000
 

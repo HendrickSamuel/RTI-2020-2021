@@ -7,21 +7,25 @@
 
 #include "CMMP.h"
 #include "Trace.h"
-#include "ParcAcces.h"
-#include "StructParc.h"
 #include "liste.h"
 #include "Output.h"
-#include "Configurator.h"
 #include <stdio.h>     
 #include <iostream>
 #include <unistd.h> 
 #include <stdlib.h>
 #include <pthread.h>
+#include "ParcAcces.h"
+#include "StructParc.h"
+#include "Configurator.h"
+#include "ParcourChaine.h"
 #include "BaseException.h"
+#include "SocketsClient.h"
 #include "SocketsServeur.h"
 
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+
+#define MTU 5000
 
 //#define NB_MAX_CONNECTIONS 1
 
@@ -522,6 +526,14 @@ void switchThread(protocole &proto)
 
 void * fctThread(void * param)
 {
+    int port;
+    char *portMouv = NULL;
+    char *adresseMouv = NULL;
+    char *pwdMouv = NULL;
+    char *loginMouv = NULL;
+    char* retour = NULL;
+    SocketsClient  socketMouv;
+
     struct protocole proto;
     int* identite = (int*)malloc(sizeof(int));
     *identite = *((int *)param);
@@ -548,6 +560,42 @@ void * fctThread(void * param)
     char* msgConfirmation = NULL;
     msgConfirmation = (char*)malloc(255);
     strcpy(msgConfirmation, "0#true#Mise en place de la connection#%");
+
+    portMouv = Configurator::getProperty("test.conf","MOUVEMENT-PORT");
+    adresseMouv = Configurator::getProperty("test.conf","MOUVEMENT-ADRESS");
+    if(portMouv == NULL || adresseMouv == NULL)
+    {
+        exit(0);
+    }
+    
+    //Connexion a la socket du serveur MouvementPLAMAP
+    port = atoi(portMouv);
+    socketMouv.initSocket(adresseMouv, port);
+
+    pwdMouv = Configurator::getProperty("test.conf","SERVEUR-PASSWORD");
+    loginMouv = Configurator::getProperty("test.conf","SERVEUR-NAME");
+    if(pwdMouv == NULL || loginMouv == NULL)
+    {
+        exit(0);
+    }
+
+    
+    int tail = strlen("protocol.PLAMAP.DonneeLoginCont#username=#password=") + 1 + strlen(pwdMouv) + strlen(loginMouv);
+    char * mes = (char*)malloc(tail);
+    strcpy(mes, "protocol.PLAMAP.DonneeLoginCont#username=");
+    strcat(mes, loginMouv);
+    strcat(mes, "#password=");
+    strcat(mes, pwdMouv);
+    mes[tail-1] = '\n';
+
+    cout << mes << " : est le message envoyé" << endl;
+
+    socketMouv.sendString(mes, tail);
+
+    retour = socketMouv.receiveString(MTU, '#', '%');
+
+    cout << "message recu : " << retour << endl;
+    
 
     while(true)
     {
