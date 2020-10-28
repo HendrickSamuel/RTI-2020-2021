@@ -75,7 +75,7 @@ void SocketsClient::connectSocket(const char* host, int port)
     //TODO: verifier que this->hSocket est set (valide)
     if (connect(this->hSocket, (struct sockaddr *)&adresseSocket, sizeof(struct sockaddr_in)) == -1)
     {
-        throw BaseException("Erreur de connect");
+        throw BaseException("Erreur de connect\n");
     }
     else 
         printf("<OK> connect socket OK\n");

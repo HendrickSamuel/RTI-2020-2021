@@ -111,18 +111,24 @@ public class ThreadClientConnecte extends ThreadClient
         DataOutputStream dos = null;
         boolean inCommunication = false;
 
-        while(!isInterrupted()) {
-            try {
+        while(!isInterrupted())
+        {
+            try
+            {
                 tacheEnCours = _taches.getTache();
                 _client = new Client(); //nouveau client par connection
                 inCommunication = true;
-            } catch (InterruptedException e) {
+            }
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
                 inCommunication = false;
             }
 
-            while (!isInterrupted() && inCommunication) {
-                try {
+            while (!isInterrupted() && inCommunication)
+            {
+                try
+                {
                     dis = new DataInputStream(tacheEnCours.getInputStream());
                     dos = new DataOutputStream(tacheEnCours.getOutputStream());
 
@@ -133,11 +139,16 @@ public class ThreadClientConnecte extends ThreadClient
                     Reponse rp = _traitement.traiteRequete(req, _client);
                     dos.write(rp.toString().getBytes());
                     dos.flush();
-                } catch (IOException e) {
-                    if (e instanceof EOFException) {
+                }
+                catch (IOException e)
+                {
+                    if (e instanceof EOFException)
+                    {
                         inCommunication = false;
                         this.AfficheServeur("Le client s'est deconnecte");
-                    } else {
+                    }
+                    else
+                        {
                         inCommunication = false;
                         this.AfficheServeur("[Erreur] - " + e.getLocalizedMessage());
                     }
@@ -158,7 +169,9 @@ public class ThreadClientConnecte extends ThreadClient
                 if(b != '\n')
                     message.append((char)b);
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             e.printStackTrace();
         }
 

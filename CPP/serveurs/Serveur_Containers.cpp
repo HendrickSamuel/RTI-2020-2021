@@ -570,7 +570,16 @@ void * fctThread(void * param)
     
     //Connexion a la socket du serveur MouvementPLAMAP
     port = atoi(portMouv);
-    socketMouv.initSocket(adresseMouv, port);
+    try
+    {
+       socketMouv.initSocket(adresseMouv, port);
+    }
+    catch(BaseException ex)
+    {
+        cout << ex.getMessage() << endl;
+        exit(0);
+    }
+    
 
     pwdMouv = Configurator::getProperty("test.conf","SERVEUR-PASSWORD");
     loginMouv = Configurator::getProperty("test.conf","SERVEUR-NAME");

@@ -12,9 +12,11 @@ import lib.BeanDBAcces.BDMouvements;
 import javax.swing.*;
 import java.sql.SQLException;
 
-public class ServerLayout extends JFrame {
+public class ServerLayout extends JFrame
+{
 
-    public static void main (String[] args){
+    public static void main (String[] args)
+    {
         JFrame frame = new ServerLayout();
         frame.setVisible(true);
     }
@@ -34,6 +36,7 @@ public class ServerLayout extends JFrame {
     private JPanel mainPannel;
 
     private ServeurMouvement serveur1;
+    private ServeurMouvementPLAMAP serveur2;
     private ThreadServer th2;
 
     private int port1;
@@ -86,7 +89,7 @@ public class ServerLayout extends JFrame {
 
             ConsoleSwing cs = new ConsoleSwing(textArea1);
             MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
-            int port = Integer.parseInt(mp.getContent("PORT1"));
+            port1 = Integer.parseInt(mp.getContent("PORT1"));
 
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
@@ -94,10 +97,10 @@ public class ServerLayout extends JFrame {
             try
             {
                 bd = new BDMouvements(USER,PWD,"bd_mouvements");
-                serveur1 = new ServeurMouvement(port, true, 3, bd, cs);
+                serveur1 = new ServeurMouvement(port1, true, 3, bd, cs);
                 serveur1.StartServeur();
 
-                labelPort1.setText("PORT: " + port);
+                labelPort1.setText("PORT: " + port1);
             }
             catch (SQLException |ClassNotFoundException e)
             {
@@ -115,6 +118,37 @@ public class ServerLayout extends JFrame {
 
     private void ToggleServer2(java.awt.event.ActionEvent evt)
     {
+        if(serveur2 == null)
+        {
+            toggleServer2.setText("-- STOP --");
+            textArea2.setText(null);
 
+            ConsoleSwing cs = new ConsoleSwing(textArea2);
+            MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
+            port2 = Integer.parseInt(mp.getContent("PORT2"));
+
+            String USER = mp.getContent("BDUSER");
+            String PWD = mp.getContent("BDPWD");
+            BDMouvements bd = null;
+            try
+            {
+                bd = new BDMouvements(USER,PWD,"bd_mouvements");
+                serveur2 = new ServeurMouvementPLAMAP(port2, true, 3, bd, cs, false);
+                serveur2.StartServeur();
+
+                labelPort2.setText("PORT: " + port2);
+            }
+            catch (SQLException |ClassNotFoundException e)
+            {
+                cs.Affiche("Could not find DataBase to start on");
+                toggleServer2.setText("-- START --");
+            }
+
+        }
+        else
+        {
+            serveur2.StopServeur();
+            toggleServer2.setText("-- START --");
+        }
     }
 }
