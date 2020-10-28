@@ -14,10 +14,13 @@ public class TestServeur {
     public static void main(String[] args)
     {
         ServeurBateaux sb = new ServeurBateaux(5000,true, 5, null);
-        try {
+        try
+        {
             BDMouvements bd = new BDMouvements("root","root","bd_mouvements");
             sb.set_bdMouvement(bd);
-        } catch (SQLException | ClassNotFoundException throwables) {
+        }
+        catch (SQLException | ClassNotFoundException throwables)
+        {
             throwables.printStackTrace();
         }
         sb.StartServeur();

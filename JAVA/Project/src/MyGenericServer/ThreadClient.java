@@ -54,4 +54,16 @@ public abstract class ThreadClient extends Thread {
     public DataSource get_dataSource() {
         return _dataSource;
     }
+
+    protected void AfficheServeur(String message)
+    {
+        if(_console != null)
+        {
+            _console.Affiche(message);
+        }
+        else
+        {
+            System.err.println("-- Le serveur n'a pas de console dédiée pour ce message -- " + message);
+        }
+    }
 }

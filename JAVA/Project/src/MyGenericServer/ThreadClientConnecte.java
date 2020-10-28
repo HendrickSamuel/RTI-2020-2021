@@ -10,7 +10,6 @@ package MyGenericServer;
 import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Requete;
-import protocol.IOBREP.DonneeBoatArrived;
 
 import java.io.*;
 import java.net.Socket;
@@ -29,8 +28,6 @@ public class ThreadClientConnecte extends ThreadClient
     /********************************/
     public ThreadClientConnecte()
     {
-        System.out.println("DEMARRAGE ThreadClientConnecte");
-        _client = new Client();
     }
 
     /********************************/
@@ -47,12 +44,11 @@ public class ThreadClientConnecte extends ThreadClient
     @Override
     public void run()
     {
-        System.out.println("Demarrage du Thread: " + index);
+        this.AfficheServeur("Demarrage du Thread: " + index);
         if(this.is_javaObjectsCommunication())
             runJavaObject();
         else
             runByteStream();
-
     }
 
     public void runJavaObject()
@@ -81,7 +77,7 @@ public class ThreadClientConnecte extends ThreadClient
                     oos = new ObjectOutputStream(tacheEnCours.getOutputStream());
 
                     req = (Requete)ois.readObject();
-                    System.out.println("Requete lue par le serveur, instance de " +
+                    this.AfficheServeur("Requete lue par le serveur, instance de " +
                             req.getClass().getName() + " et " + req.getChargeUtile().getClass().getName());
 
                     Reponse rp = _traitement.traiteRequete(req.getChargeUtile(), _client);
@@ -90,12 +86,14 @@ public class ThreadClientConnecte extends ThreadClient
                 }
                 catch (ClassNotFoundException e)
                 {
-                    System.err.println("Erreur de def de classe [" + e.getMessage() + "]");
-                } catch (IOException e) {
+                    this.AfficheServeur("Erreur de def de classe [" + e.getMessage() + "]");
+                }
+                catch (IOException e)
+                {
                     if(e instanceof EOFException)
                     {
                         inCommunication = false;
-                        System.out.println("Le client s'est deconnecte");
+                        this.AfficheServeur("Le client s'est deconnecte");
                     }
                     else
                     {
@@ -130,7 +128,7 @@ public class ThreadClientConnecte extends ThreadClient
 
                     String message = readAllBytes(dis);
                     DonneeRequete req = parseString(message);
-                    System.out.println("Requete lue par le serveur, instance de " + req.getClass().getName());
+                    this.AfficheServeur("Requete lue par le serveur, instance de " + req.getClass().getName());
 
                     Reponse rp = _traitement.traiteRequete(req, _client);
                     dos.write(rp.toString().getBytes());
@@ -138,10 +136,10 @@ public class ThreadClientConnecte extends ThreadClient
                 } catch (IOException e) {
                     if (e instanceof EOFException) {
                         inCommunication = false;
-                        System.out.println("Le client s'est deconnecte");
+                        this.AfficheServeur("Le client s'est deconnecte");
                     } else {
                         inCommunication = false;
-                        e.printStackTrace();
+                        this.AfficheServeur("[Erreur] - " + e.getLocalizedMessage());
                     }
                 }
             }
@@ -169,7 +167,8 @@ public class ThreadClientConnecte extends ThreadClient
 
     public DonneeRequete parseString(String message)
     {
-        //return new DonneeBoatArrived();
+        String[] parametres = message.split("#");
+        System.out.println("Objet reçu: " + parametres[0]);
         // todo: stuff
         return null;
     }

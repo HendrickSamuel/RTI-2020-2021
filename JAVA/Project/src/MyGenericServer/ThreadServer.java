@@ -13,6 +13,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -80,7 +81,8 @@ public class ThreadServer extends Thread
             {
                 CSocket = SSocket.accept();
                 this.AfficheServeur("Réception d'un client: " + CSocket.getInetAddress());
-                _sourceTaches.addTache(CSocket);
+                 if(!_sourceTaches.addTache(CSocket))
+                     ReponseResourceOccupee(CSocket, this._errorResponse);
             }
             catch (IOException e)
             {
@@ -104,6 +106,7 @@ public class ThreadServer extends Thread
 
     private void ReponseResourceOccupee(Socket sock, Reponse reponse)
     {
+        AfficheServeur("Un client tente de se connecter sans ressources disponibles");
         try
         {
             if(this.is_javaObjectsCommunication())
@@ -111,7 +114,7 @@ public class ThreadServer extends Thread
             else
                 ReponseBytes(sock, reponse);
         } catch (IOException e) {
-            e.printStackTrace();
+            AfficheServeur("[Erreur] - "+e.getLocalizedMessage());
         }
     }
 
