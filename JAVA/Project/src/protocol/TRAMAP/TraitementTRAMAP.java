@@ -23,6 +23,9 @@ import java.util.List;
 
 public class TraitementTRAMAP implements Traitement
 {
+    /********************************/
+    /*           Variables          */
+    /********************************/
     BDMouvements _bd;
     ConsoleServeur _cs;
 
@@ -78,7 +81,8 @@ public class TraitementTRAMAP implements Traitement
     }
 
     @Override
-    public void AfficheTraitement(String message) {
+    public void AfficheTraitement(String message)
+    {
         if (_cs != null)
         {
             _cs.Affiche(message);

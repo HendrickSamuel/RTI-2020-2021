@@ -17,6 +17,7 @@ public class DonneeSignalDep implements DonneeRequete, Serializable
     /********************************/
     private String idTransporteur;
     private List<String> ListIdCont;
+    private int type;
 
 
     /********************************/
@@ -24,19 +25,25 @@ public class DonneeSignalDep implements DonneeRequete, Serializable
     /********************************/
     public DonneeSignalDep()
     {
-
+        this.type = 5;
     }
 
     public DonneeSignalDep(String idTransporteur, List<String> listIdCont)
     {
         this.idTransporteur = idTransporteur;
         ListIdCont = listIdCont;
+        this.type = 5;
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public int getType()
+    {
+        return type;
+    }
+
     public String getIdTransporteur()
     {
         return idTransporteur;
@@ -65,5 +72,9 @@ public class DonneeSignalDep implements DonneeRequete, Serializable
     /********************************/
     /*            Methodes          */
     /********************************/
-
+    @Override
+    public String toString()
+    {
+        return  getType() + "";
+    }
 }

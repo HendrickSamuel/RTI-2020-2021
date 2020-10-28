@@ -128,7 +128,6 @@ public class ThreadClientConnecte extends ThreadClient
                     dis = new DataInputStream(tacheEnCours.getInputStream());
                     dos = new DataOutputStream(tacheEnCours.getOutputStream());
 
-                    //req = (Requete) ois.readObject();
                     String message = readAllBytes(dis);
                     DonneeRequete req = parseString(message);
                     System.out.println("Requete lue par le serveur, instance de " + req.getClass().getName());

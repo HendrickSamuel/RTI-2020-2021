@@ -386,8 +386,6 @@ void switchThread(protocole &proto)
                     liste = fich_parc.searchDestination(proto.donnees.outputReady.dest, &(PT->nbrEnv));
                     pthread_mutex_unlock(&mutexFichParc);
 
-                    cout << "test" << endl;
-
                     if(liste != NULL) 
                     {
                         freePTMess();

@@ -10,12 +10,11 @@ import genericRequest.Reponse;
 
 import java.io.Serializable;
 
-public class ReponseIOBREP implements Reponse, Serializable {
-
+public class ReponseIOBREP implements Reponse, Serializable
+{
     /********************************/
     /*           Variables          */
     /********************************/
-
     public static int OK = 200;
     public static int NOK = 400;
     public static int REQUEST_NOT_FOUND = 404;
@@ -27,7 +26,8 @@ public class ReponseIOBREP implements Reponse, Serializable {
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ReponseIOBREP(int _code, DonneeRequete _chargeUtile, String _message) {
+    public ReponseIOBREP(int _code, DonneeRequete _chargeUtile, String _message)
+    {
         this._code = _code;
         this._chargeUtile = _chargeUtile;
         this._message = _message;
@@ -45,15 +45,18 @@ public class ReponseIOBREP implements Reponse, Serializable {
     /*            Methodes          */
     /********************************/
     @Override
-    public int getCode() {
+    public int getCode()
+    {
         return _code;
     }
 
-    public DonneeRequete get_chargeUtile() {
+    public DonneeRequete get_chargeUtile()
+    {
         return _chargeUtile;
     }
 
-    public String get_message() {
+    public String get_message()
+    {
         return _message;
     }
 }

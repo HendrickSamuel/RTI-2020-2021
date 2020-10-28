@@ -17,6 +17,7 @@ public class DonneeSendWeight implements DonneeRequete, Serializable
     private int x;
     private int y;
     private float poids;
+    private int type;
 
 
     /********************************/
@@ -24,7 +25,7 @@ public class DonneeSendWeight implements DonneeRequete, Serializable
     /********************************/
     public DonneeSendWeight()
     {
-
+        this.type = 3;
     }
 
     public DonneeSendWeight(String idContainer, int x, int y, float poids)
@@ -33,12 +34,18 @@ public class DonneeSendWeight implements DonneeRequete, Serializable
         this.x = x;
         this.y = y;
         this.poids = poids;
+        this.type = 3;
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public int getType()
+    {
+        return type;
+    }
+
     public String getIdContainer()
     {
         return idContainer;
@@ -87,5 +94,9 @@ public class DonneeSendWeight implements DonneeRequete, Serializable
     /********************************/
     /*            Methodes          */
     /********************************/
-
+    @Override
+    public String toString()
+    {
+        return  getType() + "";
+    }
 }

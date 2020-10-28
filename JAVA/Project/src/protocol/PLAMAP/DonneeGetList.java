@@ -17,6 +17,7 @@ public class DonneeGetList implements DonneeRequete, Serializable
     private String idTransporteur;
     private String destination;
     private int nombreMax;
+    private int type;
 
     private List<Container> listCont;
 
@@ -26,7 +27,7 @@ public class DonneeGetList implements DonneeRequete, Serializable
     /********************************/
     public DonneeGetList()
     {
-
+      this.type = 4;
     }
 
     public DonneeGetList(String idTransporteur, String destination, int nombreMax)
@@ -34,12 +35,18 @@ public class DonneeGetList implements DonneeRequete, Serializable
         this.idTransporteur = idTransporteur;
         this.destination = destination;
         this.nombreMax = nombreMax;
+        this.type = 4;
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public int getType()
+    {
+        return type;
+    }
+
     public String getIdTransporteur()
     {
         return idTransporteur;
@@ -53,6 +60,11 @@ public class DonneeGetList implements DonneeRequete, Serializable
     public int getNombreMax()
     {
         return nombreMax;
+    }
+
+    public List<Container> getListCont()
+    {
+        return listCont;
     }
 
 
@@ -74,6 +86,10 @@ public class DonneeGetList implements DonneeRequete, Serializable
         this.nombreMax = nombreMax;
     }
 
+    public void setListCont(List<Container> listCont)
+    {
+        this.listCont = listCont;
+    }
 
     /********************************/
     /*            Methodes          */
@@ -81,8 +97,13 @@ public class DonneeGetList implements DonneeRequete, Serializable
     @Override
     public String toString()
     {
-        return "DonneeGetList{" +
-                "listCont=" + listCont +
-                '}';
+        String s = getType() + "#";
+
+        for(int i = 0 ; i < getListCont().size() ; i++)
+        {
+            s = s + getListCont().get(i).toString();
+        }
+
+        return s;
     }
 }

@@ -13,6 +13,7 @@ public class DonneeLoginCont implements DonneeRequete, Serializable
     /********************************/
     /*           Variables          */
     /********************************/
+    private int type;
     private String username;
     private String password;
 
@@ -22,11 +23,12 @@ public class DonneeLoginCont implements DonneeRequete, Serializable
     /********************************/
     public DonneeLoginCont()
     {
-
+        this.type = 1;
     }
 
     public DonneeLoginCont(String username, String password)
     {
+        this.type = 1;
         this.username = username;
         this.password = password;
     }
@@ -35,6 +37,11 @@ public class DonneeLoginCont implements DonneeRequete, Serializable
     /********************************/
     /*            Getters           */
     /********************************/
+    public int getType()
+    {
+        return type;
+    }
+
     public String getUsername()
     {
         return username;
@@ -63,5 +70,9 @@ public class DonneeLoginCont implements DonneeRequete, Serializable
     /********************************/
     /*            Methodes          */
     /********************************/
-
+    @Override
+    public String toString()
+    {
+        return  getType() + "";
+    }
 }

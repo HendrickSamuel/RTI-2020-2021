@@ -14,26 +14,44 @@ public class RequetePLAMAP implements Requete, Serializable
     /********************************/
     /*           Variables          */
     /********************************/
+    private DonneeRequete chargeUtile;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public RequetePLAMAP()
+    {
+
+    }
+
+    public RequetePLAMAP(DonneeRequete chargeUtile)
+    {
+        this.chargeUtile = chargeUtile;
+    }
+
 
     /********************************/
     /*            Getters           */
     /********************************/
+    @Override
+    public DonneeRequete getChargeUtile()
+    {
+        return chargeUtile;
+    }
+
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setChargeUtile(DonneeRequete chargeUtile)
+    {
+        this.chargeUtile = chargeUtile;
+    }
+
 
     /********************************/
     /*            Methodes          */
     /********************************/
-    @Override
-    public DonneeRequete getChargeUtile()
-    {
-        return null;
-    }
 
 }

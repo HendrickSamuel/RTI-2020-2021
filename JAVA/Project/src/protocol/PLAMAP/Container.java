@@ -77,10 +77,6 @@ public class Container implements Serializable
     @Override
     public String toString()
     {
-        return "Container{" +
-                "id='" + id + '\'' +
-                ", x=" + x +
-                ", y=" + y +
-                '}';
+        return getId() + "@" + getX() + "@" + getY() + "/";
     }
 }

@@ -17,6 +17,7 @@ public class DonneeGetXY implements DonneeRequete, Serializable
     private String immatriculationCamion;
     private String idContainer;
 
+    private int type;
     private String numReservation;
     private int x;
     private int y;
@@ -27,7 +28,7 @@ public class DonneeGetXY implements DonneeRequete, Serializable
     /********************************/
     public DonneeGetXY()
     {
-
+        this.type = 2;
     }
 
     public DonneeGetXY(String numReservation, int x, int y)
@@ -35,6 +36,7 @@ public class DonneeGetXY implements DonneeRequete, Serializable
         this.numReservation = numReservation;
         this.x = x;
         this.y = y;
+        this.type = 2;
     }
 
     public DonneeGetXY(String societe, String immatriculationCamion, String idContainer)
@@ -42,12 +44,18 @@ public class DonneeGetXY implements DonneeRequete, Serializable
         this.societe = societe;
         this.immatriculationCamion = immatriculationCamion;
         this.idContainer = idContainer;
+        this.type = 2;
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public int getType()
+    {
+        return type;
+    }
+
     public String getSociete()
     {
         return societe;
@@ -119,10 +127,6 @@ public class DonneeGetXY implements DonneeRequete, Serializable
     @Override
     public String toString()
     {
-        return "DonneeGetXY{" +
-                "numReservation='" + numReservation + '\'' +
-                ", x=" + x +
-                ", y=" + y +
-                '}';
+        return getType() + "#" + getNumReservation() + "#" + getX() + "/" + getY();
     }
 }
