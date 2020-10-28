@@ -13,6 +13,7 @@
 #include <iostream>
 #include <string.h>
 #include "iterateur.h"
+#include "ParcourChaine.h"
 #include "SocketsClient.h"
 #include "BaseException.h"
 #include "Configurator.h"
@@ -28,15 +29,8 @@ using namespace std;
 
 void    afficheMenu();
 void    afficheEntete();
-int     getType(char *retour);
-char*   getSucces(char *retour);
-char*   getMessage(char *retour);
-void    createListe(char *donnees);
 void    switchReceive(char *retour);
-void    getCoordonees(char *retour, int *coordonees);
 void    switchSend(int choix, struct protocole &proto);
-char*   myTokenizer(char *tampon, char token, int *place);
-void    getData(char *retour, int *type, char **succes, char **message);
 
 
 /********************************/
@@ -81,7 +75,7 @@ int main(int argc, char *argv[])
         char *succes = NULL;
         char *message = NULL;
 
-        getData(retour, &type, &succes, &message);
+        ParcourChaine::getData(retour, &type, &succes, &message);
 
         if(strcmp(succes, "true") == 0)
         {
@@ -318,7 +312,7 @@ void switchReceive(char *retour)
     char *succes = NULL;
     char *message = NULL;
 
-    getData(retour, &type, &succes, &message);
+    ParcourChaine::getData(retour, &type, &succes, &message);
 
     switch(type)
     {
@@ -339,7 +333,7 @@ void switchReceive(char *retour)
             if(strcmp("true",succes) == 0)
             {
                 int coord[2];
-                getCoordonees(message, coord);
+                ParcourChaine::getCoordonees(message, coord);
                 cout << endl << "InputTruck OK : place du container " << "[" << coord[0] << "] [" << coord[1] << "]" << endl << endl;
             }
             else
@@ -367,7 +361,7 @@ void switchReceive(char *retour)
             {
                 cout << endl << "OutputReady OK : vous trouverez la liste des container sous Output One" << endl << endl;
 
-                createListe(message);
+                ParcourChaine::createListe(message, listeOut);
             }
             else
             {
@@ -413,151 +407,5 @@ void switchReceive(char *retour)
                 cout << endl << "Deconnexion echouee :" << message << endl << endl;
             }
             break;
-    }
-}
-
-
-//Fonction qui retourne le type de requête hors de la trame
-int getType(char *retour)
-{
-    char *pch;
-    int place = 0;
-    
-    pch = myTokenizer(retour, '#', &place);
-
-    return atoi(pch);
-}
-
-
-//Fonction qui retourne la "validite" de la requête hors de la trame
-char* getSucces(char *retour)
-{
-    char *pch;
-    int place = 0;
-    
-    pch = myTokenizer(retour, '#', &place);
-    free(pch);
-
-    pch = myTokenizer(retour, '#', &place);
-    return pch;
-}
-
-
-//Fonction qui retourne le message de la trame (peut contenir des données)
-char* getMessage(char *retour)
-{
-    char *pch;
-    int place = 0;
-
-    pch = myTokenizer(retour, '#', &place);
-    free(pch);
-    pch = myTokenizer(retour, '#', &place);
-    free(pch);
-
-    pch = myTokenizer(retour, '#', &place);
-    return pch;
-}
-
-
-//Fonction qui récupere les coodronées dans le message
-void getCoordonees(char *retour, int *coordonees)
-{
-    char *pch;
-    int place = 0;
-
-    pch = myTokenizer(retour, '/', &place);
-    coordonees[0] = atoi(pch);
-    free(pch);
-
-    pch = myTokenizer(retour, '\0', &place);
-    coordonees[1] = atoi(pch);
-    free(pch);
-}
-
-
-//Fonction qui permet d'avoir le type, la validité et le message d'un coup
-void getData(char *retour, int *type, char **succes, char **message)
-{
-    char *pch;
-    int place = 0;
-
-    pch = myTokenizer(retour, '#', &place);
-    *type = atoi(pch);
-    free(pch);
-
-    pch = myTokenizer(retour, '#', &place);
-    *succes = pch;
-
-    pch = myTokenizer(retour, '#', &place);
-    *message = pch;  
-}
-
-
-//Séparateur de chaine de caractère
-char* myTokenizer(char *tampon, char token, int *place)
-{
-    bool search = true;
-    char *retour = NULL;
-    char *pT = NULL;
-    int taille = 0;
-    pT = tampon;
-
-    while(search)
-    {
-        if(pT[*place] == token)
-        {
-            search = false;
-        }
-        else if(pT[*place] == '\0')
-        {
-            search = false;
-        }
-        else
-        {
-            (*place)++;
-            taille++;
-        }
-    }
-
-    if(taille > 0)
-    {
-        retour = (char*)malloc(taille+1);
-        memcpy(retour, &pT[*place-taille], (taille));
-        retour[taille] = '\0';
-
-        if(pT[*place] != '\0')
-        {
-            (*place)++;
-        }
-        return retour;
-    }
-    else
-    {
-        return NULL;
-    }
-}
-
-
-//Fonction qui crée la liste de container 
-//    à afficher pour le Output One
-void createListe(char *donnees)
-{
-    char *pch;
-    int place = 0;
-    Output out;
-
-    while( (pch = myTokenizer(donnees, '@', &place)) != NULL)
-    {
-        out.setId(pch);
-
-        pch = myTokenizer(donnees, '@', &place);
-        out.setX(atoi(pch));
-        free(pch);
-
-        pch = myTokenizer(donnees, '/', &place);
-        out.setY(atoi(pch));
-        free(pch);
-
-        listeOut.insere(out);
     }
 }

@@ -8,7 +8,7 @@ CLIENT = ./clients
 
 INCL = -I $(LIBRAIRIE)/ -I $(SERVEURS)/
 GPP = g++ -m64 -Wall -lnsl -pthread $(INCL) -D CPP -D LINUX #-D DEV -D DEVPLUS
-LIBRAIRIE_O = Sockets.o SocketsServeur.o SocketsClient.o BaseException.o Trace.o Configurator.o ListeBase.o Liste.o Iterateur.o Output.o
+LIBRAIRIE_O = Sockets.o SocketsServeur.o SocketsClient.o BaseException.o Trace.o Configurator.o ListeBase.o Liste.o Iterateur.o Output.o ParcourChaine.o
 
 SERVERCONTAINERS_OBJS = $(LIBRAIRIE_O) ./ParcAcces.o
 CLIENTCONTAINERS_OBJS = $(LIBRAIRIE_O)
@@ -66,3 +66,7 @@ Iterateur.o: $(LIBRAIRIE)/Iterateur.cpp $(LIBRAIRIE)/Iterateur.h
 Output.o: $(LIBRAIRIE)/Output.cpp $(LIBRAIRIE)/Output.h
 	echo Creation de Output.o
 	$(GPP) -c $(LIBRAIRIE)/Output.cpp -o Output.o
+
+ParcourChaine.o: $(LIBRAIRIE)/ParcourChaine.cpp $(LIBRAIRIE)/ParcourChaine.h
+	echo Creation de ParcourChaine.o
+	$(GPP) -c $(LIBRAIRIE)/ParcourChaine.cpp -o ParcourChaine.o
