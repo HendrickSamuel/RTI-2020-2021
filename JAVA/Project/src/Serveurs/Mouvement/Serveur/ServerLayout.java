@@ -107,11 +107,11 @@ public class ServerLayout extends JFrame
                 cs.Affiche("Could not find DataBase to start on");
                 toggleServer1.setText("-- START --");
             }
-
         }
         else
         {
             serveur1.StopServeur();
+            serveur1 = null;
             toggleServer1.setText("-- START --");
         }
     }
@@ -148,6 +148,7 @@ public class ServerLayout extends JFrame
         else
         {
             serveur2.StopServeur();
+            serveur2 = null;
             toggleServer2.setText("-- START --");
         }
     }

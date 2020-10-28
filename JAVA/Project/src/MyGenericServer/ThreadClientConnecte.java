@@ -10,6 +10,7 @@ package MyGenericServer;
 import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Requete;
+import protocol.PLAMAP.DonneeLoginCont;
 
 import java.io.*;
 import java.net.Socket;
@@ -181,8 +182,21 @@ public class ThreadClientConnecte extends ThreadClient
     public DonneeRequete parseString(String message)
     {
         String[] parametres = message.split("#");
+        String[] row;
         System.out.println("Objet reçu: " + parametres[0]);
-        // todo: stuff
+        try {
+            DonneeRequete dr = (DonneeRequete)Class.forName(parametres[0]).newInstance();
+            if(dr instanceof DonneeLoginCont)
+            {
+                row = parametres[1].split("=");
+                ((DonneeLoginCont)dr).setUsername(row[1]);
+                row = parametres[2].split("=");
+                ((DonneeLoginCont)dr).setPassword(row[0]);
+                return dr;
+            }
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }

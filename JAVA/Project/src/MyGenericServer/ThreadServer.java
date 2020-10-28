@@ -9,13 +9,8 @@ package MyGenericServer;
 
 import genericRequest.Reponse;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 
 public class ThreadServer extends Thread
 {
@@ -66,7 +61,9 @@ public class ThreadServer extends Thread
         try
         {
             SSocket = new ServerSocket(_port);
-            this.AfficheServeur("Demarrage du serveur : "+ InetAddress.getLocalHost().getHostAddress() + ":" + _port);
+            this.AfficheServeur("Demarrage du serveur sur l'adresse locale: "+ InetAddress.getLocalHost().getHostAddress() + ":" + _port);
+            this.AfficheServeur("Demarrage du serveur sur l'adresse publique : "+ this.getPublicIp() + ":" + _port);
+
         }
         catch (IOException e)
         {
@@ -128,6 +125,24 @@ public class ThreadServer extends Thread
         DataOutputStream dos = new DataOutputStream(sock.getOutputStream());
         dos.write(reponse.toString().getBytes());
         dos.flush();
+    }
+
+    private String getPublicIp()
+    {
+        String systemipaddress;
+        try
+        {
+            URL url_name = new URL("http://bot.whatismyipaddress.com");
+
+            BufferedReader sc =
+                    new BufferedReader(new InputStreamReader(url_name.openStream()));
+            systemipaddress = sc.readLine().trim();
+        }
+        catch (Exception e)
+        {
+            systemipaddress = "Could not find Public IP";
+        }
+        return systemipaddress;
     }
 
 }
