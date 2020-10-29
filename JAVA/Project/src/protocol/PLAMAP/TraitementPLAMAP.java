@@ -141,6 +141,7 @@ public class TraitementPLAMAP implements Traitement
 
     private Reponse traiteGETXY(DonneeGetXY chargeUtile, Client client)
     {
+
         System.out.println("traiteGETXY");
         System.out.println(chargeUtile.toString());
         return null;
@@ -155,6 +156,7 @@ public class TraitementPLAMAP implements Traitement
 
     private Reponse traiteSENDWEIGHT(DonneeSendWeight chargeUtile, Client client)
     {
+        //todo: si ok retourné la charge utile sinon bug et mettre le containrer en statut 2
         System.out.println("traiteSENDWEIGHT");
         System.out.println(chargeUtile.toString());
         return null;
