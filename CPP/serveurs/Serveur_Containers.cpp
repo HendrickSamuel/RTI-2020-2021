@@ -307,6 +307,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
 
                     retour = socketMouv.receiveString(MTU, '#', '%');
 
+
+
                     //verification si la requete est OK
                     if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0)
                     {               
@@ -316,10 +318,13 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                         
                         char* coord = ParcourChaine::getMessage(retour);
 
+                            cout << "teste de coord : " << coord << endl;
+
                         int coo[2];
 
+cout << "teste 1 : " << endl;
                         ParcourChaine::getCoordonees(coord, coo);
-
+ cout << "teste 2 : " << endl;
                         PT->tmpContaineur.x = coo[0];
                         PT->tmpContaineur.y = coo[1];
 
