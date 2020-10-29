@@ -190,6 +190,7 @@ public class TraitementPLAMAP implements Traitement
 
     private Reponse traiteGETLISTE(DonneeGetList chargeUtile, Client client)
     {
+        //todo
         System.out.println("traiteGETLISTE");
         System.out.println(chargeUtile.toString());
         return null;

@@ -108,7 +108,7 @@ public class DonneeSendWeight implements DonneeRequete, Serializable
         for(int i = 1; i < parametres.length; i++)
         {
             row = parametres[i].split("=");
-            switch (row[i])
+            switch (row[0])
             {
                 case "idContainer": this.setIdContainer(row[1]); break;
                 case "x": this.setX(Integer.parseInt(row[1])); break;

@@ -42,6 +42,7 @@ class ParcourChaine
         static void createListe(char *donnees, Liste<Output> &listeOut);
 
 		static char* getSuccesServeur(char *retour);
+		static void getCoordoneesServeur(char *retour, int *coordonees);
 };
 
 #endif //PARCOURCHAINE_H

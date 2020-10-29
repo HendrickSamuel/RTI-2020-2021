@@ -80,6 +80,30 @@ void ParcourChaine::getCoordonees(char *retour, int *coordonees)
     free(pch);
 }
 
+//Fonction qui récupere les coodronées dans le message
+void ParcourChaine::getCoordoneesServeur(char *retour, int *coordonees)
+{
+    char *pch;
+    int place = 0;
+
+    pch = myTokenizer(retour, '#', &place);
+    free(pch);
+
+    pch = myTokenizer(retour, '#', &place);
+    free(pch);
+
+    pch = myTokenizer(retour, '#', &place);
+    free(pch);
+
+    pch = myTokenizer(retour, '/', &place);
+    coordonees[0] = atoi(pch);
+    free(pch);
+
+    pch = myTokenizer(retour, '#', &place);
+    coordonees[1] = atoi(pch);
+    free(pch);
+}
+
 
 //Fonction qui permet d'avoir le type, la validité et le message d'un coup
 void ParcourChaine::getData(char *retour, int *type, char **succes, char **message)

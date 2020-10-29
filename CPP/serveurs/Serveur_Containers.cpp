@@ -314,16 +314,12 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                     {               
 
                         strcpy(PT->tmpContaineur.id, proto.donnees.inputTruck.idContainer);
-                        PT->tmpContaineur.flagemplacement = 1;
-                        
-                        char* coord = ParcourChaine::getMessage(retour);
-
-                            cout << "teste de coord : " << coord << endl;
+                        PT->tmpContaineur.flagemplacement = 1;                 
 
                         int coo[2];
 
 cout << "teste 1 : " << endl;
-                        ParcourChaine::getCoordonees(coord, coo);
+                        ParcourChaine::getCoordoneesServeur(retour, coo);
  cout << "teste 2 : " << endl;
                         PT->tmpContaineur.x = coo[0];
                         PT->tmpContaineur.y = coo[1];
@@ -429,7 +425,7 @@ cout << "teste 1 : " << endl;
                     int tail = strlen("protocol.PLAMAP.DonneeGetList#idTransporteur=#destination=#nombreMax=") + 1 + strlen(proto.donnees.outputReady.id) + strlen(proto.donnees.outputReady.dest) + strlen(cap);
                     char * mes = (char*)malloc(tail);
                     strcpy(mes, "protocol.PLAMAP.DonneeGetList#idTransporteur=");
-                    strcat(mes, PT->tmpContaineur.id);
+                    strcat(mes, proto.donnees.outputReady.id);
                     strcat(mes, "#destination=");
                     strcat(mes, proto.donnees.outputReady.dest);
                     strcat(mes, "#nombreMax=");
