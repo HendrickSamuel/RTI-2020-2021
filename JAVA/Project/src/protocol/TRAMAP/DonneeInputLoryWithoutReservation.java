@@ -13,6 +13,7 @@ import java.io.Serializable;
 
 public class DonneeInputLoryWithoutReservation implements DonneeRequete, Serializable
 {
+    private static final long serialVersionUID = 352398473577430745L;
     /********************************/
     /*           Variables          */
     /********************************/
@@ -99,5 +100,13 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
     public void setSociete(String societe)
     {
         this.societe = societe;
+    }
+
+    /********************************/
+    /*            Methodes          */
+    /********************************/
+    @Override
+    public void setFiledsFromString(String fields) {
+
     }
 }

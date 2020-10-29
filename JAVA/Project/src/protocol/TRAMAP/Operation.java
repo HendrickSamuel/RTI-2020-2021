@@ -10,6 +10,7 @@ import java.util.Date;
 
 public class Operation implements Serializable
 {
+    private static final long serialVersionUID = 9125510080211771328L;
 
     /********************************/
     /*           Variables          */

@@ -14,6 +14,7 @@ import java.util.Properties;
 
 public class ReponseTRAMAP implements Reponse, Serializable
 {
+    private static final long serialVersionUID = -7113131332807602954L;
     /********************************/
     /*           Variables          */
     /********************************/

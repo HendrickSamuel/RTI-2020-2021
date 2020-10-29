@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 public class ReponsePLAMAP implements Reponse, Serializable
 {
+    private static final long serialVersionUID = 928512451231093947L;
     /********************************/
     /*           Variables          */
     /********************************/

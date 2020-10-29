@@ -134,6 +134,7 @@ public class ThreadClientConnecte extends ThreadClient
                     dos = new DataOutputStream(tacheEnCours.getOutputStream());
 
                     String message = readAllBytes(dis);
+                    System.out.println("Recu: " + message);
                     DonneeRequete req = parseString(message);
                     this.AfficheServeur("Requete lue par le serveur, instance de " + req.getClass().getName());
 
@@ -158,25 +159,18 @@ public class ThreadClientConnecte extends ThreadClient
         }
     }
 
-    public String readAllBytes(DataInputStream dis)
-    {
+    public String readAllBytes(DataInputStream dis) throws IOException {
         StringBuffer message = new StringBuffer();
         byte b = 0;
         message.setLength(0);
-        try
+        while((b = dis.readByte()) != (byte)'\n')
         {
-            while((b = dis.readByte()) != (byte)'\n')
-            {
-                if(b != '\n')
-                    message.append((char)b);
-            }
+            if(b != '\n')
+                message.append((char)b);
         }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
         return message.toString().trim();
+
+
     }
 
     public DonneeRequete parseString(String message)
@@ -186,14 +180,8 @@ public class ThreadClientConnecte extends ThreadClient
         System.out.println("Objet reçu: " + parametres[0]);
         try {
             DonneeRequete dr = (DonneeRequete)Class.forName(parametres[0]).newInstance();
-            if(dr instanceof DonneeLoginCont)
-            {
-                row = parametres[1].split("=");
-                ((DonneeLoginCont)dr).setUsername(row[1]);
-                row = parametres[2].split("=");
-                ((DonneeLoginCont)dr).setPassword(row[0]);
-                return dr;
-            }
+            dr.setFiledsFromString(message);
+            return dr;
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
         }

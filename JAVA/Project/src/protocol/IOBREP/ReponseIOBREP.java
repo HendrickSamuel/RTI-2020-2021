@@ -12,6 +12,7 @@ import java.io.Serializable;
 
 public class ReponseIOBREP implements Reponse, Serializable
 {
+    private static final long serialVersionUID = 614841574279229577L;
     /********************************/
     /*           Variables          */
     /********************************/

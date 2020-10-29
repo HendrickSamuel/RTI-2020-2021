@@ -9,7 +9,6 @@ import java.sql.SQLException;
 
 public class BDCompta extends MysqlConnector
 {
-
     /********************************/
     /*           Variables          */
     /********************************/

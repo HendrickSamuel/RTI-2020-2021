@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 public class DonneeLoginCont implements DonneeRequete, Serializable
 {
+    private static final long serialVersionUID = -2862166183109259082L;
     /********************************/
     /*           Variables          */
     /********************************/
@@ -74,5 +75,20 @@ public class DonneeLoginCont implements DonneeRequete, Serializable
     public String toString()
     {
         return  getType() + "#";
+    }
+
+    @Override
+    public void setFiledsFromString(String fields) {
+        String[] parametres = fields.split("#");
+        String[] row;
+        for(int i = 1; i < parametres.length; i++)
+        {
+            row = parametres[i].split("=");
+            switch (row[0])
+            {
+                case "username": this.setUsername(row[1]); break;
+                case "password": this.setPassword(row[1]); break;
+            }
+        }
     }
 }

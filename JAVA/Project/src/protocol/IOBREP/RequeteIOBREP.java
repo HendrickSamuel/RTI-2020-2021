@@ -11,6 +11,7 @@ import genericRequest.Requete;
 import java.io.Serializable;
 
 public class RequeteIOBREP implements Requete, Serializable {
+    private static final long serialVersionUID = -6613909099191883056L;
 
     /********************************/
     /*           Variables          */

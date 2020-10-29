@@ -10,5 +10,5 @@ package genericRequest;
 //Moyen de regrouper toutes les classes l'implementant
 public interface DonneeRequete
 {
-
+    public void setFiledsFromString(String fields);
 }

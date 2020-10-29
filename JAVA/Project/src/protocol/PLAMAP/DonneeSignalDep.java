@@ -7,10 +7,12 @@ package protocol.PLAMAP;
 
 import genericRequest.DonneeRequete;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DonneeSignalDep implements DonneeRequete, Serializable
 {
+    private static final long serialVersionUID = -4880966009261613396L;
     //todo: MAKE_BILL partie 4 avec le serveur compta en réponse au signal_dep
     /********************************/
     /*           Variables          */
@@ -76,5 +78,27 @@ public class DonneeSignalDep implements DonneeRequete, Serializable
     public String toString()
     {
         return  getType() + "";
+    }
+
+    @Override
+    public void setFiledsFromString(String fields) {
+        String[] parametres = fields.split("#");
+        String[] row;
+        for(int i = 1; i < parametres.length; i++)
+        {
+            row = parametres[i].split("=");
+            switch (row[0])
+            {
+                case "idTransporteur": this.setIdTransporteur(row[1]); break;
+                case "ListIdCont":
+                    ArrayList<String> al = new ArrayList<String>();
+                    String[] champs = row[1].split("|");
+                    for(String champ : champs)
+                    {
+                        al.add(champ);
+                    }
+                    this.setListIdCont(al);
+            }
+        }
     }
 }
