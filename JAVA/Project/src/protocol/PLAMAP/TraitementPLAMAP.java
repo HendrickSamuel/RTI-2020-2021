@@ -216,9 +216,14 @@ public class TraitementPLAMAP implements Traitement
             ResultSet rs = _bd.ExecuteQuery(ps);
             if(rs != null && rs.next())
             {
-                rs.updateFloat("poidsTotal",chargeUtile.getPoids());
-                rs.updateInt("etat",2);
-                _bd.UpdateResult(rs);
+                PreparedStatement ps1 = _bd.getPreparedStatement("UPDATE mouvements SET poidsTotal = ? WHERE id = ?");
+                ps1.setFloat(1, chargeUtile.getPoids());
+                ps1.setInt(2, rs.getInt("m.id"));
+                _bd.Execute(ps1);
+                PreparedStatement ps2 = _bd.getPreparedStatement("UPDATE parc SET etat = ? WHERE idContainer = ?");
+                ps2.setInt(1, 2);
+                ps2.setString(2, chargeUtile.getIdContainer());
+                _bd.Execute(ps2);
                 return new ReponsePLAMAP(ReponsePLAMAP.OK, null, chargeUtile);
             }
             else

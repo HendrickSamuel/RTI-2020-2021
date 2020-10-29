@@ -20,7 +20,6 @@ public class DonneeInputLory implements DonneeRequete, Serializable
     private String numeroReservation;
     private String idTransporteur;
     private String idContainer;
-    private String destination;
 
     private int x;
     private int y;
@@ -29,11 +28,10 @@ public class DonneeInputLory implements DonneeRequete, Serializable
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DonneeInputLory(String numeroReservation, String idTransporteur, String idContainer, String destination) {
+    public DonneeInputLory(String numeroReservation, String idTransporteur, String idContainer) {
         this.numeroReservation = numeroReservation;
         this.idTransporteur = idTransporteur;
         this.idContainer = idContainer;
-        this.destination = destination;
     }
 
     /********************************/
@@ -63,10 +61,6 @@ public class DonneeInputLory implements DonneeRequete, Serializable
         return idTransporteur;
     }
 
-    public String getDestination() {
-        return destination;
-    }
-
     /********************************/
     /*            Setters           */
     /********************************/
@@ -92,10 +86,6 @@ public class DonneeInputLory implements DonneeRequete, Serializable
 
     public void setIdTransporteur(String idTransporteur) {
         this.idTransporteur = idTransporteur;
-    }
-
-    public void setDestination(String destination) {
-        this.destination = destination;
     }
 
     /********************************/
