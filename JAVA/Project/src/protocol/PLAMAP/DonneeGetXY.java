@@ -16,6 +16,7 @@ public class DonneeGetXY implements DonneeRequete, Serializable
     private String societe;
     private String immatriculationCamion;
     private String idContainer;
+    private String destination;
 
     private int type;
     private String numReservation;
@@ -39,11 +40,12 @@ public class DonneeGetXY implements DonneeRequete, Serializable
         this.type = 2;
     }
 
-    public DonneeGetXY(String societe, String immatriculationCamion, String idContainer)
+    public DonneeGetXY(String societe, String immatriculationCamion, String idContainer, String destination)
     {
         this.societe = societe;
         this.immatriculationCamion = immatriculationCamion;
         this.idContainer = idContainer;
+        this.destination = destination;
         this.type = 2;
     }
 
@@ -86,6 +88,9 @@ public class DonneeGetXY implements DonneeRequete, Serializable
         return y;
     }
 
+    public String getDestination() {
+        return destination;
+    }
 
     /********************************/
     /*            Setters           */
@@ -120,6 +125,9 @@ public class DonneeGetXY implements DonneeRequete, Serializable
         this.y = y;
     }
 
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
 
     /********************************/
     /*            Methodes          */

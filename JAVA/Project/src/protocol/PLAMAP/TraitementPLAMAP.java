@@ -19,6 +19,7 @@ import java.sql.SQLException;
 
 public class TraitementPLAMAP implements Traitement
 {
+
     /********************************/
     /*           Variables          */
     /********************************/
@@ -141,10 +142,42 @@ public class TraitementPLAMAP implements Traitement
 
     private Reponse traiteGETXY(DonneeGetXY chargeUtile, Client client)
     {
-
         System.out.println("traiteGETXY");
         System.out.println(chargeUtile.toString());
-        return null;
+
+        try {
+            PreparedStatement ps = _bd.getPreparedStatement("SELECT * " +
+                    "FROM parc p " +
+                    "INNER JOIN containers c on p.idContainer = c.idContainer " +
+                    "INNER JOIN mouvements m on c.idContainer = m.idContainer " +
+                    "WHERE UPPER(c.idContainer) = UPPER(?) " +
+                    "AND UPPER(c.idSociete) = UPPER(?) " +
+                    "AND UPPER(m.transporteurEntrant) = UPPER(?) " +
+                    "AND UPPER(m.destination) = UPPER(?);");
+            ps.setString(1, chargeUtile.getIdContainer());
+            ps.setString(2, chargeUtile.getSociete());
+            ps.setString(3, chargeUtile.getImmatriculationCamion());
+            ps.setString(4, chargeUtile.getDestination());
+
+            ResultSet rs = _bd.ExecuteQuery(ps);
+
+            if(rs != null && rs.next())
+            {
+                chargeUtile.setX(rs.getInt("x"));
+                chargeUtile.setY(rs.getInt("y"));
+                chargeUtile.setNumReservation(rs.getString("numeroReservation"));
+                return new ReponsePLAMAP(ReponsePLAMAP.OK, null, chargeUtile);
+            }
+            else
+            {
+                return new ReponsePLAMAP(ReponsePLAMAP.OK, "un des renseignements envoyés ne correspond pas", null);
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return new ReponsePLAMAP(ReponsePLAMAP.NOK, "ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGETLISTE(DonneeGetList chargeUtile, Client client)
@@ -159,7 +192,36 @@ public class TraitementPLAMAP implements Traitement
         //todo: si ok retourné la charge utile sinon bug et mettre le containrer en statut 2
         System.out.println("traiteSENDWEIGHT");
         System.out.println(chargeUtile.toString());
-        return null;
+
+        try {
+            PreparedStatement ps = _bd.getPreparedStatement("SELECT * " +
+                    "FROM parc p " +
+                    "INNER JOIN mouvements m on p.idContainer = m.idContainer " +
+                    "WHERE p.x = ? " +
+                    "AND p.y = ? " +
+                    "AND UPPER(p.idContainer) = UPPER(?) " +
+                    "AND m.dateDepart IS NULL;");
+            ps.setInt(1, chargeUtile.getX());
+            ps.setInt(2, chargeUtile.getY());
+            ps.setString(3, chargeUtile.getIdContainer());
+
+            ResultSet rs = _bd.ExecuteQuery(ps);
+            if(rs != null && rs.next())
+            {
+                rs.updateFloat("poidsTotal",chargeUtile.getPoids());
+                rs.updateInt("etat",2);
+                _bd.UpdateResult(rs);
+                return new ReponsePLAMAP(ReponsePLAMAP.OK, "ERREUR lors du traitement de la requete", null);
+            }
+            else
+            {
+                return new ReponsePLAMAP(ReponsePLAMAP.NOK, "ERREUR lors de l'encodage des données", null);
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new ReponsePLAMAP(ReponsePLAMAP.NOK, "ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteSIGNALDEP(DonneeSignalDep chargeUtile, Client client)
