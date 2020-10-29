@@ -18,7 +18,7 @@
 #include "SocketsClient.h"
 #include "BaseException.h"
 
-#define MTU 5000
+#define MTU 1000
 
 using namespace std;
 
@@ -129,6 +129,9 @@ int main(int argc, char *argv[])
 
                 switchReceive(retour);
                 
+                if(retour != NULL)
+                    free(retour);
+
                 cout << endl << endl;
             }
         }
@@ -412,4 +415,10 @@ void switchReceive(char *retour)
             }
             break;
     }
+
+    if(succes != NULL)
+        free(succes);
+
+    if(message != NULL)
+        free(message);
 }

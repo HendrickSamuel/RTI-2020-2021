@@ -159,8 +159,7 @@ void Sockets::sendStruct(void* structure, int taille)
 
 char* Sockets::receiveString(int taille, char marq1, char marq2)
 {
-    char *message = NULL;
-    char *messageTmp = NULL;
+    char *message = (char*) malloc(taille);
     bool fin = false;
     char buff[taille];
     int nbrBytesRecus = 0;
@@ -188,23 +187,16 @@ char* Sockets::receiveString(int taille, char marq1, char marq2)
             }
 
             fin = marqueurRecu(buff, nbrBytesRecus, marq1, marq2);
-            messageTmp = message;
-            message = (char*) malloc(nbrBytesRecus + tailleMessageRecu);
-            
-            //on regarde s'il y a déjà quelques chose a copier dans "message"
-            if(messageTmp != NULL)
-            {
-                strcpy(message, messageTmp);
-            }
 
-            memcpy(message+tailleMessageRecu,buff,nbrBytesRecus);
+            memcpy((char*)message+tailleMessageRecu,buff,nbrBytesRecus);
             tailleMessageRecu+=nbrBytesRecus;
         }
         
     } while (nbrBytesRecus!=0 && nbrBytesRecus!=-1 && !fin);
 
-    strcat(message, "\0");
+    message[tailleMessageRecu] = '\0';
     
+    cout << "message = [" << message << "]" << endl;
     return message;
 }
 

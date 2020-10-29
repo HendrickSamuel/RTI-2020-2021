@@ -77,7 +77,7 @@ public class DonneeSignalDep implements DonneeRequete, Serializable
     @Override
     public String toString()
     {
-        return  getType() + "";
+        return  getType() + "#";
     }
 
     @Override

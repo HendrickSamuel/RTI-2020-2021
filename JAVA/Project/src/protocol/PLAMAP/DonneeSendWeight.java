@@ -98,7 +98,7 @@ public class DonneeSendWeight implements DonneeRequete, Serializable
     @Override
     public String toString()
     {
-        return  getType() + "";
+        return  getType() + "#";
     }
 
     @Override
