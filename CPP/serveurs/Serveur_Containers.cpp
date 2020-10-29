@@ -290,14 +290,16 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
             case InputTruck:
                 {
                     //Construction du message
-                    int tail = strlen("protocol.PLAMAP.DonneeGetXY#societe=#immatriculationCamion=#idContainer=") + 1 + strlen(proto.donnees.inputTruck.idContainer) + strlen(proto.donnees.inputTruck.imCamion) + strlen(proto.donnees.inputTruck.societe);
+                    int tail = strlen("protocol.PLAMAP.DonneeGetXY#societe=#immatriculationCamion=#idContainer=#destination=") + 1 + strlen(proto.donnees.inputTruck.idContainer) + strlen(proto.donnees.inputTruck.imCamion) + strlen(proto.donnees.inputTruck.societe) + strlen(proto.donnees.inputTruck.destination);
                     char * mes = (char*)malloc(tail);
                     strcpy(mes, "protocol.PLAMAP.DonneeGetXY#societe=");
                     strcat(mes, proto.donnees.inputTruck.societe);
                     strcat(mes, "#immatriculationCamion=");
                     strcat(mes, proto.donnees.inputTruck.imCamion);
                     strcat(mes, "#idContainer=");
-                    strcat(mes, proto.donnees.inputTruck.idContainer);
+                    strcat(mes, proto.donnees.inputTruck.idContainer);      
+                    strcat(mes, "#destination=");
+                    strcat(mes, proto.donnees.inputTruck.destination);
                     mes[tail-1] = '\n';
 
 
@@ -481,31 +483,65 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                 {
                     if(PT->idCont.getNombreElements() == PT->capacite || PT->idCont.getNombreElements() == PT->nbrEnv) 
                     {
-                        char *id;
-                        struct fich_parc record;
-                        parcAcces fich_parc("FICH_PARC.dat"); 
+                        char* id = NULL;
+                        char* liste = NULL;
 
                         struct Cellule<char*> *cel = PT->idCont.getTete();
-
-                        //On retire les containers de FICH_PARC
-                        pthread_mutex_lock(&mutexFichParc);                     
+                        
                         do
                         {
+                            char* listeTmp;
                             id = cel->valeur;
                             cel = cel->suivant;
 
-                            strcpy(record.id, id);
-                            free(id);
-                            fich_parc.removeRecord(record);
-                        }while(cel != NULL);
+                            if(liste == NULL)
+                            {
+                                listeTmp = (char*) malloc(strlen(id) + 1);
+                                strcpy(listeTmp, id);
+                                strcat(listeTmp, "/");
+                            }
+                            else
+                            {
+                                listeTmp = (char*) malloc(strlen(id) + strlen(liste) + 1);
+                                strcpy(liste, id);
+                                strcpy(listeTmp, id);
+                                strcat(listeTmp, "/");
+                            }
 
-                        pthread_mutex_unlock(&mutexFichParc);
+                            free(id);
+                            free(liste);
+                            liste = listeTmp;
+
+                        }while(cel != NULL);
+               
+                        //Construction du message
+                        int tail = strlen("protocol.PLAMAP.DonneeSignalDep#idTransporteur=#ListIdCont=") + 1 + strlen(proto.donnees.outputDone.id) + strlen(liste);
+                        char * mes = (char*)malloc(tail);
+                        strcpy(mes, "protocol.PLAMAP.DonneeSignalDep#idTransporteur=");
+                        strcat(mes, proto.donnees.outputDone.id);
+                        strcat(mes, "#ListIdCont=");
+                        strcat(mes, liste);
+                        mes[tail-1] = '\n';
+
+                        socketMouv.sendString(mes, tail);
+
+                        retour = socketMouv.receiveString(MTU, '#', '%');
+
+                        if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0) 
+                        {
+                            freePTMess();
+                            PT->message = new char[strlen("6#true#Chargement termine correctement#%")+1];
+                            strcpy(PT->message, "6#true#Chargement termine correctement#%");
+                        }
+                        else
+                        {
+                            freePTMess();
+                            PT->message = new char[strlen("6#false#Un probleme est survenu, veuillez recommencer#%")+1];
+                            strcpy(PT->message, "6#false#Un probleme est survenu, veuillez recommencer#%");
+                        }
 
                         PT->idCont.removeAll();
 
-                        freePTMess();
-                        PT->message = new char[strlen("6#true#Chargement termine correctement#%")+1];
-                        strcpy(PT->message, "6#true#Chargement termine correctement#%");
                     }
                     else
                     {

@@ -204,6 +204,8 @@ void switchSend(int choix, struct protocole &proto)
                 cin >> proto.donnees.inputTruck.idContainer;
                 cout << "\tEntrez le nom de la societe : ";
                 cin >> proto.donnees.inputTruck.societe;
+                cout << "\tEntrez la destination : ";
+                cin >> proto.donnees.inputTruck.destination;
             }
             break;
 

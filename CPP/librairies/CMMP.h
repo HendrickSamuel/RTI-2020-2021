@@ -39,6 +39,7 @@ struct inputTruck
 	char imCamion[10];
 	char idContainer[18];
 	char societe[50];
+	char destination[50];
 };
 
 
