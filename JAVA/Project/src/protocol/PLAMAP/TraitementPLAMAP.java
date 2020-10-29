@@ -26,7 +26,6 @@ public class TraitementPLAMAP implements Traitement
     private BDMouvements _bd;
     private ConsoleServeur _cs;
 
-
     /********************************/
     /*         Constructeurs        */
     /********************************/
@@ -159,6 +158,7 @@ public class TraitementPLAMAP implements Traitement
                     "INNER JOIN containers c on p.idContainer = c.idContainer " +
                     "INNER JOIN mouvements m on c.idContainer = m.idContainer " +
                     "WHERE UPPER(c.idContainer) = UPPER(?) " +
+                    "AND p.etat = 1" +
                     "AND UPPER(c.idSociete) = UPPER(?) " +
                     "AND UPPER(m.transporteurEntrant) = UPPER(?) " +
                     "AND UPPER(m.destination) = UPPER(?);");
@@ -239,7 +239,6 @@ public class TraitementPLAMAP implements Traitement
 
     private Reponse traiteSIGNALDEP(DonneeSignalDep chargeUtile, Client client)
     {
-        //todo: #idtransporteur=..#liste=...|...|...|\n
         System.out.println("traiteSIGNALDEP");
         System.out.println(chargeUtile.toString());
         return null;
