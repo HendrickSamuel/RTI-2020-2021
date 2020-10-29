@@ -74,6 +74,10 @@ public class MysqlConnector implements DataSource
         return statement.executeQuery();
     }
 
+    public synchronized boolean Execute(PreparedStatement statement) throws SQLException {
+        return statement.execute();
+    }
+
     public synchronized Statement CreateUpdatableStatement() throws SQLException {
         return _con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
     }

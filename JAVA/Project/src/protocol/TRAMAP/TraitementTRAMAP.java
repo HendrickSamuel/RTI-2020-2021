@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class TraitementTRAMAP implements Traitement
@@ -144,12 +145,18 @@ public class TraitementTRAMAP implements Traitement
             {
                 chargeUtile.setX(ret.getInt("x"));
                 chargeUtile.setY(ret.getInt("y"));
+                PreparedStatement prepstate = _bd.getPreparedStatement("INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, destination) " +
+                        "VALUES (?, ?, ?, ?);");
+                prepstate.setString(1, chargeUtile.getIdContainer());
+                prepstate.setString(2, chargeUtile.getIdTransporteur());
+                prepstate.setDate(3, new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+                prepstate.setString(4, chargeUtile.getDestination());
+                _bd.Execute(prepstate);
                 return new ReponseTRAMAP(ReponseTRAMAP.OK, chargeUtile, null);
             }
             else
             {
                 return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Aucune réservation ne correspond à ce container");
-                //todo: verifier si on attent + si les 2 vont ensemble ?
             }
         } catch (SQLException throwables) {
             return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Erreur lors de la connection à la base de données");
@@ -198,7 +205,13 @@ public class TraitementTRAMAP implements Traitement
                 ret.updateRow();
                 chargeUtile.setX(ret.getInt("x"));
                 chargeUtile.setY(ret.getInt("y"));
-                //todo: insert Mouvement
+                PreparedStatement ps = _bd.getPreparedStatement("INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, destination) " +
+                        "VALUES (?, ?, ?, ?);");
+                ps.setString(1, chargeUtile.getIdContainer());
+                ps.setString(2, chargeUtile.getImmatriculation());
+                ps.setDate(3, new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+                ps.setString(4, chargeUtile.getDestination());
+                _bd.Execute(ps);
                 return new ReponseTRAMAP(ReponseTRAMAP.OK, chargeUtile, null);
             }
             else
@@ -206,6 +219,7 @@ public class TraitementTRAMAP implements Traitement
                 return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Problème avec l'input");
             }
         } catch (SQLException throwables) {
+            throwables.printStackTrace();
             System.out.println("Erreur" + throwables.getSQLState() + " | " + throwables.getErrorCode());
             return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Erreur de la requete");
         }

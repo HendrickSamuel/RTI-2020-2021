@@ -39,7 +39,7 @@ public class Client
             switch (option)
             {
                 case 1: dt = new DonneeLogin("Sam","superSecurePass123"); break;
-                case 2: dt = new DonneeInputLory("test","blabla"); break;
+                case 2: dt = new DonneeInputLory("test","blabla","",""); break;
                 case 3: dt = new DonneeInputLoryWithoutReservation("Container", "immatriculation", "societe", "destination"); break;
                 case 4: dt = new DonneeListOperations(new Date(), new Date(), "Societe", "Destination"); break;
             }

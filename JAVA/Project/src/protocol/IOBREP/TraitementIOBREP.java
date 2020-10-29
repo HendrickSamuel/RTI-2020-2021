@@ -13,10 +13,9 @@ import genericRequest.Traitement;
 import lib.BeanDBAcces.BDCompta;
 import lib.BeanDBAcces.BDMouvements;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class TraitementIOBREP implements Traitement {
 
@@ -70,6 +69,14 @@ public class TraitementIOBREP implements Traitement {
             return traiteBoatArrived((protocol.IOBREP.DonneeBoatArrived) donnee, client);
         if(donnee instanceof protocol.IOBREP.DoneeBoatLeft)
             return traiteBoatLeft((protocol.IOBREP.DoneeBoatLeft) donnee, client);
+        if(donnee instanceof protocol.IOBREP.DonneeHandleContainerIn)
+            return traiteHandleContainerIn((protocol.IOBREP.DonneeHandleContainerIn) donnee, client);
+        if(donnee instanceof protocol.IOBREP.DonneeEndContainerIn)
+            return traiteEndContainerIn((protocol.IOBREP.DonneeEndContainerIn) donnee, client);
+        if(donnee instanceof protocol.IOBREP.DonneeHandleContainerOut)
+            return traiteHandleContainerOut((protocol.IOBREP.DonneeHandleContainerOut) donnee, client);
+        if(donnee instanceof protocol.IOBREP.DonneeEndContainerOut)
+            return traiteEndContainerOut((protocol.IOBREP.DonneeEndContainerOut) donnee, client);
         else
             return traite404();
     }
@@ -191,6 +198,54 @@ public class TraitementIOBREP implements Traitement {
             throwables.printStackTrace();
             return new ReponseIOBREP(ReponseIOBREP.NOK ,null, "Erreur lors de l'execution de la requete");
         }
+    }
+
+    private Reponse traiteHandleContainerIn(protocol.IOBREP.DonneeHandleContainerIn chargeUtile, Client client)
+    {
+        //todo: mettre le container dans le parc + oui ou non ?
+        return null;
+    }
+
+    private Reponse traiteEndContainerIn(protocol.IOBREP.DonneeEndContainerIn chargeUtile, Client client)
+    {
+        //todo: finir le dechargement ?
+        return null;
+    }
+
+    private Reponse traiteHandleContainerOut(protocol.IOBREP.DonneeHandleContainerOut chargeUtile, Client client)
+    {
+        //todo: vider le container du parc
+        try {
+            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM mouvements WHERE UPPER(idContainer) = UPPER(?) AND dateDepart IS NULL;");
+            ps.setString(1, chargeUtile.getIdContainer());
+            ResultSet rs = _bdMouvement.ExecuteQuery(ps);
+            if(rs != null && rs.next())
+            {
+                rs.updateString("transporteurSortant",chargeUtile.getIdBateau());
+                rs.updateDate("dateDepart", new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+                _bdMouvement.UpdateResult(rs);
+                PreparedStatement pre = _bdMouvement.getPreparedStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?);");
+                pre.setString(1, chargeUtile.getIdContainer());
+                ResultSet res = _bdMouvement.ExecuteQuery(pre);
+                if(res != null && res.next())
+                {
+                    res.updateNull("idContainer"); //idcontainer à null
+                    res.updateInt("etat",0); //etat à 0
+                    _bdMouvement.UpdateResult(res);
+
+                    return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
+                }
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new ReponseIOBREP(ReponseIOBREP.NOK, null, "Message d'erreur");
+    }
+
+    private Reponse traiteEndContainerOut(protocol.IOBREP.DonneeEndContainerOut chargeUtile, Client client)
+    {
+        //todo: finir le chargement ???
+        return null;
     }
 
     private Reponse traite404()
