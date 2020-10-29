@@ -186,14 +186,8 @@ public class ThreadClientConnecte extends ThreadClient
         System.out.println("Objet reçu: " + parametres[0]);
         try {
             DonneeRequete dr = (DonneeRequete)Class.forName(parametres[0]).newInstance();
-            if(dr instanceof DonneeLoginCont)
-            {
-                row = parametres[1].split("=");
-                ((DonneeLoginCont)dr).setUsername(row[1]);
-                row = parametres[2].split("=");
-                ((DonneeLoginCont)dr).setPassword(row[0]);
-                return dr;
-            }
+            dr.setFiledsFromString(message);
+            return dr;
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
         }

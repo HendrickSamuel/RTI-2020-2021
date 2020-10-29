@@ -57,4 +57,12 @@ public class DonneeLogin implements DonneeRequete, Serializable
         this.password = password;
     }
 
+    /********************************/
+    /*            Methodes          */
+    /********************************/
+    @Override
+    public void setFiledsFromString(String fields) {
+
+    }
+
 }

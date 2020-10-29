@@ -100,4 +100,12 @@ public class DonneeInputLoryWithoutReservation implements DonneeRequete, Seriali
     {
         this.societe = societe;
     }
+
+    /********************************/
+    /*            Methodes          */
+    /********************************/
+    @Override
+    public void setFiledsFromString(String fields) {
+
+    }
 }

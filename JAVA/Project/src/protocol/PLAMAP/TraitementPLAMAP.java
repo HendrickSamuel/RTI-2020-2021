@@ -76,6 +76,9 @@ public class TraitementPLAMAP implements Traitement
     @Override
     public Reponse traiteRequete(DonneeRequete Requete, Client client) throws ClassCastException
     {
+        if(Requete == null)
+            return traite404();
+
         System.out.println(Requete);
         if(Requete instanceof DonneeLoginCont)
             return traiteLOGINCONT((DonneeLoginCont)Requete, client);
@@ -189,7 +192,6 @@ public class TraitementPLAMAP implements Traitement
 
     private Reponse traiteSENDWEIGHT(DonneeSendWeight chargeUtile, Client client)
     {
-        //todo: si ok retourné la charge utile sinon bug et mettre le containrer en statut 2
         System.out.println("traiteSENDWEIGHT");
         System.out.println(chargeUtile.toString());
 
@@ -226,6 +228,7 @@ public class TraitementPLAMAP implements Traitement
 
     private Reponse traiteSIGNALDEP(DonneeSignalDep chargeUtile, Client client)
     {
+        //todo: #idtransporteur=..#liste=...|...|...|\n
         System.out.println("traiteSIGNALDEP");
         System.out.println(chargeUtile.toString());
         return null;

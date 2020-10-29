@@ -106,4 +106,20 @@ public class DonneeGetList implements DonneeRequete, Serializable
 
         return s;
     }
+
+    @Override
+    public void setFiledsFromString(String fields) {
+        String[] parametres = fields.split("#");
+        String[] row;
+        for(int i = 1; i < parametres.length; i++)
+        {
+            row = parametres[i].split("=");
+            switch (row[0])
+            {
+                case "idTransporteur": this.setIdTransporteur(row[1]); break;
+                case "destination": this.setDestination(row[1]); break;
+                case "nombreMax": this.setNombreMax(Integer.parseInt(row[1])); break;
+            }
+        }
+    }
 }

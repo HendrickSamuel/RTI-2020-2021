@@ -99,4 +99,21 @@ public class DonneeSendWeight implements DonneeRequete, Serializable
     {
         return  getType() + "";
     }
+
+    @Override
+    public void setFiledsFromString(String fields) {
+        String[] parametres = fields.split("#");
+        String[] row;
+        for(int i = 1; i < parametres.length; i++)
+        {
+            row = parametres[i].split("=");
+            switch (row[i])
+            {
+                case "idContainer": this.setIdContainer(row[1]); break;
+                case "x": this.setX(Integer.parseInt(row[1])); break;
+                case "y": this.setY(Integer.parseInt(row[1])); break;
+                case "poids": this.setPoids(Float.parseFloat(row[1])); break;
+            }
+        }
+    }
 }

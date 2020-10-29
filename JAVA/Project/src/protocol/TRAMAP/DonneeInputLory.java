@@ -80,4 +80,11 @@ public class DonneeInputLory implements DonneeRequete, Serializable
         this.idContainer = idContainer;
     }
 
+    /********************************/
+    /*            Methodes          */
+    /********************************/
+    @Override
+    public void setFiledsFromString(String fields) {
+
+    }
 }

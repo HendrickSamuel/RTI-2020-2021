@@ -137,4 +137,22 @@ public class DonneeGetXY implements DonneeRequete, Serializable
     {
         return getType() + "#" + getNumReservation() + "#" + getX() + "/" + getY();
     }
+
+    @Override
+    public void setFiledsFromString(String fields) {
+        String[] parametres = fields.split("#");
+        String[] row;
+        for(int i = 1; i < parametres.length; i++)
+        {
+            row = parametres[i].split("=");
+            switch (row[0])
+            {
+                case "societe": this.setSociete(row[1]); break;
+                case "immatriculationCamion": this.setImmatriculationCamion(row[1]); break;
+                case "idContainer": this.setIdContainer(row[1]); break;
+                case "destination": this.setDestination(row[1]); break;
+            }
+        }
+    }
+
 }

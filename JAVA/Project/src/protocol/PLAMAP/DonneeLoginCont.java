@@ -75,4 +75,19 @@ public class DonneeLoginCont implements DonneeRequete, Serializable
     {
         return  getType() + "#";
     }
+
+    @Override
+    public void setFiledsFromString(String fields) {
+        String[] parametres = fields.split("#");
+        String[] row;
+        for(int i = 1; i < parametres.length; i++)
+        {
+            row = parametres[i].split("=");
+            switch (row[0])
+            {
+                case "username": this.setUsername(row[1]); break;
+                case "password": this.setPassword(row[1]); break;
+            }
+        }
+    }
 }
