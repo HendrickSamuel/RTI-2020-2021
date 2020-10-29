@@ -192,7 +192,36 @@ public class TraitementPLAMAP implements Traitement
         //todo: si ok retourné la charge utile sinon bug et mettre le containrer en statut 2
         System.out.println("traiteSENDWEIGHT");
         System.out.println(chargeUtile.toString());
-        return null;
+
+        try {
+            PreparedStatement ps = _bd.getPreparedStatement("SELECT * " +
+                    "FROM parc p " +
+                    "INNER JOIN mouvements m on p.idContainer = m.idContainer " +
+                    "WHERE p.x = ? " +
+                    "AND p.y = ? " +
+                    "AND UPPER(p.idContainer) = UPPER(?) " +
+                    "AND m.dateDepart IS NULL;");
+            ps.setInt(1, chargeUtile.getX());
+            ps.setInt(2, chargeUtile.getY());
+            ps.setString(3, chargeUtile.getIdContainer());
+
+            ResultSet rs = _bd.ExecuteQuery(ps);
+            if(rs != null && rs.next())
+            {
+                rs.updateFloat("poidsTotal",chargeUtile.getPoids());
+                rs.updateInt("etat",2);
+                _bd.UpdateResult(rs);
+                return new ReponsePLAMAP(ReponsePLAMAP.OK, "ERREUR lors du traitement de la requete", null);
+            }
+            else
+            {
+                return new ReponsePLAMAP(ReponsePLAMAP.NOK, "ERREUR lors de l'encodage des données", null);
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new ReponsePLAMAP(ReponsePLAMAP.NOK, "ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteSIGNALDEP(DonneeSignalDep chargeUtile, Client client)
