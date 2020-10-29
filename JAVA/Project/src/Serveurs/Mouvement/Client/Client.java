@@ -169,7 +169,7 @@ public class Client
         return rep;
     }
 
-    public ReponseTRAMAP sendInputLorry(String numeroReservation, String idContainer)
+    public ReponseTRAMAP sendInputLorry(String numeroReservation, String idContainer, String idTransporteur, String destination)
     {
         RequeteTRAMAP req = null;
         ReponseTRAMAP rep = null;
@@ -185,7 +185,7 @@ public class Client
 
         if(rep.getCode() == 200)
         {
-            dt = new DonneeInputLory(numeroReservation, idContainer);
+            dt = new DonneeInputLory(numeroReservation, idTransporteur, idContainer, destination);
             req = new RequeteTRAMAP(dt);
 
             sendReq(req);

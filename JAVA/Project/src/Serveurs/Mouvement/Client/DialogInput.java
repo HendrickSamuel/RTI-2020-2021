@@ -24,6 +24,8 @@ public class DialogInput extends JDialog
     private JTextField containerField;
     private JTextField reservationField;
     private JLabel labelRetour;
+    private JTextField idTransporteurField;
+    private JTextField destinationField;
 
 
     /********************************/
@@ -63,6 +65,16 @@ public class DialogInput extends JDialog
     public String getReservation()
     {
         return reservationField.getText();
+    }
+
+    public String getTransporteur()
+    {
+        return idTransporteurField.getText();
+    }
+
+    public String getdestination()
+    {
+        return destinationField.getText();
     }
 
     /********************************/
@@ -123,7 +135,7 @@ public class DialogInput extends JDialog
 
     private void onOK()
     {
-        ReponseTRAMAP rep = getClient().sendInputLorry(getReservation(), getContainer());
+        ReponseTRAMAP rep = getClient().sendInputLorry(getReservation(), getContainer(), getTransporteur(), getdestination());
 
         if(rep == null)
         {
