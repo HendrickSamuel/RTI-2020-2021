@@ -31,6 +31,13 @@ public class ReponsePLAMAP implements Reponse, Serializable
 
     }
 
+
+    /**
+     *
+     * @param codeRetour
+     * @param message
+     * @param chargeUtile
+     */
     public ReponsePLAMAP(int codeRetour, String message, DonneeRequete chargeUtile)
     {
         this.codeRetour = codeRetour;
