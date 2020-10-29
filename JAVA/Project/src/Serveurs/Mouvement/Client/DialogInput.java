@@ -135,7 +135,7 @@ public class DialogInput extends JDialog
 
     private void onOK()
     {
-        ReponseTRAMAP rep = getClient().sendInputLorry(getReservation(), getContainer(), getTransporteur(), getdestination());
+        ReponseTRAMAP rep = getClient().sendInputLorry(getReservation(), getContainer(), getTransporteur());
 
         if(rep == null)
         {

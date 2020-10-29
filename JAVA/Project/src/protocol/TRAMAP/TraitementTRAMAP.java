@@ -150,7 +150,7 @@ public class TraitementTRAMAP implements Traitement
                 prepstate.setString(1, chargeUtile.getIdContainer());
                 prepstate.setString(2, chargeUtile.getIdTransporteur());
                 prepstate.setDate(3, new java.sql.Date(Calendar.getInstance().getTime().getTime()));
-                prepstate.setString(4, chargeUtile.getDestination());
+                prepstate.setString(4, ret.getString("destination"));
                 _bd.Execute(prepstate);
                 return new ReponseTRAMAP(ReponseTRAMAP.OK, chargeUtile, null);
             }
