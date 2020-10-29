@@ -415,16 +415,28 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
 
             case OutputReady:
                 {
-                    char *liste = NULL;
-                    parcAcces fich_parc("FICH_PARC.dat");
+                    char cap [10];
+                    sprintf(cap, "%d", proto.donnees.outputReady.capacite);
 
-                    // recherche dans FICH_PARC
-                    pthread_mutex_lock(&mutexFichParc);
-                    liste = fich_parc.searchDestination(proto.donnees.outputReady.dest, &(PT->nbrEnv));
-                    pthread_mutex_unlock(&mutexFichParc);
+                    //Construction du message
+                    int tail = strlen("protocol.PLAMAP.DonneeGetList#idTransporteur=#destination=#nombreMax=") + 1 + strlen(proto.donnees.outputReady.id) + strlen(proto.donnees.outputReady.dest) + strlen(cap);
+                    char * mes = (char*)malloc(tail);
+                    strcpy(mes, "protocol.PLAMAP.DonneeGetList#idTransporteur=");
+                    strcat(mes, PT->tmpContaineur.id);
+                    strcat(mes, "#destination=");
+                    strcat(mes, proto.donnees.outputReady.dest);
+                    strcat(mes, "#nombreMax=");
+                    strcat(mes, cap);
+                    mes[tail-1] = '\n';
 
-                    if(liste != NULL) 
+                    socketMouv.sendString(mes, tail);
+
+                    retour = socketMouv.receiveString(MTU, '#', '%');
+
+                    if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0) 
                     {
+                        char* liste = ParcourChaine::getMessage(retour);
+
                         freePTMess();
                         PT->message = new char[strlen("4#true#%")+strlen(liste)+1];
                         strcpy(PT->message, "4#true#");
