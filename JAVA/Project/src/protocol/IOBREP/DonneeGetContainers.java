@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class DonneeGetContainers implements DonneeRequete, Serializable {
+    private static final long serialVersionUID = -14106860632702088L;
 
     /********************************/
     /*           Variables          */
@@ -62,4 +63,8 @@ public class DonneeGetContainers implements DonneeRequete, Serializable {
     /*            Methodes          */
     /********************************/
 
+    @Override
+    public void setFiledsFromString(String fields) {
+
+    }
 }

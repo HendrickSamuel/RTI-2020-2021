@@ -102,7 +102,6 @@ int main(int argc, char *argv[])
     parcAcces pa = parcAcces("FICH_PARC.dat");
     pa.setBidon();
 
-
     //fin bidon
 
     /* lecture des parametres sur fichier */
@@ -306,6 +305,7 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                     socketMouv.sendString(mes, tail);
 
                     retour = socketMouv.receiveString(MTU, '#', '%');
+                    cout << "ICI: " << retour << endl;
 
                     //verification si la requete est OK
                     if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0)

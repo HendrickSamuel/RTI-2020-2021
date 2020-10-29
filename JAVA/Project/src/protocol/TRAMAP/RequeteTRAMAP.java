@@ -15,6 +15,7 @@ import java.io.Serializable;
 
 public class RequeteTRAMAP implements Requete, Serializable
 {
+    private static final long serialVersionUID = 6695039056227684573L;
     /********************************/
     /*          Variables           */
     /********************************/

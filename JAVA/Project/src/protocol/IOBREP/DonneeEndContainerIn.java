@@ -10,6 +10,7 @@ import genericRequest.DonneeRequete;
 import java.io.Serializable;
 
 public class DonneeEndContainerIn implements DonneeRequete, Serializable {
+    private static final long serialVersionUID = -8210794890764332648L;
 
     /********************************/
     /*           Variables          */
@@ -30,5 +31,10 @@ public class DonneeEndContainerIn implements DonneeRequete, Serializable {
     /********************************/
     /*            Methodes          */
     /********************************/
+
+    @Override
+    public void setFiledsFromString(String fields) {
+
+    }
 
 }

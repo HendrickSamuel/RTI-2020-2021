@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 public class DonneeGetXY implements DonneeRequete, Serializable
 {
+    private static final long serialVersionUID = 7187482965337325000L;
     /********************************/
     /*           Variables          */
     /********************************/

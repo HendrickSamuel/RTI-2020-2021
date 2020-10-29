@@ -11,6 +11,7 @@ import java.io.Serializable;
 
 public class DonneeLogin implements DonneeRequete, Serializable
 {
+    private static final long serialVersionUID = 794356211181367421L;
 
     /********************************/
     /*           Variables          */
@@ -46,5 +47,10 @@ public class DonneeLogin implements DonneeRequete, Serializable
     /********************************/
     /*            Methodes          */
     /********************************/
+
+    @Override
+    public void setFiledsFromString(String fields) {
+
+    }
 
 }

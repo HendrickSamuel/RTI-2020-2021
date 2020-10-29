@@ -15,6 +15,7 @@ import java.util.List;
 
 public class DonneeListOperations implements DonneeRequete, Serializable
 {
+    private static final long serialVersionUID = -8131406145842552497L;
     /********************************/
     /*           Variables          */
     /********************************/

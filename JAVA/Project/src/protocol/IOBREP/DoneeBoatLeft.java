@@ -10,6 +10,7 @@ import genericRequest.DonneeRequete;
 import java.io.Serializable;
 
 public class DoneeBoatLeft implements DonneeRequete, Serializable {
+    private static final long serialVersionUID = -9119628162186033820L;
 
     /********************************/
     /*           Variables          */
@@ -40,5 +41,10 @@ public class DoneeBoatLeft implements DonneeRequete, Serializable {
     /********************************/
     /*            Methodes          */
     /********************************/
+
+    @Override
+    public void setFiledsFromString(String fields) {
+
+    }
 
 }

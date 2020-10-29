@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 public class DonneeSendWeight implements DonneeRequete, Serializable
 {
+    private static final long serialVersionUID = 6340505110823371892L;
     /********************************/
     /*           Variables          */
     /********************************/

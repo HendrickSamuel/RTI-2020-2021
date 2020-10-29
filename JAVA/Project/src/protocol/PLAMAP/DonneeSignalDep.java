@@ -12,6 +12,7 @@ import java.util.List;
 
 public class DonneeSignalDep implements DonneeRequete, Serializable
 {
+    private static final long serialVersionUID = -4880966009261613396L;
     //todo: MAKE_BILL partie 4 avec le serveur compta en réponse au signal_dep
     /********************************/
     /*           Variables          */

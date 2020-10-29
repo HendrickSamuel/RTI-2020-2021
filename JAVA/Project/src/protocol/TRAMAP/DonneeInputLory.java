@@ -13,6 +13,7 @@ import java.io.Serializable;
 
 public class DonneeInputLory implements DonneeRequete, Serializable
 {
+    private static final long serialVersionUID = -5255810545824479653L;
     /********************************/
     /*           Variables          */
     /********************************/

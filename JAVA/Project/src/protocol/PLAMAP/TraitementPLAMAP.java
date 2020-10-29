@@ -146,6 +146,11 @@ public class TraitementPLAMAP implements Traitement
     private Reponse traiteGETXY(DonneeGetXY chargeUtile, Client client)
     {
         System.out.println("traiteGETXY");
+        System.out.println("Parametres: \n" +
+                chargeUtile.getSociete() + "\n" +
+                chargeUtile.getDestination() + "\n" +
+                chargeUtile.getIdContainer() + "\n" +
+                chargeUtile.getImmatriculationCamion());
         System.out.println(chargeUtile.toString());
 
         try {
@@ -173,7 +178,7 @@ public class TraitementPLAMAP implements Traitement
             }
             else
             {
-                return new ReponsePLAMAP(ReponsePLAMAP.OK, "un des renseignements envoyés ne correspond pas", null);
+                return new ReponsePLAMAP(ReponsePLAMAP.NOK, "un des renseignements envoyés ne correspond pas", null);
             }
 
         } catch (SQLException throwables) {
@@ -213,7 +218,7 @@ public class TraitementPLAMAP implements Traitement
                 rs.updateFloat("poidsTotal",chargeUtile.getPoids());
                 rs.updateInt("etat",2);
                 _bd.UpdateResult(rs);
-                return new ReponsePLAMAP(ReponsePLAMAP.OK, "ERREUR lors du traitement de la requete", null);
+                return new ReponsePLAMAP(ReponsePLAMAP.OK, null, chargeUtile);
             }
             else
             {

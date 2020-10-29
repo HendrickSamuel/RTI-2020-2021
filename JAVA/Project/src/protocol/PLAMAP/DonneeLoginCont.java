@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 public class DonneeLoginCont implements DonneeRequete, Serializable
 {
+    private static final long serialVersionUID = -2862166183109259082L;
     /********************************/
     /*           Variables          */
     /********************************/
