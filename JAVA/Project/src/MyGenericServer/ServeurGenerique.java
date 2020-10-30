@@ -75,6 +75,15 @@ public abstract class ServeurGenerique
 
     public void StopServeur()
     {
+        if(_console != null)
+            _console.Affiche("/!\\ Arret du serveur en cours");
+
+        _threadServer.CloseSocketAccept();
+        _threadServer.interrupt();
+        for(Thread th : listeThreadsEnfants)
+        {
+            th.interrupt();
+        }
 
     }
 

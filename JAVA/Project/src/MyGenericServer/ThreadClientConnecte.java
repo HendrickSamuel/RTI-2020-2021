@@ -46,14 +46,17 @@ public class ThreadClientConnecte extends ThreadClient
     public void run()
     {
         this.AfficheServeur("Demarrage du Thread: " + index);
-        if(this.is_javaObjectsCommunication())
-            runJavaObject();
-        else
-            runByteStream();
+        try {
+            if(this.is_javaObjectsCommunication())
+                runJavaObject();
+            else
+                runByteStream();
+        } catch (InterruptedException e) {
+            this.AfficheServeur("Arret du Thread: " + index);
+        }
     }
 
-    public void runJavaObject()
-    {
+    public void runJavaObject() throws InterruptedException {
         boolean inCommunication = false;
         ObjectInputStream ois=null;
         ObjectOutputStream oos=null;
@@ -61,14 +64,9 @@ public class ThreadClientConnecte extends ThreadClient
 
         while(!isInterrupted())
         {
-            try {
-                tacheEnCours = _taches.getTache();
-                _client = new Client(); //nouveau client par connection
-                inCommunication = true;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                inCommunication = false;
-            }
+            tacheEnCours = _taches.getTache();
+            _client = new Client(); //nouveau client par connection
+            inCommunication = true;
 
             while(!isInterrupted() && inCommunication)
             {
@@ -107,25 +105,16 @@ public class ThreadClientConnecte extends ThreadClient
         }
     }
 
-    public void runByteStream()
-    {
+    public void runByteStream() throws InterruptedException {
         DataInputStream dis = null;
         DataOutputStream dos = null;
         boolean inCommunication = false;
 
         while(!isInterrupted())
         {
-            try
-            {
-                tacheEnCours = _taches.getTache();
-                _client = new Client(); //nouveau client par connection
-                inCommunication = true;
-            }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-                inCommunication = false;
-            }
+            tacheEnCours = _taches.getTache();
+            _client = new Client(); //nouveau client par connection
+            inCommunication = true;
 
             while (!isInterrupted() && inCommunication)
             {

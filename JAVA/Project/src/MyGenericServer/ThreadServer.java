@@ -83,10 +83,20 @@ public class ThreadServer extends Thread
             }
             catch (IOException e)
             {
-                System.out.println(isInterrupted());
+                if(this.isInterrupted())
+                    this.interrupt();
             }
         }
         this.AfficheServeur("Le serveur se coupe");
+    }
+
+    public void CloseSocketAccept()
+    {
+        try {
+            SSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void AfficheServeur(String message)

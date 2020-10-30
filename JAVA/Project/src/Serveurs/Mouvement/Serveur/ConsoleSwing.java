@@ -39,7 +39,7 @@ public class ConsoleSwing implements ConsoleServeur {
     /********************************/
 
     @Override
-    public void Affiche(String message) {
+    public synchronized void Affiche(String message) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date now = Calendar.getInstance().getTime();
         jta.append(formatter.format(now) + "> "+ message+"\n");
