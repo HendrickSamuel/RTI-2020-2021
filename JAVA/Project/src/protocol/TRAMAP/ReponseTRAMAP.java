@@ -66,4 +66,9 @@ public class ReponseTRAMAP implements Reponse, Serializable
     {
         this.chargeUtile = chargeUtile;
     }
+
+    @Override
+    public String toString() {
+        return "Code retour: " + this.getCode();
+    }
 }

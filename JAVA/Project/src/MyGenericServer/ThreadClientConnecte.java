@@ -82,6 +82,7 @@ public class ThreadClientConnecte extends ThreadClient
                             req.getClass().getName() + " et " + req.getChargeUtile().getClass().getName());
 
                     Reponse rp = _traitement.traiteRequete(req.getChargeUtile(), _client);
+                    this.AfficheServeur("Reponse ==> " + rp);
                     oos.writeObject(rp);
                     oos.flush();
                 }
@@ -134,11 +135,12 @@ public class ThreadClientConnecte extends ThreadClient
                     dos = new DataOutputStream(tacheEnCours.getOutputStream());
 
                     String message = readAllBytes(dis);
-                    System.out.println("Recu: " + message);
+                    this.AfficheServeur("Recu ==> " + message);
                     DonneeRequete req = parseString(message);
                     this.AfficheServeur("Requete lue par le serveur, instance de " + req.getClass().getName());
 
                     Reponse rp = _traitement.traiteRequete(req, _client);
+                    this.AfficheServeur("Reponse ==> " + rp);
                     dos.write(rp.toString().getBytes());
                     dos.flush();
                 }

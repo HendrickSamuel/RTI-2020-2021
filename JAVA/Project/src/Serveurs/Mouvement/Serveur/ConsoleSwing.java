@@ -8,6 +8,9 @@ package Serveurs.Mouvement.Serveur;
 import MyGenericServer.ConsoleServeur;
 
 import javax.swing.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class ConsoleSwing implements ConsoleServeur {
 
@@ -37,7 +40,9 @@ public class ConsoleSwing implements ConsoleServeur {
 
     @Override
     public void Affiche(String message) {
-        jta.append(message+"\n");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date now = Calendar.getInstance().getTime();
+        jta.append(formatter.format(now) + "> "+ message+"\n");
     }
 
 }

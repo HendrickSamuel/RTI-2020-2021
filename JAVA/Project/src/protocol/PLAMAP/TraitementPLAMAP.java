@@ -78,7 +78,6 @@ public class TraitementPLAMAP implements Traitement
         if(Requete == null)
             return traite404();
 
-        System.out.println(Requete);
         if(Requete instanceof DonneeLoginCont)
             return traiteLOGINCONT((DonneeLoginCont)Requete, client);
         else if(Requete instanceof DonneeGetXY)
@@ -145,12 +144,6 @@ public class TraitementPLAMAP implements Traitement
     private Reponse traiteGETXY(DonneeGetXY chargeUtile, Client client)
     {
         System.out.println("traiteGETXY");
-        System.out.println("Parametres: \n" +
-                chargeUtile.getSociete() + "\n" +
-                chargeUtile.getDestination() + "\n" +
-                chargeUtile.getIdContainer() + "\n" +
-                chargeUtile.getImmatriculationCamion());
-        System.out.println(chargeUtile.toString());
 
         try {
             PreparedStatement ps = _bd.getPreparedStatement("SELECT * " +
@@ -158,7 +151,7 @@ public class TraitementPLAMAP implements Traitement
                     "INNER JOIN containers c on p.idContainer = c.idContainer " +
                     "INNER JOIN mouvements m on c.idContainer = m.idContainer " +
                     "WHERE UPPER(c.idContainer) = UPPER(?) " +
-                    "AND p.etat = 1" +
+                    "AND p.etat = 1 " +
                     "AND UPPER(c.idSociete) = UPPER(?) " +
                     "AND UPPER(m.transporteurEntrant) = UPPER(?) " +
                     "AND UPPER(m.destination) = UPPER(?);");
@@ -182,6 +175,7 @@ public class TraitementPLAMAP implements Traitement
             }
 
         } catch (SQLException throwables) {
+
             throwables.printStackTrace();
         }
 
@@ -246,7 +240,7 @@ public class TraitementPLAMAP implements Traitement
 
     private Reponse traite404()
     {
-        System.out.println("traite404 Request not found");
+        AfficheTraitement("Un client à essayer d'acceder à une mauvaise ressource");
         return new ReponsePLAMAP(ReponsePLAMAP.REQUEST_NOT_FOUND,  "request could not be exeuted due to unsopported version.",null);
     }
 }
