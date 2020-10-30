@@ -162,7 +162,7 @@ public class ClientLayout extends JFrame
         if(isConnect())
         {
             DialogLogout logout = new DialogLogout(this, true, getClient());
-            logout.setSize(260, 190);
+            logout.setSize(400, 200);
             logout.setVisible(true);
             if(logout.isLogout())
             {

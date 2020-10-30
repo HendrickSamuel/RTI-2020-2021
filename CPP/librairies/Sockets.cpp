@@ -196,7 +196,6 @@ char* Sockets::receiveString(int taille, char marq1, char marq2)
 
     message[tailleMessageRecu] = '\0';
     
-    cout << "message = [" << message << "]" << endl;
     return message;
 }
 

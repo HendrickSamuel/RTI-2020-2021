@@ -307,6 +307,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
 
                     retour = socketMouv.receiveString(MTU, '#', '%');
 
+                    cout << "message recu de serveur mouvement [" << retour << "]" << endl;
+
                     //verification si la requete est OK
                     if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0)
                     {               
@@ -320,8 +322,6 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
 
                         PT->tmpContaineur.x = coo[0];
                         PT->tmpContaineur.y = coo[1];
-
-                        cout << "x = " << PT->tmpContaineur.x << "y = " << PT->tmpContaineur.y << endl;
 
                         proto.donnees.reponse.x = coo[0];
                         proto.donnees.reponse.y = coo[1];
@@ -367,21 +367,16 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
 
                             retour = socketMouv.receiveString(MTU, '#', '%');
 
-                            cout << "retour = [" << retour << "]" << endl;
+                            cout << "message recu de serveur mouvement [" << retour << "]" << endl;
 
                             if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0)
-                            {         
-                                cout << "test 1 " << endl;      
+                            {              
                                 freePTMess();
-                                cout << "test 1.2 " << endl;
                                 PT->message = new char[strlen("3#true#Container enregistre#%")+1];
-                                cout << "test 1.3 " << endl;
                                 strcpy(PT->message, "3#true#Container enregistre#%");
-                                cout << "test 1.4 " << endl;
                             }
                             else
                             {
-                                cout << "test 2 " << endl; 
                                 freePTMess();
                                 PT->message = new char[strlen("3#false#Container non conforme#%")+1];
                                 strcpy(PT->message, "3#false#Container non conforme#%");
@@ -404,7 +399,6 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                             PT->dernOpp = Init;
                     }
                 }
-                cout << "break ^^ " << endl;
                 break;
 
             case OutputReady:
@@ -426,6 +420,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                     socketMouv.sendString(mes, tail);
 
                     retour = socketMouv.receiveString(MTU, '#', '%');
+
+                    cout << "message recu de serveur mouvement [" << retour << "]" << endl;
 
                     if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0) 
                     {
@@ -581,7 +577,6 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                 }
                 break;
         }
-        cout << "apres switch" << endl;
     }
     else
     {  
@@ -597,8 +592,6 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
     {
         free(retour);
     }
-
-    cout << "fin de la fonction " << endl;
 }
 
 /********************************/
@@ -723,7 +716,6 @@ void * fctThread(void * param)
                 if(PT->connect == true || proto.type == 1)
                 {
                     switchThread(proto, socketMouv);
-                    cout << "aucune idee ..... " << endl;
                 }
                 else
                 {
@@ -735,9 +727,7 @@ void * fctThread(void * param)
                     strcat(PT->message, "#false#Vous devez etre connecte pour cette action#%");
                 }
             
-            cout << "test 2 " << endl;
                 hSocketService.sendString(PT->message, strlen(PT->message));
-                cout << "test 2.2 " << endl;
             }
             catch(BaseException e)
             {
