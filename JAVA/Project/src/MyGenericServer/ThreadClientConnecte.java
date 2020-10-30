@@ -83,6 +83,9 @@ public class ThreadClientConnecte extends ThreadClient
                     this.AfficheServeur("Reponse ==> " + rp);
                     oos.writeObject(rp);
                     oos.flush();
+
+                    //sleep(5000);
+
                 }
                 catch (ClassNotFoundException e)
                 {

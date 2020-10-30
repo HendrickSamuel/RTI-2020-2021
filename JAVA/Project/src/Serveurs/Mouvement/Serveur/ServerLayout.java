@@ -84,12 +84,14 @@ public class ServerLayout extends JFrame
     {
         if(serveur1 == null)
         {
+            int NbThreads = 0;
             toggleServer1.setText("-- STOP --");
             textArea1.setText(null);
 
             ConsoleSwing cs = new ConsoleSwing(textArea1);
             MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
             port1 = Integer.parseInt(mp.getContent("PORT1"));
+            NbThreads = Integer.parseInt(mp.getContent("NBTHREADS_PORT1"));
 
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
@@ -97,7 +99,7 @@ public class ServerLayout extends JFrame
             try
             {
                 bd = new BDMouvements(USER,PWD,"bd_mouvements");
-                serveur1 = new ServeurMouvement(port1, true, 3, bd, cs);
+                serveur1 = new ServeurMouvement(port1, true, NbThreads, bd, cs);
                 serveur1.StartServeur();
 
                 labelPort1.setText("PORT: " + port1);
@@ -120,12 +122,14 @@ public class ServerLayout extends JFrame
     {
         if(serveur2 == null)
         {
+            int NbThreads = 0;
             toggleServer2.setText("-- STOP --");
             textArea2.setText(null);
 
             ConsoleSwing cs = new ConsoleSwing(textArea2);
             MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
             port2 = Integer.parseInt(mp.getContent("PORT2"));
+            NbThreads = Integer.parseInt(mp.getContent("NBTHREADS_PORT2"));
 
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
@@ -133,7 +137,7 @@ public class ServerLayout extends JFrame
             try
             {
                 bd = new BDMouvements(USER,PWD,"bd_mouvements");
-                serveur2 = new ServeurMouvementPLAMAP(port2, true, 3, bd, cs, false);
+                serveur2 = new ServeurMouvementPLAMAP(port2, true, NbThreads, bd, cs, false);
                 serveur2.StartServeur();
 
                 labelPort2.setText("PORT: " + port2);
