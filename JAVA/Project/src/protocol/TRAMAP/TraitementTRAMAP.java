@@ -227,6 +227,11 @@ public class TraitementTRAMAP implements Traitement
 
     private Reponse traiteListe(DonneeListOperations chargeUtile, Client client)
     {
+        if(!client.is_loggedIn())
+        {
+            return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Le client n'est pas connecte dans le serveur");
+        }
+
         try {
             ResultSet resultat;
             if(chargeUtile.getNomSociete() != null && chargeUtile.getNomDestination() == null)

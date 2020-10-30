@@ -84,7 +84,6 @@ public abstract class ServeurGenerique
         {
             th.interrupt();
         }
-
     }
 
     public void CreationPoolThreads(SourceTaches sourceTaches)
