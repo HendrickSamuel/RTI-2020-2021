@@ -15,18 +15,31 @@ public class DonneeHandleContainerIn implements DonneeRequete, Serializable {
     /********************************/
     /*           Variables          */
     /********************************/
+    private String idContainer;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public DonneeHandleContainerIn(String idContainer) {
+        this.idContainer = idContainer;
+    }
+
+    public DonneeHandleContainerIn() {
+    }
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public String getIdContainer() {
+        return idContainer;
+    }
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setIdContainer(String idContainer) {
+        this.idContainer = idContainer;
+    }
 
     /********************************/
     /*            Methodes          */

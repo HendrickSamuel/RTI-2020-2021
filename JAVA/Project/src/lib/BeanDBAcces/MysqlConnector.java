@@ -65,7 +65,7 @@ public class MysqlConnector implements DataSource
         return _con.prepareStatement(request, ResultSet.TYPE_SCROLL_SENSITIVE,
                 ResultSet.CONCUR_UPDATABLE);
     }
-
+ 
     public synchronized void UpdateResult(ResultSet rs) throws SQLException {
         rs.updateRow();
     }
@@ -79,7 +79,8 @@ public class MysqlConnector implements DataSource
     }
 
     public synchronized Statement CreateUpdatableStatement() throws SQLException {
-        return _con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        return _con.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
     }
 
     public synchronized ResultSet ExecuteQuery(Statement statement, String query) throws SQLException {

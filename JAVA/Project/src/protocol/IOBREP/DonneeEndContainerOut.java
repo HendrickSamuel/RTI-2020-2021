@@ -15,19 +15,28 @@ public class DonneeEndContainerOut implements DonneeRequete, Serializable {
     /********************************/
     /*           Variables          */
     /********************************/
+    private String idBateau;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public DonneeEndContainerOut(String idBateau) {
+        this.idBateau = idBateau;
+    }
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public String getIdBateau() {
+        return idBateau;
+    }
 
     /********************************/
     /*            Setters           */
     /********************************/
-
+    public void setIdBateau(String idBateau) {
+        this.idBateau = idBateau;
+    }
     /********************************/
     /*            Methodes          */
     /********************************/

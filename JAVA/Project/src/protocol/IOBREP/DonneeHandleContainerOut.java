@@ -15,7 +15,6 @@ public class DonneeHandleContainerOut implements DonneeRequete, Serializable {
     /********************************/
     /*           Variables          */
     /********************************/
-    private String idBateau;
     private String idContainer;
 
     /********************************/
@@ -32,19 +31,11 @@ public class DonneeHandleContainerOut implements DonneeRequete, Serializable {
         return idContainer;
     }
 
-    public String getIdBateau() {
-        return idBateau;
-    }
-
     /********************************/
     /*            Setters           */
     /********************************/
     public void setIdContainer(String idContainer) {
         this.idContainer = idContainer;
-    }
-
-    public void setIdBateau(String idBateau) {
-        this.idBateau = idBateau;
     }
 
     /********************************/
