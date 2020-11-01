@@ -130,7 +130,7 @@ public class TraitementIOBREP implements Traitement {
         containersList = new ArrayList<>();
         treatedContainersList = new ArrayList<>();
         try{
-            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM parc WHERE upper(moyenTransport) = upper(?) AND upper(destination) = upper(?) ORDER BY ?;");
+            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM parc WHERE upper(moyenTransport) = upper(?) AND idContainer IS NOT NULL AND upper(destination) = upper(?) ORDER BY ?;");
             ps.setString(1, "Bateau");
             ps.setString(2, chargeUtile.getDestination());
 
@@ -266,18 +266,17 @@ public class TraitementIOBREP implements Traitement {
                     if(res != null && res.next())
                     {
                         res.updateNull("idContainer"); //idcontainer à null
+                        res.updateNull("moyenTransport"); //idcontainer à null
                         res.updateInt("etat",0); //etat à 0
                         _bdMouvement.UpdateResult(res);
-
-                        return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
                     }
                 }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
+                return new ReponseIOBREP(ReponseIOBREP.NOK, null, "Erreur de validation du container: " + container);
             }
-            return new ReponseIOBREP(ReponseIOBREP.NOK, null, "Message d'erreur");
         }
-        return null;
+        return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
     }
 
     private Reponse traite404()
