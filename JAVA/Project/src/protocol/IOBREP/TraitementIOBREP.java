@@ -28,12 +28,22 @@ public class TraitementIOBREP implements Traitement {
 
     private ArrayList<String> containersList;
     private ArrayList<String> treatedContainersList;
+    private ArrayList<String> containersListIn;
+    private ArrayList<String> treatedContainersListIn;
+
     private String sortingAlgo;
+    private String dockerName;
+
+    private int dockersid;
+
+    private boolean startedLoading = false;
+    private boolean startedUnloading = false;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public TraitementIOBREP(BDMouvements _bdMouvement, BDCompta _bdCompta) {
+    public TraitementIOBREP(BDMouvements _bdMouvement, BDCompta _bdCompta)
+    {
         this._bdMouvement = _bdMouvement;
         this._bdCompta = _bdCompta;
     }
@@ -47,7 +57,8 @@ public class TraitementIOBREP implements Traitement {
     /********************************/
 
     @Override
-    public void setConsole(ConsoleServeur cs) {
+    public void setConsole(ConsoleServeur cs)
+    {
 
     }
 
@@ -68,7 +79,10 @@ public class TraitementIOBREP implements Traitement {
         if(donnee instanceof protocol.IOBREP.DonneeLogin)
             return traiteLOGIN((protocol.IOBREP.DonneeLogin) donnee, client);
         if(donnee instanceof protocol.IOBREP.DonneeGetContainers)
-            return traiteGetContainers((protocol.IOBREP.DonneeGetContainers) donnee, client);
+            if(((DonneeGetContainers) donnee).getMode().equals("IN"))
+                return traiteGetContainersIN((protocol.IOBREP.DonneeGetContainers) donnee, client);
+            else
+                return traiteGetContainersOUT((protocol.IOBREP.DonneeGetContainers) donnee, client);
         if(donnee instanceof protocol.IOBREP.DonneeBoatArrived)
             return traiteBoatArrived((protocol.IOBREP.DonneeBoatArrived) donnee, client);
         if(donnee instanceof protocol.IOBREP.DoneeBoatLeft)
@@ -81,6 +95,8 @@ public class TraitementIOBREP implements Traitement {
             return traiteHandleContainerOut((protocol.IOBREP.DonneeHandleContainerOut) donnee, client);
         if(donnee instanceof protocol.IOBREP.DonneeEndContainerOut)
             return traiteEndContainerOut((protocol.IOBREP.DonneeEndContainerOut) donnee, client);
+        if(donnee instanceof protocol.IOBREP.DonneeGetLoadUnloadStats)
+            return traiteDonneeGetLoadUnloadStats((protocol.IOBREP.DonneeGetLoadUnloadStats) donnee, client);
         else
             return traite404();
     }
@@ -110,6 +126,7 @@ public class TraitementIOBREP implements Traitement {
                 if(password.compareTo(bddpass) == 0)
                 {
                     client.set_loggedIn(true);
+                    dockerName = username;
                     return new ReponseIOBREP(ReponseIOBREP.OK, null, null);
                 }
                 else
@@ -125,11 +142,41 @@ public class TraitementIOBREP implements Traitement {
         return new ReponseIOBREP(ReponseIOBREP.NOK, null, "ERREUR lors du traitement de la requete");
     }
 
-    private Reponse traiteGetContainers(DonneeGetContainers chargeUtile, Client client)
+    private Reponse traiteGetContainersIN(DonneeGetContainers chargeUtile, Client client)
     {
-        containersList = new ArrayList<>();
-        treatedContainersList = new ArrayList<>();
         try{
+            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM mouvements WHERE upper(transporteurEntrant) = upper(?) AND dateArrivee IS NULL and upper(destination) = upper('parc') ORDER BY RAND();");
+            ps.setString(1, chargeUtile.getIdBateau());
+
+            System.out.println(ps);
+
+            ResultSet rs = _bdMouvement.ExecuteQuery(ps);
+
+            ArrayList<Container> containers = new ArrayList<>();
+            while (rs.next())
+            {
+                Container cont = new Container();
+                cont.setId(rs.getString("idContainer"));
+                containersListIn.add(cont.getId());
+                containers.add(cont);
+            }
+            chargeUtile.set_containers(containers);
+            return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
+        }
+         catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new ReponseIOBREP(ReponseIOBREP.NOK, null, "ERREUR lors du traitement de la requete");
+    }
+
+    private Reponse traiteGetContainersOUT(DonneeGetContainers chargeUtile, Client client)
+    {
+        try{
+            PreparedStatement pse = _bdMouvement.getPreparedStatement("UPDATE dockers set destination = ? WHERE id = ? ");
+            pse.setString(1, chargeUtile.getDestination());
+            pse.setInt(2, this.dockersid);
+            _bdMouvement.Execute(pse);
+
             PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM parc WHERE upper(moyenTransport) = upper(?) AND idContainer IS NOT NULL AND upper(destination) = upper(?) ORDER BY ?;");
             ps.setString(1, "Bateau");
             ps.setString(2, chargeUtile.getDestination());
@@ -156,15 +203,19 @@ public class TraitementIOBREP implements Traitement {
             chargeUtile.set_containers(containers);
             return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
         }
-         catch (SQLException throwables) {
+        catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         return new ReponseIOBREP(ReponseIOBREP.NOK, null, "ERREUR lors du traitement de la requete");
-
     }
 
     private Reponse traiteBoatArrived(DonneeBoatArrived chargeUtile, Client client)
     {
+        containersList = new ArrayList<>();
+        treatedContainersList = new ArrayList<>();
+        containersListIn = new ArrayList<>();
+        treatedContainersListIn = new ArrayList<>();
+
         try {
             PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM transporteurs WHERE upper(idTransporteur) = upper(?);");
             ps.setString(1, chargeUtile.getIdContainer());
@@ -173,6 +224,19 @@ public class TraitementIOBREP implements Traitement {
             {
                 rs.updateBoolean("present",true);
                 _bdMouvement.UpdateResult(rs);
+
+                PreparedStatement psDocker = _bdMouvement.getPreparedStatement("INSERT INTO dockers (idDocker, idBateau) VALUES (?,?);");
+                psDocker.setString(1, dockerName);
+                psDocker.setString(2, chargeUtile.getIdContainer());
+                _bdMouvement.Execute(psDocker);
+
+                PreparedStatement psid = _bdMouvement.getPreparedStatement("SELECT * from dockers ORDER BY id DESC LIMIT 1");
+                ResultSet res = _bdMouvement.ExecuteQuery(psid);
+                if(res!= null && res.next())
+                {
+                    dockersid = res.getInt("id");
+                }
+
                 return new ReponseIOBREP(ReponseIOBREP.OK ,chargeUtile, null);
             }
             else
@@ -211,19 +275,120 @@ public class TraitementIOBREP implements Traitement {
 
     private Reponse traiteHandleContainerIn(protocol.IOBREP.DonneeHandleContainerIn chargeUtile, Client client)
     {
-        //todo: mettre le container dans le parc + oui ou non ?
-        return null;
+        if(!startedUnloading)
+        {
+            try {
+                PreparedStatement ps = _bdMouvement.getPreparedStatement("UPDATE dockers SET startBoatUnload = ? WHERE id = ?");
+                ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                ps.setInt(2, this.dockersid);
+                _bdMouvement.Execute(ps);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            startedUnloading = true;
+        }
+
+        if(containersListIn.contains(chargeUtile.getIdContainer()))
+        {
+            treatedContainersListIn.add(containersListIn.remove(containersListIn.indexOf(chargeUtile.getIdContainer())));
+            try {
+                PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM parc WHERE etat = 0");
+                ResultSet rs = _bdMouvement.ExecuteQuery(ps);
+                if(rs!= null && rs.next())
+                {
+                    rs.updateInt("etat", 1);
+                    rs.updateString("idContainer", chargeUtile.getIdContainer());
+                    _bdMouvement.UpdateResult(rs);
+
+                    //todo: mettre à jour le mouvement avec le champs de date d'arrivee;
+                }
+                else
+                {
+                    return new ReponseIOBREP(ReponseIOBREP.NOK, null, "No place to unload");
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                return new ReponseIOBREP(ReponseIOBREP.NOK, null, "Erreur sur la base de donnée");
+            }
+            return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
+        }
+        else
+            return new ReponseIOBREP(ReponseIOBREP.NOK, null, "Container not in the list");
     }
 
     private Reponse traiteEndContainerIn(protocol.IOBREP.DonneeEndContainerIn chargeUtile, Client client)
     {
-        //todo: finir le dechargement ?
-        return null;
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        if(!startedUnloading)
+        {
+            try {
+                PreparedStatement ps = _bdMouvement.getPreparedStatement("UPDATE dockers SET startBoatUnload = ? , endBoatUnload = ? , containersDecharges = ?  WHERE id = ?");
+                ps.setTimestamp(1, now);
+                ps.setTimestamp(2, now);
+                ps.setInt(3, treatedContainersListIn.size());
+                ps.setInt(4, dockersid);
+                _bdMouvement.Execute(ps);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+        else
+        {
+            try {
+                PreparedStatement ps = _bdMouvement.getPreparedStatement("UPDATE dockers SET endBoatUnload = ? , containersDecharges = ?  WHERE id = ?");
+                ps.setTimestamp(1, now);
+                ps.setInt(2, treatedContainersListIn.size());
+                ps.setInt(3, dockersid);
+                _bdMouvement.Execute(ps);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+
+        for(String container : treatedContainersListIn)
+        {
+            try {
+                PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM mouvements WHERE UPPER(idContainer) = UPPER(?) AND dateArrivee IS NULL;");
+                ps.setString(1, container);
+                ResultSet rs = _bdMouvement.ExecuteQuery(ps);
+                if(rs != null && rs.next())
+                {
+                    rs.updateString("transporteurEntrant",chargeUtile.getIdBateau());
+                    rs.updateDate("dateArrivee", new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+                    _bdMouvement.UpdateResult(rs);
+
+                    PreparedStatement pre = _bdMouvement.getPreparedStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?);");
+                    pre.setString(1, container);
+                    ResultSet res = _bdMouvement.ExecuteQuery(pre);
+                    if(res != null && res.next())
+                    {
+                        res.updateInt("etat",2); //etat à 0
+                        _bdMouvement.UpdateResult(res);
+                    }
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+                return new ReponseIOBREP(ReponseIOBREP.NOK, null, "Erreur de validation du container: " + container);
+            }
+        }
+        return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
     }
 
     private Reponse traiteHandleContainerOut(protocol.IOBREP.DonneeHandleContainerOut chargeUtile, Client client)
     {
-        //todo: verifier qu'on ne depasse pas la capacite max ?
+        if(!startedLoading)
+        {
+            try {
+                PreparedStatement ps = _bdMouvement.getPreparedStatement("UPDATE dockers SET startBoatLoad = ? WHERE id = ? ");
+                ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                ps.setInt(2, this.dockersid);
+                _bdMouvement.Execute(ps);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            startedLoading = true;
+        }
+
         if(sortingAlgo.equals("FIRST"))
         {
             if(chargeUtile.getIdContainer().toUpperCase().equals(containersList.get(0))){
@@ -248,6 +413,34 @@ public class TraitementIOBREP implements Traitement {
 
     private Reponse traiteEndContainerOut(protocol.IOBREP.DonneeEndContainerOut chargeUtile, Client client)
     {
+        //si on a rien chargé alors le début = fin
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        if(!startedLoading)
+        {
+            try {
+                PreparedStatement ps = _bdMouvement.getPreparedStatement("UPDATE dockers SET startBoatLoad = ? , endBoatLoad = ? , containersCharges = ?  WHERE id = ?");
+                ps.setTimestamp(1, now);
+                ps.setTimestamp(2, now);
+                ps.setInt(3, treatedContainersList.size());
+                ps.setInt(4, dockersid);
+                _bdMouvement.Execute(ps);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+        else
+        {
+            try {
+                PreparedStatement ps = _bdMouvement.getPreparedStatement("UPDATE dockers SET endBoatLoad = ? , containersCharges = ? WHERE id = ?");
+                ps.setTimestamp(1, now);
+                ps.setInt(2, treatedContainersList.size());
+                ps.setInt(3, dockersid);
+                _bdMouvement.Execute(ps);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+
         for(String container : treatedContainersList)
         {
             try {
@@ -277,6 +470,43 @@ public class TraitementIOBREP implements Traitement {
             }
         }
         return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
+    }
+
+    private Reponse traiteDonneeGetLoadUnloadStats(protocol.IOBREP.DonneeGetLoadUnloadStats chargeUtile, Client client)
+    {
+        try {
+            ResultSet rs = _bdMouvement.ExecuteQuery(_bdMouvement.CreateUpdatableStatement(),
+                    "SELECT SUM(containersCharges) AS cc, SUM(containersDecharges) AS cd, DATE(MIN(startBoatLoad)) AS datemouvement " +
+                            "FROM dockers " +
+                            "GROUP BY DATE(startBoatLoad) ");
+            ArrayList<Day> liste = new ArrayList<>();
+            while(rs.next())
+            {
+                Day day = new Day(rs.getTimestamp("datemouvement").toString(),
+                        rs.getInt("cc"),
+                        rs.getInt("cd"));
+                liste.add(day);
+            }
+            chargeUtile.setJours(liste);
+            return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new ReponseIOBREP(ReponseIOBREP.NOK, null, "Erreur d'execution");
+    }
+
+    private Reponse traiteDonneeGetLoadUnloadTime(protocol.IOBREP.DonneeGetLoadUnloadTime chargeUtile, Client clietn)
+    {
+        try{
+            ResultSet rs = _bdMouvement.ExecuteQuery(_bdMouvement.CreateUpdatableStatement(),
+                    "SELECT AVG(endBoatLoad - startBoatLoad) AS un, AVG(endBoatUnload - startBoatUnload) AS deux, idDocker as docker " +
+                            "FROM dockers " +
+                            "GROUP BY idDocker AND destination");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return null;
     }
 
     private Reponse traite404()

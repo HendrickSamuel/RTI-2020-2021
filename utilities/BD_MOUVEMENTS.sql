@@ -4,6 +4,7 @@ USE BD_MOUVEMENTS;
 */
 SET storage_engine=INNODB;
 
+DROP TABLE IF EXISTS Dockers;
 DROP TABLE IF EXISTS Mouvements;
 DROP TABLE IF EXISTS Parc;
 DROP TABLE IF EXISTS Containers;
@@ -11,6 +12,7 @@ DROP TABLE IF EXISTS Transporteurs;
 DROP TABLE IF EXISTS Destinations;
 DROP TABLE IF EXISTS Societes;
 DROP TABLE IF EXISTS Logins;
+
 
 CREATE TABLE Societes (
 nom varchar(255) PRIMARY KEY,
@@ -76,9 +78,24 @@ FOREIGN KEY (destination) REFERENCES Destinations(ville)
 );
 
 CREATE TABLE Logins(
-id INT AUTO_INCREMENT PRIMARY KEY,
-username varchar(255),
+username varchar(255) PRIMARY KEY,
 userpassword varchar(255)
+);
+
+CREATE TABLE Dockers(
+id INT AUTO_INCREMENT PRIMARY KEY,
+idDocker varchar(255),
+idBateau varchar(255),
+startBoatLoad TIMESTAMP DEFAULT '0000-00-00 00:00:00', 
+endBoatLoad TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+startBoatUnload TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+endBoatUnload TIMESTAMP DEFAULT '0000-00-00 00:00:00',
+containersCharges INT DEFAULT 0,
+containersDecharges INT DEFAULT 0,
+destination varchar(255),
+FOREIGN KEY (idDocker) REFERENCES Logins(username),
+FOREIGN KEY (idBateau) REFERENCES Transporteurs(idTransporteur),
+FOREIGN KEY (destination) REFERENCES Destinations(ville)
 );
 
 INSERT into Destinations (ville) VALUES ("Paris");
@@ -86,8 +103,9 @@ INSERT into Destinations (ville) VALUES ("Madrid");
 INSERT into Destinations (ville) VALUES ("Liege");
 INSERT into Destinations (ville) VALUES ("Vise");
 INSERT into Destinations (ville) VALUES ("Berlin");
+INSERT into Destinations (ville) VALUES ("parc");
 
-INSERT into Logins (username, userpassword) VALUES ("Samuel","superSecurePass123");
+INSERT into Logins (username, userpassword) VALUES ("Samuel","sam");
 INSERT into Logins (username, userpassword) VALUES ("Kevin","superSecurePass123");
 INSERT into Logins (username, userpassword) VALUES ("ServeurContainer","password");
 
@@ -153,3 +171,8 @@ INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transport
 VALUES ("YABB-CHARL-A1B2C3", "1-VIL-007", STR_TO_DATE("25,10,2020", "%d,%m,%Y"), NULL, 500, NULL, "Paris");
 INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination)
 VALUES ("DMTE-GMELF-A4G8G4", "3-FAB-123", STR_TO_DATE("12,10,2020", "%d,%m,%Y"), NULL, 250, NULL, "Liege");
+
+INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination)
+VALUES ("DMTE-GMELF-A4G8G4", "2-KEV-123", NULL, NULL, 250, NULL, "parc");
+INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination)
+VALUES ("DEDE-JPOLE-D7J0M4", "2-KEV-123", NULL, NULL, 250, NULL, "parc");

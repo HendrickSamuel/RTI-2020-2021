@@ -25,7 +25,7 @@ public class ClientBateau {
         ObjectOutputStream oos;
         Socket cliSock;
 
-        DonneeRequete dt = new protocol.IOBREP.DonneeGetContainers("Paris","RAND");
+        DonneeRequete dt = new protocol.IOBREP.DonneeGetContainers("Paris","RAND", "IN");
 
 
         RequeteIOBREP req = null;

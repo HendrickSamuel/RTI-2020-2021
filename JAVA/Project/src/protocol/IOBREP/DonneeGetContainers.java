@@ -20,14 +20,18 @@ public class DonneeGetContainers implements DonneeRequete, Serializable {
     private String destination;
     private String selection; //FIRST RANDOM
 
+    private String mode;
+    private String idBateau;
+
     private List<Container> _containers;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DonneeGetContainers(String destination, String selection) {
+    public DonneeGetContainers(String destination, String selection, String mode) {
         this.destination = destination;
         this.selection = selection;
+        this.mode = mode;
     }
     /********************************/
     /*            Getters           */
@@ -44,6 +48,14 @@ public class DonneeGetContainers implements DonneeRequete, Serializable {
         return _containers;
     }
 
+    public String getMode() {
+        return mode;
+    }
+
+    public String getIdBateau() {
+        return idBateau;
+    }
+
     /********************************/
     /*            Setters           */
     /********************************/
@@ -57,6 +69,14 @@ public class DonneeGetContainers implements DonneeRequete, Serializable {
 
     public void set_containers(List<Container> _containers) {
         this._containers = _containers;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public void setIdBateau(String idBateau) {
+        this.idBateau = idBateau;
     }
 
     /********************************/
