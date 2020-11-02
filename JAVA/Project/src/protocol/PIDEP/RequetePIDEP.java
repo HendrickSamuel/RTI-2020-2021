@@ -16,22 +16,41 @@ public class RequetePIDEP implements Requete, Serializable {
     /********************************/
     /*           Variables          */
     /********************************/
+    private DonneeRequete chargeUtile;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public RequetePIDEP()
+    {
+
+    }
+
+    public RequetePIDEP(DonneeRequete chargeUtile)
+    {
+        this.chargeUtile = chargeUtile;
+    }
+
 
     /********************************/
     /*            Getters           */
     /********************************/
     @Override
-    public DonneeRequete getChargeUtile() {
-        return null;
+    public DonneeRequete getChargeUtile()
+    {
+        return chargeUtile;
     }
+
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setChargeUtile(DonneeRequete chargeUtile)
+    {
+        this.chargeUtile = chargeUtile;
+    }
+
 
     /********************************/
     /*            Methodes          */

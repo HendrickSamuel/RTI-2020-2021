@@ -10,8 +10,11 @@ import MyGenericServer.ServeurGenerique;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import protocol.IOBREP.ReponseIOBREP;
 import protocol.IOBREP.TraitementIOBREP;
+
+import java.security.Security;
 
 public class ServeurBateaux extends ServeurGenerique
 {
@@ -28,11 +31,13 @@ public class ServeurBateaux extends ServeurGenerique
     public ServeurBateaux(int port, boolean connecte, int NbThreads, ConsoleServeur cs)
     {
         super(port, connecte, NbThreads, cs, true);
+        Security.addProvider(new BouncyCastleProvider());
     }
 
     public ServeurBateaux(int port, boolean connecte, int NbThreads, ConsoleServeur cs, boolean isJavaCommunication)
     {
         super(port, connecte, NbThreads, cs, isJavaCommunication);
+        Security.addProvider(new BouncyCastleProvider());
     }
 
 

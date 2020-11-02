@@ -3,7 +3,7 @@
 //Projet : R.T.I.                                 
 //Date de la création : 02/11/2020
 
-package Serveurs.DataAnalysis;
+package Serveurs.DataAnalysis.Serveur;
 
 import MyGenericServer.ConsoleServeur;
 import MyGenericServer.ServeurGenerique;

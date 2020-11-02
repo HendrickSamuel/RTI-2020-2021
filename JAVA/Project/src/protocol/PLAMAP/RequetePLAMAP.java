@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class RequetePLAMAP implements Requete, Serializable
 {
     private static final long serialVersionUID = -393641524309419331L;
+
     /********************************/
     /*           Variables          */
     /********************************/

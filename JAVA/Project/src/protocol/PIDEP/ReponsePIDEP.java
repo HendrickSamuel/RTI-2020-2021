@@ -10,7 +10,8 @@ import genericRequest.Reponse;
 
 import java.io.Serializable;
 
-public class ReponsePIDEP implements Reponse, Serializable {
+public class ReponsePIDEP implements Reponse, Serializable
+{
     private static final long serialVersionUID = 2673787521001662610L;
 
     /********************************/
@@ -27,18 +28,56 @@ public class ReponsePIDEP implements Reponse, Serializable {
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public ReponsePIDEP()
+    {
+
+    }
+
+    public ReponsePIDEP(int codeRetour, String message, DonneeRequete chargeUtile)
+    {
+        this.codeRetour = codeRetour;
+        this.message = message;
+        this.chargeUtile = chargeUtile;
+    }
+
 
     /********************************/
     /*            Getters           */
     /********************************/
     @Override
-    public int getCode() {
-        return 0;
+    public int getCode()
+    {
+        return codeRetour;
+    }
+
+    public String getMessage()
+    {
+        return message;
+    }
+
+    public DonneeRequete getChargeUtile()
+    {
+        return chargeUtile;
     }
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setCodeRetour(int codeRetour)
+    {
+        this.codeRetour = codeRetour;
+    }
+
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
+
+    public void setChargeUtile(DonneeRequete chargeUtile)
+    {
+        this.chargeUtile = chargeUtile;
+    }
+
 
     /********************************/
     /*            Methodes          */

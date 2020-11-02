@@ -9,9 +9,10 @@ import MyGenericServer.Client;
 import MyGenericServer.ConsoleServeur;
 import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
-import genericRequest.Requete;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
+import protocol.PLAMAP.DonneeLoginCont;
+
 
 public class TraitementPIDEP implements Traitement
 {
@@ -78,5 +79,35 @@ public class TraitementPIDEP implements Traitement
     public void AfficheTraitement(String message)
     {
 
+    }
+
+    private Reponse traiteLOGIN(DonneeLoginCont chargeUtile, Client client)
+    {
+        return null;
+    }
+
+    private Reponse traiteGET_STAT_DESCR_CONT(DonneeLoginCont chargeUtile, Client client)
+    {
+        return null;
+    }
+
+    private Reponse traiteGET_GR_COULEUR_REP(DonneeLoginCont chargeUtile, Client client)
+    {
+        return null;
+    }
+
+    private Reponse traiteGET_GR_COULEUR_COMP(DonneeLoginCont chargeUtile, Client client)
+    {
+        return null;
+    }
+
+    private Reponse traiteGET_STAT_INFER_TEST_CONF(DonneeLoginCont chargeUtile, Client client)
+    {
+        return null;
+    }
+
+    private Reponse traiteGET_STAT_INFER_TEST_HOMOG(DonneeLoginCont chargeUtile, Client client)
+    {
+        return null;
     }
 }
