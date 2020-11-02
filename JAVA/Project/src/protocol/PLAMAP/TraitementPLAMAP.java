@@ -11,8 +11,6 @@ import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
-import protocol.TRAMAP.ReponseTRAMAP;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

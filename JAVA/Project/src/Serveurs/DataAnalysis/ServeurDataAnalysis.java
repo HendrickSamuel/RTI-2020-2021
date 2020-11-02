@@ -1,21 +1,19 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 24/10/2020
+//Date de la création : 02/11/2020
 
-package Serveurs.Bateaux;
+package Serveurs.DataAnalysis;
 
 import MyGenericServer.ConsoleServeur;
 import MyGenericServer.ServeurGenerique;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
-import protocol.IOBREP.ReponseIOBREP;
-import protocol.IOBREP.TraitementIOBREP;
+import protocol.PIDEP.TraitementPIDEP;
 
-public class ServeurBateaux extends ServeurGenerique
+public class ServeurDataAnalysis extends ServeurGenerique
 {
-
     /********************************/
     /*           Variables          */
     /********************************/
@@ -25,20 +23,19 @@ public class ServeurBateaux extends ServeurGenerique
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ServeurBateaux(int port, boolean connecte, int NbThreads, ConsoleServeur cs)
-    {
-        super(port, connecte, NbThreads, cs, true);
-    }
-
-    public ServeurBateaux(int port, boolean connecte, int NbThreads, ConsoleServeur cs, boolean isJavaCommunication)
+    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, ConsoleServeur cs, boolean isJavaCommunication)
     {
         super(port, connecte, NbThreads, cs, isJavaCommunication);
     }
 
-
     /********************************/
     /*            Getters           */
     /********************************/
+    public BDMouvements get_bdMouvement()
+    {
+        return _bdMouvement;
+    }
+
 
     /********************************/
     /*            Setters           */
@@ -55,12 +52,12 @@ public class ServeurBateaux extends ServeurGenerique
     @Override
     public Traitement CreationTraitement()
     {
-        return new TraitementIOBREP(_bdMouvement, null);
+        return new TraitementPIDEP(_bdMouvement);
     }
 
     @Override
     public Reponse CreateBusyResponse()
     {
-        return new ReponseIOBREP(ReponseIOBREP.NOK, null, "Plus de ressources disponibles");
+        return null;
     }
 }

@@ -1,17 +1,16 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 01/11/2020
+//Date de la création : 02/11/2020
 
 package protocol.PIDEP;
 
 import genericRequest.DonneeRequete;
-
 import java.io.Serializable;
 
-public class DonneeLogin implements DonneeRequete, Serializable
+public class DonneeGetGrCouleurComp implements DonneeRequete, Serializable
 {
-    private static final long serialVersionUID = 3160554856053867313L;
+    private static final long serialVersionUID = -6985593057830045853L;
 
     /********************************/
     /*           Variables          */
@@ -37,5 +36,4 @@ public class DonneeLogin implements DonneeRequete, Serializable
     {
 
     }
-
 }
