@@ -9,7 +9,8 @@ import genericRequest.DonneeRequete;
 
 import java.io.Serializable;
 
-public class DonneeLogin implements DonneeRequete, Serializable {
+public class DonneeLogin implements DonneeRequete, Serializable
+{
     private static final long serialVersionUID = 3160554856053867313L;
 
     /********************************/
@@ -32,7 +33,8 @@ public class DonneeLogin implements DonneeRequete, Serializable {
     /*            Methodes          */
     /********************************/
     @Override
-    public void setFiledsFromString(String fields) {
+    public void setFiledsFromString(String fields)
+    {
 
     }
 
