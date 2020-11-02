@@ -6,7 +6,6 @@
 package protocol.PIDEP;
 
 import genericRequest.DonneeRequete;
-
 import java.io.Serializable;
 
 public class DonneeLogin implements DonneeRequete, Serializable
@@ -16,18 +15,74 @@ public class DonneeLogin implements DonneeRequete, Serializable
     /********************************/
     /*           Variables          */
     /********************************/
+    private String username;
+    private long temps;
+    private double alea;
+    private byte[] msgD;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public DonneeLogin()
+    {
+
+    }
+
+    public DonneeLogin(String username, long temps, double alea, byte[] msgD)
+    {
+        this.username = username;
+        this.temps = temps;
+        this.alea = alea;
+        this.msgD = msgD;
+    }
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public String getUsername()
+    {
+        return username;
+    }
+
+    public long getTemps()
+    {
+        return temps;
+    }
+
+    public double getAlea()
+    {
+        return alea;
+    }
+
+    public byte[] getMsgD()
+    {
+        return msgD;
+    }
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setUsername(String username)
+    {
+        this.username = username;
+    }
+
+    public void setTemps(long temps)
+    {
+        this.temps = temps;
+    }
+
+    public void setAlea(double alea)
+    {
+        this.alea = alea;
+    }
+
+    public void setMsgD(byte[] msgD)
+    {
+        this.msgD = msgD;
+    }
+
 
     /********************************/
     /*            Methodes          */

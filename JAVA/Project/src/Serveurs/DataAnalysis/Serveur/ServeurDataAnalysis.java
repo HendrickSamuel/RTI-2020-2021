@@ -10,7 +10,9 @@ import MyGenericServer.ServeurGenerique;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
+import protocol.PIDEP.ReponsePIDEP;
 import protocol.PIDEP.TraitementPIDEP;
+
 
 public class ServeurDataAnalysis extends ServeurGenerique
 {
@@ -23,9 +25,16 @@ public class ServeurDataAnalysis extends ServeurGenerique
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, ConsoleServeur cs, boolean isJavaCommunication)
+    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, ConsoleServeur cs)
+    {
+        super(port, connecte, NbThreads, cs, true);
+        this._bdMouvement = _bdMouvements;
+    }
+
+    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, ConsoleServeur cs, boolean isJavaCommunication)
     {
         super(port, connecte, NbThreads, cs, isJavaCommunication);
+        this._bdMouvement = _bdMouvements;
     }
 
     /********************************/
@@ -52,12 +61,15 @@ public class ServeurDataAnalysis extends ServeurGenerique
     @Override
     public Traitement CreationTraitement()
     {
-        return new TraitementPIDEP(_bdMouvement);
+        TraitementPIDEP tp = new TraitementPIDEP();
+        tp.setConsole(this._console);
+        tp.set_bd(this._bdMouvement);
+        return tp;
     }
 
     @Override
     public Reponse CreateBusyResponse()
     {
-        return null;
+        return new ReponsePIDEP(ReponsePIDEP.NOK, "Plus de ressource disponible", null);
     }
 }

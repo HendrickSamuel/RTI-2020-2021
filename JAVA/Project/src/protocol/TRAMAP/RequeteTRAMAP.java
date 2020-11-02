@@ -28,7 +28,6 @@ public class RequeteTRAMAP implements Requete, Serializable
     public RequeteTRAMAP(DonneeRequete chu)
     {
         chargeUtile = chu;
-
     }
 
 

@@ -82,5 +82,9 @@ public class ReponsePIDEP implements Reponse, Serializable
     /********************************/
     /*            Methodes          */
     /********************************/
-
+    @Override
+    public String toString()
+    {
+        return "Code retour: " + this.getCode();
+    }
 }

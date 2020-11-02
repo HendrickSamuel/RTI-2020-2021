@@ -92,9 +92,9 @@ public class ClientAnalysisLayout extends JFrame
         getClient().setLogin(utilisateur);
     }
 
-    public void setPwd(char[] pwd)
+    public void setPwd(String pwd)
     {
-        getClient().setPwd(pwd.toString());
+        getClient().setPwd(pwd);
     }
 
     /********************************/
@@ -124,8 +124,8 @@ public class ClientAnalysisLayout extends JFrame
     private void onLoginOK(java.awt.event.ActionEvent evt)
     {
         //todo
-       /* setUtilisateur(userField.getText());
-        setPwd(passwordField.getPassword());
+        setUtilisateur(userField.getText());
+        setPwd(String.valueOf(passwordField.getPassword()));
 
         ReponsePIDEP rep = getClient().sendLogin();
 
@@ -136,12 +136,13 @@ public class ClientAnalysisLayout extends JFrame
         }
         if(rep.getCode() == 200)
         {
-
+            LoginPanel.setVisible(false);
+            AppPanel.setVisible(true);
         }
         else
         {
             LoginErrorLabel.setText("Nom d'utilisateur ou mot de passe incorrecte");
-        }*/
+        }
     }
 
     private void onLoginCancel(java.awt.event.ActionEvent evt)
