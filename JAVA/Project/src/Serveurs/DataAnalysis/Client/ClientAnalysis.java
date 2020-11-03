@@ -235,4 +235,34 @@ public class ClientAnalysis
         }
         return null;
     }
+
+    public ReponsePIDEP sendGetStatDescrCont(int tailEch, boolean entree)
+    {
+        return null;
+    }
+
+    public ReponsePIDEP sendGrCouleurRep(int donnee, boolean annee)
+    {
+        return null;
+    }
+
+    public ReponsePIDEP sendGrCouleurComp(int annee)
+    {
+        return null;
+    }
+
+    public ReponsePIDEP sendGetStatInferTestConf(int tailEch)
+    {
+        return null;
+    }
+
+    public ReponsePIDEP sendGetStatInferTestHomog(int tailEch)
+    {
+        return null;
+    }
+
+    public ReponsePIDEP sendGetStatInferANOVA(int tailEch)
+    {
+        return null;
+    }
 }

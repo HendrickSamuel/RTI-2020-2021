@@ -15,18 +15,40 @@ public class DonneeGetStatInferTestConf implements DonneeRequete, Serializable
     /********************************/
     /*           Variables          */
     /********************************/
+    private int _taillEch;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public DonneeGetStatInferTestConf()
+    {
+
+    }
+
+    public DonneeGetStatInferTestConf(int _taillEch)
+    {
+        this._taillEch = _taillEch;
+    }
+
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public int get_taillEch()
+    {
+        return _taillEch;
+    }
+
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void set_taillEch(int _taillEch)
+    {
+        this._taillEch = _taillEch;
+    }
+
 
     /********************************/
     /*            Methodes          */

@@ -15,18 +15,40 @@ public class DonneeGetStatInferTestHomog implements DonneeRequete, Serializable
     /********************************/
     /*           Variables          */
     /********************************/
+    private int _tailleEch;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public DonneeGetStatInferTestHomog()
+    {
+
+    }
+
+    public DonneeGetStatInferTestHomog(int _tailleEch)
+    {
+        this._tailleEch = _tailleEch;
+    }
+
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public int get_tailleEch()
+    {
+        return _tailleEch;
+    }
+
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void set_tailleEch(int _tailleEch)
+    {
+        this._tailleEch = _tailleEch;
+    }
+
 
     /********************************/
     /*            Methodes          */

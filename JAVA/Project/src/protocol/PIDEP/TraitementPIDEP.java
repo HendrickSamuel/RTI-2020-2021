@@ -125,6 +125,8 @@ public class TraitementPIDEP implements Traitement
             return traiteGET_STAT_INFER_TEST_CONF( (DonneeGetStatInferTestConf)Requete, client);
         else if(Requete instanceof DonneeGetStatInferTestHomog)
             return traiteGET_STAT_INFER_TEST_HOMOG( (DonneeGetStatInferTestHomog)Requete, client);
+        else if(Requete instanceof DonneeGetStatInferANOVA)
+            return traiteGET_STAT_INFER_ANOVA( (DonneeGetStatInferANOVA)Requete, client);
         else
             return traite404();
     }
@@ -227,6 +229,11 @@ public class TraitementPIDEP implements Traitement
     }
 
     private Reponse traiteGET_STAT_INFER_TEST_HOMOG(DonneeGetStatInferTestHomog chargeUtile, Client client)
+    {
+        return null;
+    }
+
+    private Reponse traiteGET_STAT_INFER_ANOVA(DonneeGetStatInferANOVA chargeUtile, Client client)
     {
         return null;
     }
