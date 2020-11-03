@@ -5,23 +5,24 @@
 
 package protocol.PIDEP;
 
-import MyGenericServer.Client;
-import MyGenericServer.ConsoleServeur;
-import genericRequest.DonneeRequete;
-import genericRequest.Reponse;
-import genericRequest.Traitement;
-import lib.BeanDBAcces.BDMouvements;
-
-
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.io.IOException;
 import java.sql.SQLException;
+import MyGenericServer.Client;
+import genericRequest.MyProperties;
+import genericRequest.Reponse;
+import java.security.Security;
+import java.io.DataOutputStream;
+import genericRequest.Traitement;
+import java.sql.PreparedStatement;
+import java.security.MessageDigest;
+import lib.BeanDBAcces.BDMouvements;
+import genericRequest.DonneeRequete;
+import java.io.ByteArrayOutputStream;
+import MyGenericServer.ConsoleServeur;
+import java.security.NoSuchProviderException;
+import java.security.NoSuchAlgorithmException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 
 public class TraitementPIDEP implements Traitement
@@ -29,7 +30,8 @@ public class TraitementPIDEP implements Traitement
     /********************************/
     /*           Variables          */
     /********************************/
-    private static String codeProvider = "BC";
+    private String _codeProvider;
+    private String _hash;
     private BDMouvements _bd;
     private ConsoleServeur _cs;
 
@@ -39,12 +41,19 @@ public class TraitementPIDEP implements Traitement
     /********************************/
     public TraitementPIDEP()
     {
-
+        Security.addProvider(new BouncyCastleProvider());
+        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+        set_codeProvider(mp.getContent("PROVIDER"));
+        set_hash(mp.getContent("HASH"));
     }
 
     public TraitementPIDEP(BDMouvements _bd)
     {
         this._bd = _bd;
+        Security.addProvider(new BouncyCastleProvider());
+        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+        set_codeProvider(mp.getContent("PROVIDER"));
+        set_hash(mp.getContent("HASH"));
     }
 
 
@@ -61,6 +70,16 @@ public class TraitementPIDEP implements Traitement
         return _cs;
     }
 
+    public String get_codeProvider()
+    {
+        return _codeProvider;
+    }
+
+    public String get_hash()
+    {
+        return _hash;
+    }
+
 
     /********************************/
     /*            Setters           */
@@ -74,6 +93,16 @@ public class TraitementPIDEP implements Traitement
     public void setConsole(ConsoleServeur cs)
     {
         this._cs = cs;
+    }
+
+    public void set_codeProvider(String codeProvider)
+    {
+        this._codeProvider = codeProvider;
+    }
+
+    public void set_hash(String hash)
+    {
+        this._hash = hash;
     }
 
 
@@ -135,7 +164,7 @@ public class TraitementPIDEP implements Traitement
                 String bddpass = rs.getString("userpassword");
 
                 // confection d'un digest local
-                MessageDigest md = MessageDigest.getInstance("SHA-256", codeProvider);
+                MessageDigest md = MessageDigest.getInstance(get_hash(), get_codeProvider());
                 md.update(bddpass.getBytes());
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 DataOutputStream bdos = new DataOutputStream(baos);

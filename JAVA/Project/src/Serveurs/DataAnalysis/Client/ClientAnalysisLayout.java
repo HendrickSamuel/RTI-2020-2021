@@ -7,10 +7,10 @@ package Serveurs.DataAnalysis.Client;
 
 
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import protocol.PIDEP.ReponsePIDEP;
 import javax.swing.*;
-import java.security.Security;
+
 
 public class ClientAnalysisLayout extends JFrame
 {
@@ -43,8 +43,6 @@ public class ClientAnalysisLayout extends JFrame
 
         setClient(new ClientAnalysis());
         setConnect(false);
-
-        Security.addProvider(new BouncyCastleProvider());
 
         initComponents();
     }
