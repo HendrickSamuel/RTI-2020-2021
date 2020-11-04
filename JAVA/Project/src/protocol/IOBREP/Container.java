@@ -12,7 +12,6 @@ public class Container implements Serializable {
     /********************************/
     /*           Variables          */
     /********************************/
-
     private String id;
     private int x;
     private int y;

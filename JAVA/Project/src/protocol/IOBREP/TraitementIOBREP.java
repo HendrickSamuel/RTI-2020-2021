@@ -13,6 +13,7 @@ import genericRequest.Traitement;
 import lib.BeanDBAcces.BDCompta;
 import lib.BeanDBAcces.BDMouvements;
 
+import javax.print.Doc;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -97,8 +98,12 @@ public class TraitementIOBREP implements Traitement {
             return traiteEndContainerOut((protocol.IOBREP.DonneeEndContainerOut) donnee, client);
         if(donnee instanceof protocol.IOBREP.DonneeGetLoadUnloadStats)
             return traiteDonneeGetLoadUnloadStats((protocol.IOBREP.DonneeGetLoadUnloadStats) donnee, client);
-        else
-            return traite404();
+        if(donnee instanceof protocol.IOBREP.DonneeGetLoadUnloadTime)
+            return traiteDonneeGetLoadUnloadTime((protocol.IOBREP.DonneeGetLoadUnloadTime) donnee, client);
+        if(donnee instanceof protocol.IOBREP.DonneeGetLoadUnloadStatsWeekly)
+            return traiteGetLoadUnloadStatsWeeklty((protocol.IOBREP.DonneeGetLoadUnloadStatsWeekly) donnee, client);
+
+        return traite404();
     }
 
     @Override
@@ -177,16 +182,23 @@ public class TraitementIOBREP implements Traitement {
             pse.setInt(2, this.dockersid);
             _bdMouvement.Execute(pse);
 
-            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM parc WHERE upper(moyenTransport) = upper(?) AND idContainer IS NOT NULL AND upper(destination) = upper(?) ORDER BY ?;");
+            String ordre;
+            if(chargeUtile.getSelection().equals("FIRST"))
+                ordre = "dateArrivee";
+            else
+                ordre = "RAND()";
+            this.sortingAlgo = chargeUtile.getSelection();
+
+            PreparedStatement ps = _bdMouvement.getPreparedStatement(
+                    "SELECT * " +
+                    "FROM parc " +
+                    "WHERE upper(moyenTransport) = upper(?) " +
+                    "AND idContainer IS NOT NULL " +
+                    "AND upper(destination) = upper(?) " +
+                    "ORDER BY "+ ordre +";");
+
             ps.setString(1, "Bateau");
             ps.setString(2, chargeUtile.getDestination());
-
-            if(chargeUtile.getSelection().equals("FIRST"))
-                ps.setString(3, "dateArrivee");
-            else
-                ps.setString(3, "RAND()");
-
-            this.sortingAlgo = chargeUtile.getSelection();
 
             ResultSet rs = _bdMouvement.ExecuteQuery(ps);
 
@@ -215,6 +227,7 @@ public class TraitementIOBREP implements Traitement {
         treatedContainersList = new ArrayList<>();
         containersListIn = new ArrayList<>();
         treatedContainersListIn = new ArrayList<>();
+        //Linitialisation des listes des containers
 
         try {
             PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM transporteurs WHERE upper(idTransporteur) = upper(?);");
@@ -476,9 +489,10 @@ public class TraitementIOBREP implements Traitement {
     {
         try {
             ResultSet rs = _bdMouvement.ExecuteQuery(_bdMouvement.CreateUpdatableStatement(),
-                    "SELECT SUM(containersCharges) AS cc, SUM(containersDecharges) AS cd, DATE(MIN(startBoatLoad)) AS datemouvement " +
+                    "SELECT SUM(containersCharges) AS cc, SUM(containersDecharges) AS cd, DATE(startBoatLoad) AS datemouvement " +
                             "FROM dockers " +
-                            "GROUP BY DATE(startBoatLoad) ");
+                            "WHERE destination IS NOT NULL " +
+                            "GROUP BY DATE(startBoatLoad)");
             ArrayList<Day> liste = new ArrayList<>();
             while(rs.next())
             {
@@ -498,25 +512,70 @@ public class TraitementIOBREP implements Traitement {
     private Reponse traiteDonneeGetLoadUnloadTime(protocol.IOBREP.DonneeGetLoadUnloadTime chargeUtile, Client clietn)
     {
         try{
-            ResultSet rs = _bdMouvement.ExecuteQuery(_bdMouvement.CreateUpdatableStatement(),
-                    "SELECT AVG(endBoatLoad - startBoatLoad) AS un, AVG(endBoatUnload - startBoatUnload) AS deux, idDocker as docker " +
+            PreparedStatement ps = _bdMouvement.getPreparedStatement(
+                    "SELECT AVG(endBoatLoad - startBoatLoad) AS loadsecc, AVG(endBoatUnload - startBoatUnload) AS unloadsecc, idDocker " +
                             "FROM dockers " +
-                            "GROUP BY idDocker AND destination");
+                            "GROUP BY idDocker;");
+            ResultSet rs = _bdMouvement.ExecuteQuery(ps);
+            ArrayList<Docker> dockers = new ArrayList<>();
+            while(rs.next())
+            {
+                Docker dock = new Docker(rs.getString("idDocker"),
+                        rs.getDouble("loadsecc"),
+                        rs.getDouble("unloadsecc"));
+                dockers.add(dock);
+            }
+
+            chargeUtile.setDockers(dockers);
+            return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
+
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        return new ReponseIOBREP(ReponseIOBREP.NOK, null, "Erreur d'execution");
+    }
 
-        return null;
+    private Reponse traiteGetLoadUnloadStatsWeeklty(DonneeGetLoadUnloadStatsWeekly chargeUtile, Client client)
+    {
+        try{
+            PreparedStatement ps = _bdMouvement.getPreparedStatement(
+                    "SELECT SUM(containersCharges) AS cc, SUM(containersDecharges) AS cd, WEEK(DATE(startBoatLoad)) AS semaine, destination " +
+                            "FROM dockers " +
+                            "WHERE destination IS NOT NULL " +
+                            "GROUP BY WEEK(DATE(startBoatLoad)), destination " +
+                            "ORDER by semaine");
+            ResultSet rs = _bdMouvement.ExecuteQuery(ps);
+
+            ArrayList<Week> weeks = new ArrayList<>();
+            Week week = new Week(-1);
+            int weeknNumber = -1;
+            while(rs.next())
+            {
+                if(weeknNumber == -1 || weeknNumber != rs.getInt("semaine"))
+                {
+                    week = new Week(rs.getInt("semaine"));
+                    weeks.add(week);
+                }
+
+                weeknNumber = rs.getInt("semaine");
+
+                week.getDestinations().add(rs.getString("destination"));
+                week.getLoadedContainers().add(rs.getInt("cc"));
+                week.getUnloadedContainers().add(rs.getInt("cd"));
+            }
+
+            chargeUtile.setWeeks(weeks);
+            return new ReponseIOBREP(ReponseIOBREP.OK, chargeUtile, null);
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return new ReponseIOBREP(ReponseIOBREP.NOK, null, "Erreur d'execution");
     }
 
     private Reponse traite404()
     {
         System.out.println("traite404 Request not found");
         return new ReponseIOBREP(ReponseIOBREP.REQUEST_NOT_FOUND, null, "request could not be exeuted due to unsopported version.");
-    }
-
-    public void ClientLeft()
-    {
-        //todo: reinitialiser tout les traitements et remettre le bateau en parti ?
     }
 }

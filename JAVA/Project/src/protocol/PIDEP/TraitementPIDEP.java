@@ -12,7 +12,6 @@ import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -22,7 +21,6 @@ import java.security.NoSuchProviderException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
 
 public class TraitementPIDEP implements Traitement
 {
@@ -157,19 +155,7 @@ public class TraitementPIDEP implements Traitement
             }
 
         }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            e.printStackTrace();
-        }
-        catch(NoSuchProviderException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
+        catch (SQLException | NoSuchAlgorithmException | NoSuchProviderException | IOException e)
         {
             e.printStackTrace();
         }
