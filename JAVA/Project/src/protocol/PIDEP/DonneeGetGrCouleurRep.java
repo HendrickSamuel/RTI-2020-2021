@@ -7,6 +7,7 @@ package protocol.PIDEP;
 
 import genericRequest.DonneeRequete;
 import java.io.Serializable;
+import java.util.Vector;
 
 public class DonneeGetGrCouleurRep implements DonneeRequete, Serializable
 {
@@ -17,6 +18,8 @@ public class DonneeGetGrCouleurRep implements DonneeRequete, Serializable
     /********************************/
     private int _donnee;
     private boolean _annee;
+
+    private Vector _retour;
 
 
     /********************************/
@@ -33,8 +36,13 @@ public class DonneeGetGrCouleurRep implements DonneeRequete, Serializable
         this._annee = _annee;
     }
 
+    public DonneeGetGrCouleurRep(Vector _vec)
+    {
+        this._retour = _vec;
+    }
 
-/********************************/
+
+    /********************************/
     /*            Getters           */
     /********************************/
     public int get_donnee()
@@ -46,6 +54,12 @@ public class DonneeGetGrCouleurRep implements DonneeRequete, Serializable
     {
         return _annee;
     }
+
+    public Vector get_retour()
+    {
+        return _retour;
+    }
+
 
 
     /********************************/
@@ -59,6 +73,11 @@ public class DonneeGetGrCouleurRep implements DonneeRequete, Serializable
     public void set_annee(boolean _annee)
     {
         this._annee = _annee;
+    }
+
+    public void set_retour(Vector _vec)
+    {
+        this._retour = _vec;
     }
 
 

@@ -5,27 +5,34 @@
 
 package Serveurs.DataAnalysis.Client;
 
-
-import protocol.PIDEP.DonneeGetStatDescrCont;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
+import protocol.PIDEP.CouleurRep;
+import protocol.PIDEP.DonneeGetGrCouleurRep;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
+import java.util.Vector;
 
-public class DialogStatDescrCont extends JDialog
+public class DialogGrCouleurRep extends JDialog
 {
     /********************************/
     /*           Variables          */
     /********************************/
     private JPanel contentPane;
     private JButton buttonOK;
-    private JLabel textEcartType;
-    private JLabel textMediane;
-    private JLabel textMode;
-    private JLabel textMoyenne;
+    private JPanel chartPanel;
+    private JPanel buttonPanel;
+
+    private Vector _data;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DialogStatDescrCont()
+    public DialogGrCouleurRep()
     {
         setContentPane(contentPane);
         setModal(true);
@@ -33,18 +40,17 @@ public class DialogStatDescrCont extends JDialog
         initComponants();
     }
 
-    public DialogStatDescrCont(java.awt.Frame parent, boolean modal, DonneeGetStatDescrCont donnee)
+    public DialogGrCouleurRep(java.awt.Frame parent, boolean modal, DonneeGetGrCouleurRep donnee)
     {
         super(parent, modal);
         setContentPane(contentPane);
 
-        initComponants();
+        _data = donnee.get_retour();
 
-        textMoyenne.setText(String.valueOf(donnee.get_moyenne()));
-        textEcartType.setText(String.valueOf(donnee.get_ecartType()));
-        textMediane.setText(String.valueOf(donnee.get_mediane()));
-        textMode.setText(String.valueOf(donnee.get_mode()));
+        showPieChart();
+        initComponants();
     }
+
 
     /********************************/
     /*            Methodes          */
@@ -91,12 +97,36 @@ public class DialogStatDescrCont extends JDialog
         dispose();
     }
 
+    private void showPieChart()
+    {
+        //Définir un dataset qui contient les data
+        DefaultPieDataset ds = new DefaultPieDataset();
+
+        for(int i = 0 ; i < _data.size() ; i++)
+        {
+            ds.setValue(((CouleurRep)_data.get(i)).get_destination() , ((CouleurRep)_data.get(i)).get_nombre());
+        }
+
+        //Se fournir un JFreeChart
+        JFreeChart jfc = ChartFactory.createPieChart ("Résulats du nombre de containers en fonction de la destination", ds, true,  true, true);
+
+        //Fabriquer le Panel
+        ChartPanel cp = new ChartPanel(jfc);
+
+        JPanel content = new JPanel(new BorderLayout());
+        content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        content.add(cp);
+        content.add(buttonOK, BorderLayout.SOUTH);
+        setContentPane(content);
+    }
+
+
     /********************************/
     /*              Main            */
     /********************************/
     public static void main(String[] args)
     {
-        DialogStatDescrCont dialog = new DialogStatDescrCont();
+        DialogGrCouleurRep dialog = new DialogGrCouleurRep();
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);

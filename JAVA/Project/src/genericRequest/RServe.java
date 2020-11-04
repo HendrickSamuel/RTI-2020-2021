@@ -72,6 +72,7 @@ public class RServe
 
     public void RserveClose()
     {
+        System.out.println("Déconnection du serveur R.");
         getRconnection().close();
     }
 

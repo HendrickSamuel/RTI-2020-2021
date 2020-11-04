@@ -13,5 +13,9 @@
     <orderEntry type="library" name="bcprov-jdk15to18-166" level="project" />
     <orderEntry type="library" name="REngine" level="project" />
     <orderEntry type="library" name="Rserve" level="project" />
+    <orderEntry type="library" name="itext-2.0.2" level="project" />
+    <orderEntry type="library" name="jcommon-1.0.10" level="project" />
+    <orderEntry type="library" name="jfreechart-1.0.6" level="project" />
+    <orderEntry type="library" name="servlet" level="project" />
   </component>
 </module>

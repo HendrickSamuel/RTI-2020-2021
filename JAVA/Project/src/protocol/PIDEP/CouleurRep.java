@@ -1,84 +1,68 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 27/10/2020
+//Date de la création : 04/11/2020
 
-package protocol.PLAMAP;
+package protocol.PIDEP;
 
 import java.io.Serializable;
 
-public class Container implements Serializable
+public class CouleurRep implements Serializable
 {
-    private static final long serialVersionUID = 8598288074923892238L;
+    private static final long serialVersionUID = -8671390182263408580L;
 
     /********************************/
     /*           Variables          */
     /********************************/
-    private String id;
-    private int x;
-    private int y;
+    private String _destination;
+    private int _nombre;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public Container()
+    public CouleurRep()
     {
 
     }
 
-    public Container(String id, int x, int y)
+    public CouleurRep(String _destination, int _nombre)
     {
-        this.id = id;
-        this.x = x;
-        this.y = y;
+        this._destination = _destination;
+        this._nombre = _nombre;
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
-    public String getId()
+    public String get_destination()
     {
-        return id;
+        return _destination;
     }
 
-    public int getX()
+    public int get_nombre()
     {
-        return x;
-    }
-
-    public int getY()
-    {
-        return y;
+        return _nombre;
     }
 
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void setId(String id)
+    public void set_destination(String _destination)
     {
-        this.id = id;
+        this._destination = _destination;
     }
 
-    public void setX(int x)
+    public void set_nombre(int _nombre)
     {
-        this.x = x;
-    }
-
-    public void setY(int y)
-    {
-        this.y = y;
+        this._nombre = _nombre;
     }
 
 
     /********************************/
     /*            Methodes          */
     /********************************/
-    @Override
-    public String toString()
-    {
-        return getId() + "@" + getX() + "@" + getY() + "/";
-    }
+
 }

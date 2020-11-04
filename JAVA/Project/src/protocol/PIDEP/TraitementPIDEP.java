@@ -24,8 +24,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Vector;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.rosuda.REngine.Rserve.RConnection;
-import org.rosuda.REngine.Rserve.RserveException;
 
 
 public class TraitementPIDEP implements Traitement
@@ -231,13 +229,12 @@ public class TraitementPIDEP implements Traitement
                     "WHERE YEAR("+quand+") = YEAR(SYSDATE())\n" +
                     "ORDER BY RAND()\n" +
                     "LIMIT ?;");
+
             ps.setInt(1, tailEch);
 
             ResultSet rs = _bd.ExecuteQuery(ps);
             if(rs!=null && rs.next())
             {
-
-
                 connectionRserve();
 
                 Vector vec = new Vector();
@@ -267,11 +264,63 @@ public class TraitementPIDEP implements Traitement
 
     private Reponse traiteGET_GR_COULEUR_REP(DonneeGetGrCouleurRep chargeUtile, Client client)
     {
+        int donnee = chargeUtile.get_donnee();
+        String requete;
+
+        if(chargeUtile.is_annee())
+        {
+            requete = "SELECT destination, COUNT(*)as nombre\n" +
+                    "FROM mouvements\n" +
+                    "WHERE YEAR(dateArrivee) = ? OR YEAR(dateDepart) = ?\n" +
+                    "GROUP BY destination;";
+        }
+        else
+        {
+            requete = "SELECT destination, COUNT(*) as nombre\n" +
+                    "FROM mouvements\n" +
+                    "WHERE (YEAR(dateArrivee) = YEAR(SYSDATE()) AND MONTH(dateArrivee) = ?)\n" +
+                    "OR (YEAR(dateDepart) = YEAR(SYSDATE()) AND MONTH(dateDepart) = ?)\n" +
+                    "GROUP BY destination;";
+        }
+
+        PreparedStatement ps = null;
+        try
+        {
+            ps = _bd.getPreparedStatement(requete);
+            ps.setInt(1, donnee);
+            ps.setInt(2, donnee);
+
+            ResultSet rs = _bd.ExecuteQuery(ps);
+            if(rs!=null && rs.next())
+            {
+                Vector vec = new Vector();
+
+                do
+                {
+                    CouleurRep cel = new CouleurRep();
+
+                    cel.set_destination(rs.getString("destination"));
+                    cel.set_nombre(rs.getInt("nombre"));
+
+                    vec.add(cel);
+                }while(rs.next());
+
+                chargeUtile.set_retour(vec);
+
+                return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
         return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_GR_COULEUR_COMP(DonneeGetGrCouleurComp chargeUtile, Client client)
     {
+
         return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
