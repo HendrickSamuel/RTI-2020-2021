@@ -215,9 +215,9 @@ public class ClientAnalysisLayout extends JFrame
         }
         if(rep.getCode() == 200)
         {
-            //todo
-            AppLabelError.setText("OK reussite : StatInferConf");
-
+            DialogTestConf dial = new DialogTestConf(this, false, (DonneeGetStatInferTestConf) rep.getChargeUtile());
+            dial.setSize(600,500);
+            dial.setVisible(true);
         }
         else
         {

@@ -17,6 +17,8 @@ public class DonneeGetStatInferTestConf implements DonneeRequete, Serializable
     /********************************/
     private int _taillEch;
 
+    private double p_value;
+
 
     /********************************/
     /*         Constructeurs        */
@@ -31,6 +33,11 @@ public class DonneeGetStatInferTestConf implements DonneeRequete, Serializable
         this._taillEch = _taillEch;
     }
 
+    public DonneeGetStatInferTestConf(double p_value)
+    {
+        this.p_value = p_value;
+    }
+
 
     /********************************/
     /*            Getters           */
@@ -39,6 +46,12 @@ public class DonneeGetStatInferTestConf implements DonneeRequete, Serializable
     {
         return _taillEch;
     }
+
+    public double getP_value()
+    {
+        return p_value;
+    }
+
 
 
     /********************************/
@@ -49,6 +62,10 @@ public class DonneeGetStatInferTestConf implements DonneeRequete, Serializable
         this._taillEch = _taillEch;
     }
 
+    public void setP_value(double p_value)
+    {
+        this.p_value = p_value;
+    }
 
     /********************************/
     /*            Methodes          */

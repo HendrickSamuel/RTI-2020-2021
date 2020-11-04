@@ -355,17 +355,61 @@ public class TraitementPIDEP implements Traitement
 
     private Reponse traiteGET_STAT_INFER_TEST_CONF(DonneeGetStatInferTestConf chargeUtile, Client client)
     {
+        int tailEch = chargeUtile.get_taillEch();
+
+        PreparedStatement ps = null;
+        try
+        {
+            ps = _bd.getPreparedStatement("SELECT DATEDIFF(dateDepart, dateArrivee) as difference \n" +
+                                                    "FROM mouvements \n" +
+                                                    "WHERE dateArrivee IS NOT NULL \n" +
+                                                    "AND dateDepart IS NOT NULL \n" +
+                                                    "ORDER BY RAND()\n" +
+                                                    "LIMIT ?;");
+
+            ps.setInt(1, tailEch);
+
+            ResultSet rs = _bd.ExecuteQuery(ps);
+            if(rs!=null && rs.next())
+            {
+
+                Vector vec = new Vector();
+
+                do
+                {
+                    vec.add(rs.getDouble("difference"));
+                }while(rs.next());
+
+                if(vec.size() < tailEch || vec.size() < 2)
+                {
+                    return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR trop peu d'éléments", null);
+                }
+
+                connectionRserve();
+
+                chargeUtile.setP_value(getRServe().getTestConfVector(vec));
+
+                getRServe().RserveClose();
+
+                return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
         return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_STAT_INFER_TEST_HOMOG(DonneeGetStatInferTestHomog chargeUtile, Client client)
     {
-        return null;
+        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_STAT_INFER_ANOVA(DonneeGetStatInferANOVA chargeUtile, Client client)
     {
-        return null;
+        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traite404()

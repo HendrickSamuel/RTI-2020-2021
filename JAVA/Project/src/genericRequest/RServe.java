@@ -188,4 +188,31 @@ public class RServe
 
         return Double.parseDouble(null);
     }
+
+    public double getTestConfVector(Vector vec)
+    {
+        double p_value;
+
+        try
+        {
+            getRconnection().voidEval("vec <- c()");
+
+            for(int i = 0 ; i < vec.size() ; i++)
+            {
+                int j = i + 1;
+                getRconnection().voidEval("vec["+j+"] <- "+vec.get(i));
+            }
+
+            getRconnection().voidEval("value <- t.test(vec, mu = 10, alternative = \"two.sided\")");
+            REXP result = getRconnection().eval("value$p.value");
+            p_value = result.asDouble();
+            return p_value;
+        }
+        catch (RserveException | REXPMismatchException e)
+        {
+            e.printStackTrace();
+        }
+
+        return Double.parseDouble(null);
+    }
 }
