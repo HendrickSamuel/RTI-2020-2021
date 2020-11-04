@@ -185,6 +185,245 @@ public class ClientAnalysis
 
         dt = new DonneeLogin();
 
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        closeSocket();
+
+        return rep;
+    }
+
+    public ReponsePIDEP sendGetStatDescrCont(int tailEch, boolean entree)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetStatDescrCont(tailEch, entree);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponsePIDEP sendGrCouleurRep(int donnee, boolean annee)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetGrCouleurRep(donnee, annee);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponsePIDEP sendGrCouleurComp(int annee)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetGrCouleurComp(annee);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponsePIDEP sendGetStatInferTestConf(int tailEch)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetStatInferTestConf(tailEch);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponsePIDEP sendGetStatInferTestHomog(int tailEch)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetStatInferTestHomog(tailEch);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponsePIDEP sendGetStatInferANOVA(int tailEch)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetStatInferANOVA(tailEch);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    private void createDonneeLogin(DonneeLogin dt)
+    {
         try
         {
             //Déclaration du message digest
@@ -204,22 +443,10 @@ public class ClientAnalysis
             //Ajout du sel
             md.update(baos.toByteArray());
 
-            ((DonneeLogin)dt).setUsername(getLogin());
-            ((DonneeLogin)dt).setTemps(temps);
-            ((DonneeLogin)dt).setAlea(alea);
-            ((DonneeLogin)dt).setMsgD(md.digest());
-
-            req = new RequetePIDEP(dt);
-
-            connectServ();
-
-            sendReq(req);
-
-            rep = readRep();
-
-            closeSocket();
-
-            return rep;
+            dt.setUsername(getLogin());
+            dt.setTemps(temps);
+            dt.setAlea(alea);
+            dt.setMsgD(md.digest());
         }
         catch (NoSuchAlgorithmException e)
         {
@@ -233,36 +460,5 @@ public class ClientAnalysis
         {
             System.out.println("Problème imprévu : " + e.getMessage() + e.getClass());
         }
-        return null;
-    }
-
-    public ReponsePIDEP sendGetStatDescrCont(int tailEch, boolean entree)
-    {
-        return null;
-    }
-
-    public ReponsePIDEP sendGrCouleurRep(int donnee, boolean annee)
-    {
-        return null;
-    }
-
-    public ReponsePIDEP sendGrCouleurComp(int annee)
-    {
-        return null;
-    }
-
-    public ReponsePIDEP sendGetStatInferTestConf(int tailEch)
-    {
-        return null;
-    }
-
-    public ReponsePIDEP sendGetStatInferTestHomog(int tailEch)
-    {
-        return null;
-    }
-
-    public ReponsePIDEP sendGetStatInferANOVA(int tailEch)
-    {
-        return null;
     }
 }

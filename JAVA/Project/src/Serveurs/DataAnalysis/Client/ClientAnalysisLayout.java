@@ -8,6 +8,7 @@ package Serveurs.DataAnalysis.Client;
 
 
 
+import protocol.PIDEP.DonneeGetStatDescrCont;
 import protocol.PIDEP.ReponsePIDEP;
 import javax.swing.*;
 
@@ -144,9 +145,9 @@ public class ClientAnalysisLayout extends JFrame
         }
         if(rep.getCode() == 200)
         {
-            //todo
-            AppLabelError.setText("OK reussite : StatDescCont");
-
+            DialogStatDescrCont dial = new DialogStatDescrCont(this, false, (DonneeGetStatDescrCont)rep.getChargeUtile());
+            dial.setSize(300,200);
+            dial.setVisible(true);
         }
         else
         {
@@ -433,6 +434,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onstatDescCont(java.awt.event.ActionEvent evt)
     {
+        AppLabelError.setText("");
         PanelGrCouleurRep.setVisible(false);
         PanelStatInferTestConf.setVisible(false);
         PanelStatInferTestHomog.setVisible(false);
@@ -443,6 +445,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onhistCompare(java.awt.event.ActionEvent evt)
     {
+        AppLabelError.setText("");
         PanelGrCouleurRep.setVisible(false);
         PanelStatInferTestConf.setVisible(false);
         PanelStatInferTestHomog.setVisible(false);
@@ -453,6 +456,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void ondiagSectoriel(java.awt.event.ActionEvent evt)
     {
+        AppLabelError.setText("");
         PanelStatInferTestConf.setVisible(false);
         PanelStatInferTestHomog.setVisible(false);
         PanelStatInferANOVA.setVisible(false);
@@ -463,6 +467,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onstatInferTestConf(java.awt.event.ActionEvent evt)
     {
+        AppLabelError.setText("");
         PanelGrCouleurRep.setVisible(false);
         PanelStatInferTestHomog.setVisible(false);
         PanelStatInferANOVA.setVisible(false);
@@ -473,6 +478,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onstatInferTestHomog(java.awt.event.ActionEvent evt)
     {
+        AppLabelError.setText("");
         PanelGrCouleurRep.setVisible(false);
         PanelStatInferTestConf.setVisible(false);
         PanelStatInferANOVA.setVisible(false);
@@ -483,6 +489,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onstatInferANOVA(java.awt.event.ActionEvent evt)
     {
+        AppLabelError.setText("");
         PanelGrCouleurRep.setVisible(false);
         PanelStatInferTestConf.setVisible(false);
         PanelStatInferTestHomog.setVisible(false);

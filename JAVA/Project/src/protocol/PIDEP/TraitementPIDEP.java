@@ -9,20 +9,23 @@ import java.sql.ResultSet;
 import java.io.IOException;
 import java.sql.SQLException;
 import MyGenericServer.Client;
-import genericRequest.MyProperties;
-import genericRequest.Reponse;
+import genericRequest.*;
+
 import java.security.Security;
 import java.io.DataOutputStream;
-import genericRequest.Traitement;
 import java.sql.PreparedStatement;
 import java.security.MessageDigest;
 import lib.BeanDBAcces.BDMouvements;
-import genericRequest.DonneeRequete;
+
 import java.io.ByteArrayOutputStream;
 import MyGenericServer.ConsoleServeur;
 import java.security.NoSuchProviderException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Vector;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.rosuda.REngine.Rserve.RConnection;
+import org.rosuda.REngine.Rserve.RserveException;
 
 
 public class TraitementPIDEP implements Traitement
@@ -34,6 +37,7 @@ public class TraitementPIDEP implements Traitement
     private String _hash;
     private BDMouvements _bd;
     private ConsoleServeur _cs;
+    private RServe _r;
 
 
     /********************************/
@@ -80,6 +84,11 @@ public class TraitementPIDEP implements Traitement
         return _hash;
     }
 
+    private RServe getRServe()
+    {
+        return _r;
+    }
+
 
     /********************************/
     /*            Setters           */
@@ -103,6 +112,11 @@ public class TraitementPIDEP implements Traitement
     public void set_hash(String hash)
     {
         this._hash = hash;
+    }
+
+    private void setRServe(RServe r)
+    {
+        _r = r;
     }
 
 
@@ -186,21 +200,8 @@ public class TraitementPIDEP implements Traitement
                     return new ReponsePIDEP(ReponsePIDEP.NOK, "Mot de passe ou nom d'utilisateur erroné", null);
                 }
             }
-
         }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            e.printStackTrace();
-        }
-        catch(NoSuchProviderException e)
-        {
-            e.printStackTrace();
-        }
-        catch (IOException e)
+        catch (SQLException | NoSuchAlgorithmException | NoSuchProviderException | IOException e)
         {
             e.printStackTrace();
         }
@@ -210,22 +211,73 @@ public class TraitementPIDEP implements Traitement
 
     private Reponse traiteGET_STAT_DESCR_CONT(DonneeGetStatDescrCont chargeUtile, Client client)
     {
-        return null;
+        int tailEch = chargeUtile.get_tailleEch();
+        String quand;
+
+        if(chargeUtile.is_entree())
+        {
+            quand = "dateArrivee";
+        }
+        else
+        {
+            quand = "dateDepart";
+        }
+
+        PreparedStatement ps = null;
+        try
+        {
+            ps = _bd.getPreparedStatement("SELECT poidsTotal \n" +
+                    "FROM mouvements \n" +
+                    "WHERE YEAR("+quand+") = YEAR(SYSDATE())\n" +
+                    "ORDER BY RAND()\n" +
+                    "LIMIT ?;");
+            ps.setInt(1, tailEch);
+
+            ResultSet rs = _bd.ExecuteQuery(ps);
+            if(rs!=null && rs.next())
+            {
+
+
+                connectionRserve();
+
+                Vector vec = new Vector();
+
+                do
+                {
+                    vec.add(rs.getDouble("poidsTotal"));
+                }while(rs.next());
+
+                chargeUtile.set_moyenne(getRServe().getMoyenneVector(vec));
+                chargeUtile.set_mediane(getRServe().getMedianeVector(vec));
+                chargeUtile.set_ecartType(getRServe().getEcartTypeVector(vec));
+                chargeUtile.set_mode(getRServe().getModeVector(vec));
+
+                getRServe().RserveClose();
+
+                return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
+        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_GR_COULEUR_REP(DonneeGetGrCouleurRep chargeUtile, Client client)
     {
-        return null;
+        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_GR_COULEUR_COMP(DonneeGetGrCouleurComp chargeUtile, Client client)
     {
-        return null;
+        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_STAT_INFER_TEST_CONF(DonneeGetStatInferTestConf chargeUtile, Client client)
     {
-        return null;
+        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_STAT_INFER_TEST_HOMOG(DonneeGetStatInferTestHomog chargeUtile, Client client)
@@ -242,5 +294,13 @@ public class TraitementPIDEP implements Traitement
     {
         System.out.println("traite404 Request not found");
         return new ReponsePIDEP(ReponsePIDEP.REQUEST_NOT_FOUND, "request could not be exeuted due to unsopported version.", null);
+    }
+
+    private void connectionRserve()
+    {
+        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+
+        setRServe(new RServe());
+        getRServe().connectionRserve(mp.getContent("RSERVE"));
     }
 }
