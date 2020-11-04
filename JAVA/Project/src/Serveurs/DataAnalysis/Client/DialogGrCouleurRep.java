@@ -9,7 +9,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
-import protocol.PIDEP.CouleurRep;
+import protocol.PIDEP.GrCouleur;
 import protocol.PIDEP.DonneeGetGrCouleurRep;
 import javax.swing.*;
 import java.awt.*;
@@ -104,7 +104,7 @@ public class DialogGrCouleurRep extends JDialog
 
         for(int i = 0 ; i < _data.size() ; i++)
         {
-            ds.setValue(((CouleurRep)_data.get(i)).get_destination() , ((CouleurRep)_data.get(i)).get_nombre());
+            ds.setValue(((GrCouleur)_data.get(i)).get_destination() , ((GrCouleur)_data.get(i)).get_nombre());
         }
 
         //Se fournir un JFreeChart

@@ -7,7 +7,7 @@ package protocol.PIDEP;
 
 import java.io.Serializable;
 
-public class CouleurRep implements Serializable
+public class GrCouleur implements Serializable
 {
     private static final long serialVersionUID = -8671390182263408580L;
 
@@ -21,12 +21,12 @@ public class CouleurRep implements Serializable
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public CouleurRep()
+    public GrCouleur()
     {
 
     }
 
-    public CouleurRep(String _destination, int _nombre)
+    public GrCouleur(String _destination, int _nombre)
     {
         this._destination = _destination;
         this._nombre = _nombre;

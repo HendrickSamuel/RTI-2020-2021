@@ -6,11 +6,7 @@
 package Serveurs.DataAnalysis.Client;
 
 
-
-
-import protocol.PIDEP.DonneeGetGrCouleurRep;
-import protocol.PIDEP.DonneeGetStatDescrCont;
-import protocol.PIDEP.ReponsePIDEP;
+import protocol.PIDEP.*;
 import javax.swing.*;
 
 
@@ -198,9 +194,9 @@ public class ClientAnalysisLayout extends JFrame
         }
         if(rep.getCode() == 200)
         {
-            //todo
-            AppLabelError.setText("OK reussite : CouleurComp");
-
+            DialogGrCouleurComp dial = new DialogGrCouleurComp(this, false, (DonneeGetGrCouleurComp)rep.getChargeUtile());
+            dial.setSize(600,500);
+            dial.setVisible(true);
         }
         else
         {

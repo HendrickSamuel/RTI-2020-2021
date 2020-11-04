@@ -297,7 +297,7 @@ public class TraitementPIDEP implements Traitement
 
                 do
                 {
-                    CouleurRep cel = new CouleurRep();
+                    GrCouleur cel = new GrCouleur();
 
                     cel.set_destination(rs.getString("destination"));
                     cel.set_nombre(rs.getInt("nombre"));
@@ -320,6 +320,35 @@ public class TraitementPIDEP implements Traitement
 
     private Reponse traiteGET_GR_COULEUR_COMP(DonneeGetGrCouleurComp chargeUtile, Client client)
     {
+        int annee = chargeUtile.get_annee();
+        String debut;
+        String fin;
+
+        PreparedStatement ps = null;
+        try
+        {
+            debut = annee + "-01-01";
+            fin = annee + "-03-31";
+            chargeUtile.setTrim1(getTrimestre(debut, fin));
+
+            debut = annee + "-04-01";
+            fin = annee + "-06-30";
+            chargeUtile.setTrim2(getTrimestre(debut, fin));
+
+            debut = annee + "-07-01";
+            fin = annee + "-09-30";
+            chargeUtile.setTrim3(getTrimestre(debut, fin));
+
+            debut = annee + "-10-01";
+            fin = annee + "-12-31";
+            chargeUtile.setTrim4(getTrimestre(debut, fin));
+
+            return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
 
         return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
@@ -351,5 +380,41 @@ public class TraitementPIDEP implements Traitement
 
         setRServe(new RServe());
         getRServe().connectionRserve(mp.getContent("RSERVE"));
+    }
+
+    private Vector getTrimestre(String debut, String fin) throws SQLException {
+        PreparedStatement ps = null;
+
+        ps = _bd.getPreparedStatement("SELECT destination, COUNT(*) as nombre \n" +
+                "FROM mouvements \n" +
+                "WHERE (dateArrivee BETWEEN ? AND ? ) \n" +
+                "OR (dateDepart BETWEEN ? AND ? ) \n" +
+                "GROUP BY destination;");
+        ps.setString(1, String.valueOf(debut));
+        ps.setString(2, String.valueOf(fin));
+        ps.setString(3, String.valueOf(debut));
+        ps.setString(4, String.valueOf(fin));
+
+        System.out.println(ps.toString());
+
+        ResultSet rs = _bd.ExecuteQuery(ps);
+
+        if(rs!=null && rs.next())
+        {
+            Vector vec = new Vector();
+
+            do
+            {
+                GrCouleur cel = new GrCouleur();
+
+                cel.set_destination(rs.getString("destination"));
+                cel.set_nombre(rs.getInt("nombre"));
+
+                vec.add(cel);
+            } while (rs.next());
+
+            return vec;
+        }
+        return null;
     }
 }
