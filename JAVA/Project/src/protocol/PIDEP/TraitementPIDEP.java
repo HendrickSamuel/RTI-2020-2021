@@ -5,31 +5,37 @@
 
 package protocol.PIDEP;
 
+import java.sql.ResultSet;
+import java.io.IOException;
+import java.sql.SQLException;
 import MyGenericServer.Client;
-import MyGenericServer.ConsoleServeur;
-import genericRequest.DonneeRequete;
-import genericRequest.Reponse;
-import genericRequest.Traitement;
+import genericRequest.*;
+
+import java.io.ByteArrayOutputStream;
+import java.security.Security;
+import java.io.DataOutputStream;
+import java.sql.PreparedStatement;
+import java.security.MessageDigest;
 import lib.BeanDBAcces.BDMouvements;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import MyGenericServer.ConsoleServeur;
 import java.security.NoSuchProviderException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Vector;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class TraitementPIDEP implements Traitement
 {
     /********************************/
     /*           Variables          */
     /********************************/
-    private static String codeProvider = "BC";
+    private String _codeProvider;
+    private String _hash;
     private BDMouvements _bd;
     private ConsoleServeur _cs;
+    private RServe _r;
 
 
     /********************************/
@@ -37,12 +43,19 @@ public class TraitementPIDEP implements Traitement
     /********************************/
     public TraitementPIDEP()
     {
-
+        Security.addProvider(new BouncyCastleProvider());
+        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+        set_codeProvider(mp.getContent("PROVIDER"));
+        set_hash(mp.getContent("HASH"));
     }
 
     public TraitementPIDEP(BDMouvements _bd)
     {
         this._bd = _bd;
+        Security.addProvider(new BouncyCastleProvider());
+        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+        set_codeProvider(mp.getContent("PROVIDER"));
+        set_hash(mp.getContent("HASH"));
     }
 
 
@@ -59,6 +72,21 @@ public class TraitementPIDEP implements Traitement
         return _cs;
     }
 
+    public String get_codeProvider()
+    {
+        return _codeProvider;
+    }
+
+    public String get_hash()
+    {
+        return _hash;
+    }
+
+    private RServe getRServe()
+    {
+        return _r;
+    }
+
 
     /********************************/
     /*            Setters           */
@@ -72,6 +100,21 @@ public class TraitementPIDEP implements Traitement
     public void setConsole(ConsoleServeur cs)
     {
         this._cs = cs;
+    }
+
+    public void set_codeProvider(String codeProvider)
+    {
+        this._codeProvider = codeProvider;
+    }
+
+    public void set_hash(String hash)
+    {
+        this._hash = hash;
+    }
+
+    private void setRServe(RServe r)
+    {
+        _r = r;
     }
 
 
@@ -94,6 +137,8 @@ public class TraitementPIDEP implements Traitement
             return traiteGET_STAT_INFER_TEST_CONF( (DonneeGetStatInferTestConf)Requete, client);
         else if(Requete instanceof DonneeGetStatInferTestHomog)
             return traiteGET_STAT_INFER_TEST_HOMOG( (DonneeGetStatInferTestHomog)Requete, client);
+        else if(Requete instanceof DonneeGetStatInferANOVA)
+            return traiteGET_STAT_INFER_ANOVA( (DonneeGetStatInferANOVA)Requete, client);
         else
             return traite404();
     }
@@ -133,7 +178,7 @@ public class TraitementPIDEP implements Traitement
                 String bddpass = rs.getString("userpassword");
 
                 // confection d'un digest local
-                MessageDigest md = MessageDigest.getInstance("SHA-256", codeProvider);
+                MessageDigest md = MessageDigest.getInstance(get_hash(), get_codeProvider());
                 md.update(bddpass.getBytes());
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 DataOutputStream bdos = new DataOutputStream(baos);
@@ -153,7 +198,6 @@ public class TraitementPIDEP implements Traitement
                     return new ReponsePIDEP(ReponsePIDEP.NOK, "Mot de passe ou nom d'utilisateur erroné", null);
                 }
             }
-
         }
         catch (SQLException | NoSuchAlgorithmException | NoSuchProviderException | IOException e)
         {
@@ -165,25 +209,161 @@ public class TraitementPIDEP implements Traitement
 
     private Reponse traiteGET_STAT_DESCR_CONT(DonneeGetStatDescrCont chargeUtile, Client client)
     {
-        return null;
+        int tailEch = chargeUtile.get_tailleEch();
+        String quand;
+
+        if(chargeUtile.is_entree())
+        {
+            quand = "dateArrivee";
+        }
+        else
+        {
+            quand = "dateDepart";
+        }
+
+        PreparedStatement ps = null;
+        try
+        {
+            ps = _bd.getPreparedStatement("SELECT poidsTotal \n" +
+                    "FROM mouvements \n" +
+                    "WHERE YEAR("+quand+") = YEAR(SYSDATE())\n" +
+                    "ORDER BY RAND()\n" +
+                    "LIMIT ?;");
+
+            ps.setInt(1, tailEch);
+
+            ResultSet rs = _bd.ExecuteQuery(ps);
+            if(rs!=null && rs.next())
+            {
+                connectionRserve();
+
+                Vector vec = new Vector();
+
+                do
+                {
+                    vec.add(rs.getDouble("poidsTotal"));
+                }while(rs.next());
+
+                chargeUtile.set_moyenne(getRServe().getMoyenneVector(vec));
+                chargeUtile.set_mediane(getRServe().getMedianeVector(vec));
+                chargeUtile.set_ecartType(getRServe().getEcartTypeVector(vec));
+                chargeUtile.set_mode(getRServe().getModeVector(vec));
+
+                getRServe().RserveClose();
+
+                return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
+        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_GR_COULEUR_REP(DonneeGetGrCouleurRep chargeUtile, Client client)
     {
-        return null;
+        int donnee = chargeUtile.get_donnee();
+        String requete;
+
+        if(chargeUtile.is_annee())
+        {
+            requete = "SELECT destination, COUNT(*)as nombre\n" +
+                    "FROM mouvements\n" +
+                    "WHERE YEAR(dateArrivee) = ? OR YEAR(dateDepart) = ?\n" +
+                    "GROUP BY destination;";
+        }
+        else
+        {
+            requete = "SELECT destination, COUNT(*) as nombre\n" +
+                    "FROM mouvements\n" +
+                    "WHERE (YEAR(dateArrivee) = YEAR(SYSDATE()) AND MONTH(dateArrivee) = ?)\n" +
+                    "OR (YEAR(dateDepart) = YEAR(SYSDATE()) AND MONTH(dateDepart) = ?)\n" +
+                    "GROUP BY destination;";
+        }
+
+        PreparedStatement ps = null;
+        try
+        {
+            ps = _bd.getPreparedStatement(requete);
+            ps.setInt(1, donnee);
+            ps.setInt(2, donnee);
+
+            ResultSet rs = _bd.ExecuteQuery(ps);
+            if(rs!=null && rs.next())
+            {
+                Vector vec = new Vector();
+
+                do
+                {
+                    GrCouleur cel = new GrCouleur();
+
+                    cel.set_destination(rs.getString("destination"));
+                    cel.set_nombre(rs.getInt("nombre"));
+
+                    vec.add(cel);
+                }while(rs.next());
+
+                chargeUtile.set_retour(vec);
+
+                return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
+        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_GR_COULEUR_COMP(DonneeGetGrCouleurComp chargeUtile, Client client)
     {
-        return null;
+        int annee = chargeUtile.get_annee();
+        String debut;
+        String fin;
+
+        PreparedStatement ps = null;
+        try
+        {
+            debut = annee + "-01-01";
+            fin = annee + "-03-31";
+            chargeUtile.setTrim1(getTrimestre(debut, fin));
+
+            debut = annee + "-04-01";
+            fin = annee + "-06-30";
+            chargeUtile.setTrim2(getTrimestre(debut, fin));
+
+            debut = annee + "-07-01";
+            fin = annee + "-09-30";
+            chargeUtile.setTrim3(getTrimestre(debut, fin));
+
+            debut = annee + "-10-01";
+            fin = annee + "-12-31";
+            chargeUtile.setTrim4(getTrimestre(debut, fin));
+
+            return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
+        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_STAT_INFER_TEST_CONF(DonneeGetStatInferTestConf chargeUtile, Client client)
     {
-        return null;
+        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteGET_STAT_INFER_TEST_HOMOG(DonneeGetStatInferTestHomog chargeUtile, Client client)
+    {
+        return null;
+    }
+
+    private Reponse traiteGET_STAT_INFER_ANOVA(DonneeGetStatInferANOVA chargeUtile, Client client)
     {
         return null;
     }
@@ -192,5 +372,49 @@ public class TraitementPIDEP implements Traitement
     {
         System.out.println("traite404 Request not found");
         return new ReponsePIDEP(ReponsePIDEP.REQUEST_NOT_FOUND, "request could not be exeuted due to unsopported version.", null);
+    }
+
+    private void connectionRserve()
+    {
+        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+
+        setRServe(new RServe());
+        getRServe().connectionRserve(mp.getContent("RSERVE"));
+    }
+
+    private Vector getTrimestre(String debut, String fin) throws SQLException {
+        PreparedStatement ps = null;
+
+        ps = _bd.getPreparedStatement("SELECT destination, COUNT(*) as nombre \n" +
+                "FROM mouvements \n" +
+                "WHERE (dateArrivee BETWEEN ? AND ? ) \n" +
+                "OR (dateDepart BETWEEN ? AND ? ) \n" +
+                "GROUP BY destination;");
+        ps.setString(1, String.valueOf(debut));
+        ps.setString(2, String.valueOf(fin));
+        ps.setString(3, String.valueOf(debut));
+        ps.setString(4, String.valueOf(fin));
+
+        System.out.println(ps.toString());
+
+        ResultSet rs = _bd.ExecuteQuery(ps);
+
+        if(rs!=null && rs.next())
+        {
+            Vector vec = new Vector();
+
+            do
+            {
+                GrCouleur cel = new GrCouleur();
+
+                cel.set_destination(rs.getString("destination"));
+                cel.set_nombre(rs.getInt("nombre"));
+
+                vec.add(cel);
+            } while (rs.next());
+
+            return vec;
+        }
+        return null;
     }
 }

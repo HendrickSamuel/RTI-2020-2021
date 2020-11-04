@@ -1,16 +1,16 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 02/11/2020
+//Date de la création : 03/11/2020
 
 package protocol.PIDEP;
 
-import genericRequest.DonneeRequete;
 import java.io.Serializable;
+import genericRequest.DonneeRequete;
 
-public class DonneeGetStatInferTestHomog implements DonneeRequete, Serializable
+public class DonneeGetStatInferANOVA implements DonneeRequete, Serializable
 {
-    private static final long serialVersionUID = 3275793837157702544L;
+    private static final long serialVersionUID = -8005076257115631153L;
 
     /********************************/
     /*           Variables          */
@@ -21,12 +21,12 @@ public class DonneeGetStatInferTestHomog implements DonneeRequete, Serializable
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DonneeGetStatInferTestHomog()
+    public DonneeGetStatInferANOVA()
     {
 
     }
 
-    public DonneeGetStatInferTestHomog(int _tailleEch)
+    public DonneeGetStatInferANOVA(int _tailleEch)
     {
         this._tailleEch = _tailleEch;
     }

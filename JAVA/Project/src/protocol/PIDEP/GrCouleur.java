@@ -1,61 +1,68 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 02/11/2020
+//Date de la création : 04/11/2020
 
 package protocol.PIDEP;
 
-import genericRequest.DonneeRequete;
 import java.io.Serializable;
 
-public class DonneeGetStatInferTestHomog implements DonneeRequete, Serializable
+public class GrCouleur implements Serializable
 {
-    private static final long serialVersionUID = 3275793837157702544L;
+    private static final long serialVersionUID = -8671390182263408580L;
 
     /********************************/
     /*           Variables          */
     /********************************/
-    private int _tailleEch;
+    private String _destination;
+    private int _nombre;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DonneeGetStatInferTestHomog()
+    public GrCouleur()
     {
 
     }
 
-    public DonneeGetStatInferTestHomog(int _tailleEch)
+    public GrCouleur(String _destination, int _nombre)
     {
-        this._tailleEch = _tailleEch;
+        this._destination = _destination;
+        this._nombre = _nombre;
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
-    public int get_tailleEch()
+    public String get_destination()
     {
-        return _tailleEch;
+        return _destination;
+    }
+
+    public int get_nombre()
+    {
+        return _nombre;
     }
 
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void set_tailleEch(int _tailleEch)
+    public void set_destination(String _destination)
     {
-        this._tailleEch = _tailleEch;
+        this._destination = _destination;
+    }
+
+    public void set_nombre(int _nombre)
+    {
+        this._nombre = _nombre;
     }
 
 
     /********************************/
     /*            Methodes          */
     /********************************/
-    @Override
-    public void setFiledsFromString(String fields)
-    {
 
-    }
 }

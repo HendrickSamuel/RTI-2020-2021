@@ -5,23 +5,26 @@
 
 package Serveurs.DataAnalysis.Client;
 
-import genericRequest.DonneeRequete;
-import genericRequest.MyProperties;
-import protocol.PIDEP.*;
 import java.io.*;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.Date;
+import java.net.Socket;
+import protocol.PIDEP.*;
+import java.security.Security;
+import genericRequest.MyProperties;
+import java.security.MessageDigest;
+import genericRequest.DonneeRequete;
+import java.net.UnknownHostException;
+import java.security.NoSuchProviderException;
+import java.security.NoSuchAlgorithmException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class ClientAnalysis
 {
     /********************************/
     /*           Variables          */
     /********************************/
-    private static String codeProvider = "BC";
+    private String _codeProvider;
+    private String _hash;
     private boolean _connect;
     private String _login;
     private String _pwd;
@@ -37,7 +40,10 @@ public class ClientAnalysis
     /********************************/
     public ClientAnalysis()
     {
-
+        Security.addProvider(new BouncyCastleProvider());
+        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+        set_codeProvider(mp.getContent("PROVIDER"));
+        set_hash(mp.getContent("HASH"));
     }
 
 
@@ -59,6 +65,16 @@ public class ClientAnalysis
         return _pwd;
     }
 
+    public String get_codeProvider()
+    {
+        return _codeProvider;
+    }
+
+    public String get_hash()
+    {
+        return _hash;
+    }
+
 
     /********************************/
     /*            Setters           */
@@ -76,6 +92,16 @@ public class ClientAnalysis
     public void setPwd(String tmpPwd)
     {
         _pwd = tmpPwd;
+    }
+
+    public void set_codeProvider(String codeProvider)
+    {
+        this._codeProvider = codeProvider;
+    }
+
+    public void set_hash(String hash)
+    {
+        this._hash = hash;
     }
 
 
@@ -159,10 +185,249 @@ public class ClientAnalysis
 
         dt = new DonneeLogin();
 
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        closeSocket();
+
+        return rep;
+    }
+
+    public ReponsePIDEP sendGetStatDescrCont(int tailEch, boolean entree)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetStatDescrCont(tailEch, entree);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponsePIDEP sendGrCouleurRep(int donnee, boolean annee)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetGrCouleurRep(donnee, annee);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponsePIDEP sendGrCouleurComp(int annee)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetGrCouleurComp(annee);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponsePIDEP sendGetStatInferTestConf(int tailEch)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetStatInferTestConf(tailEch);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponsePIDEP sendGetStatInferTestHomog(int tailEch)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetStatInferTestHomog(tailEch);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    public ReponsePIDEP sendGetStatInferANOVA(int tailEch)
+    {
+        RequetePIDEP req = null;
+        ReponsePIDEP rep = null;
+
+        dt = new DonneeLogin();
+
+        createDonneeLogin((DonneeLogin)dt);
+
+        req = new RequetePIDEP(dt);
+
+        connectServ();
+
+        sendReq(req);
+
+        rep = readRep();
+
+        if(rep.getCode() == 200) {
+
+            dt = new DonneeGetStatInferANOVA(tailEch);
+
+            req = new RequetePIDEP(dt);
+
+            sendReq(req);
+
+            rep = readRep();
+
+            closeSocket();
+
+            return rep;
+        }
+
+        closeSocket();
+
+        return null;
+    }
+
+    private void createDonneeLogin(DonneeLogin dt)
+    {
         try
         {
             //Déclaration du message digest
-            MessageDigest md = MessageDigest.getInstance("SHA-256", codeProvider);
+            MessageDigest md = MessageDigest.getInstance(get_hash(), get_codeProvider());
 
             //Création du message digest salé
             md.update(getPwd().getBytes());
@@ -178,22 +443,10 @@ public class ClientAnalysis
             //Ajout du sel
             md.update(baos.toByteArray());
 
-            ((DonneeLogin)dt).setUsername(getLogin());
-            ((DonneeLogin)dt).setTemps(temps);
-            ((DonneeLogin)dt).setAlea(alea);
-            ((DonneeLogin)dt).setMsgD(md.digest());
-
-            req = new RequetePIDEP(dt);
-
-            connectServ();
-
-            sendReq(req);
-
-            rep = readRep();
-
-            closeSocket();
-
-            return rep;
+            dt.setUsername(getLogin());
+            dt.setTemps(temps);
+            dt.setAlea(alea);
+            dt.setMsgD(md.digest());
         }
         catch (NoSuchAlgorithmException e)
         {
@@ -207,6 +460,5 @@ public class ClientAnalysis
         {
             System.out.println("Problème imprévu : " + e.getMessage() + e.getClass());
         }
-        return null;
     }
 }
