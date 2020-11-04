@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import MyGenericServer.Client;
 import genericRequest.*;
 
+import java.io.ByteArrayOutputStream;
 import java.security.Security;
 import java.io.DataOutputStream;
 import java.sql.PreparedStatement;
@@ -24,7 +25,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Vector;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 
 public class TraitementPIDEP implements Traitement
 {

@@ -20,7 +20,6 @@ public class DonneeLogin implements DonneeRequete, Serializable
     private double alea;
     private byte[] msgD;
 
-
     /********************************/
     /*         Constructeurs        */
     /********************************/
