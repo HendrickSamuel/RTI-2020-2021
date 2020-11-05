@@ -216,7 +216,7 @@ public class ClientAnalysisLayout extends JFrame
         if(rep.getCode() == 200)
         {
             DialogTestConf dial = new DialogTestConf(this, false, (DonneeGetStatInferTestConf) rep.getChargeUtile());
-            dial.setSize(600,500);
+            dial.setSize(500,200);
             dial.setVisible(true);
         }
         else

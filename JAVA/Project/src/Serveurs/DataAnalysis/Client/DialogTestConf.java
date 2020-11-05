@@ -43,7 +43,6 @@ public class DialogTestConf extends JDialog
     {
         super(parent, modal);
         setContentPane(contentPane);
-        setModal(true);
 
         initComponants();
 
@@ -60,23 +59,29 @@ public class DialogTestConf extends JDialog
     {
         getRootPane().setDefaultButton(buttonOK);
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        buttonOK.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
                 onOK();
             }
         });
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
+        addWindowListener(new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent e)
+            {
                 onCancel();
             }
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+        contentPane.registerKeyboardAction(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
