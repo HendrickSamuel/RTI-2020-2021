@@ -9,6 +9,7 @@ import MyGenericServer.ConsoleServeur;
 import MyGenericServer.ServeurGenerique;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
+import lib.BeanDBAcces.BDDecisions;
 import lib.BeanDBAcces.BDMouvements;
 import protocol.PIDEP.ReponsePIDEP;
 import protocol.PIDEP.TraitementPIDEP;
@@ -20,21 +21,24 @@ public class ServeurDataAnalysis extends ServeurGenerique
     /*           Variables          */
     /********************************/
     private BDMouvements _bdMouvement;
+    private BDDecisions _bdDecision;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, ConsoleServeur cs)
+    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, BDDecisions _bdDecision, ConsoleServeur cs)
     {
         super(port, connecte, NbThreads, cs, true);
         this._bdMouvement = _bdMouvements;
+        this._bdDecision = _bdDecision;
     }
 
-    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, ConsoleServeur cs, boolean isJavaCommunication)
+    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, BDDecisions _bdDecision, ConsoleServeur cs, boolean isJavaCommunication)
     {
         super(port, connecte, NbThreads, cs, isJavaCommunication);
         this._bdMouvement = _bdMouvements;
+        this._bdDecision = _bdDecision;
     }
 
     /********************************/
@@ -43,6 +47,11 @@ public class ServeurDataAnalysis extends ServeurGenerique
     public BDMouvements get_bdMouvement()
     {
         return _bdMouvement;
+    }
+
+    public BDDecisions get_bdDecision()
+    {
+        return _bdDecision;
     }
 
 
@@ -54,6 +63,11 @@ public class ServeurDataAnalysis extends ServeurGenerique
         this._bdMouvement = _bdMouvement;
     }
 
+    public void set_bdDecision(BDDecisions _bdDecision)
+    {
+        this._bdDecision = _bdDecision;
+    }
+
 
     /********************************/
     /*            Methodes          */
@@ -63,7 +77,8 @@ public class ServeurDataAnalysis extends ServeurGenerique
     {
         TraitementPIDEP tp = new TraitementPIDEP();
         tp.setConsole(this._console);
-        tp.set_bd(this._bdMouvement);
+        tp.setBdMouvements(this._bdMouvement);
+        tp.setBdDecisions(this._bdDecision);
         return tp;
     }
 

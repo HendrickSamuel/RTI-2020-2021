@@ -16,9 +16,10 @@ import java.security.Security;
 import java.io.DataOutputStream;
 import java.sql.PreparedStatement;
 import java.security.MessageDigest;
+
+import lib.BeanDBAcces.BDDecisions;
 import lib.BeanDBAcces.BDMouvements;
 
-import java.io.ByteArrayOutputStream;
 import MyGenericServer.ConsoleServeur;
 import java.security.NoSuchProviderException;
 import java.security.NoSuchAlgorithmException;
@@ -33,7 +34,8 @@ public class TraitementPIDEP implements Traitement
     /********************************/
     private String _codeProvider;
     private String _hash;
-    private BDMouvements _bd;
+    private BDMouvements bdMouvements;
+    private BDDecisions bdDecisions;
     private ConsoleServeur _cs;
     private RServe _r;
 
@@ -49,9 +51,10 @@ public class TraitementPIDEP implements Traitement
         set_hash(mp.getContent("HASH"));
     }
 
-    public TraitementPIDEP(BDMouvements _bd)
+    public TraitementPIDEP(BDMouvements bdM, BDDecisions bdD)
     {
-        this._bd = _bd;
+        this.bdMouvements = bdM;
+        this.bdDecisions = bdD;
         Security.addProvider(new BouncyCastleProvider());
         MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
         set_codeProvider(mp.getContent("PROVIDER"));
@@ -62,9 +65,9 @@ public class TraitementPIDEP implements Traitement
     /********************************/
     /*            Getters           */
     /********************************/
-    public BDMouvements get_bd()
+    public BDMouvements getBdMouvements()
     {
-        return _bd;
+        return bdMouvements;
     }
 
     public ConsoleServeur get_cs()
@@ -87,13 +90,18 @@ public class TraitementPIDEP implements Traitement
         return _r;
     }
 
+    public BDDecisions getBdDecisions()
+    {
+        return bdDecisions;
+    }
+
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void set_bd(BDMouvements _bd)
+    public void setBdMouvements(BDMouvements bdMouvements)
     {
-        this._bd = _bd;
+        this.bdMouvements = bdMouvements;
     }
 
     @Override
@@ -115,6 +123,11 @@ public class TraitementPIDEP implements Traitement
     private void setRServe(RServe r)
     {
         _r = r;
+    }
+
+    public void setBdDecisions(BDDecisions bdDecisions)
+    {
+        this.bdDecisions = bdDecisions;
     }
 
 
@@ -170,9 +183,9 @@ public class TraitementPIDEP implements Traitement
 
         try
         {
-            PreparedStatement ps = _bd.getPreparedStatement("SELECT userpassword FROM logins WHERE UPPER(username) = UPPER(?) ;");
+            PreparedStatement ps = bdMouvements.getPreparedStatement("SELECT userpassword FROM logins WHERE UPPER(username) = UPPER(?) ;");
             ps.setString(1, username);
-            ResultSet rs = _bd.ExecuteQuery(ps);
+            ResultSet rs = bdMouvements.ExecuteQuery(ps);
             if(rs!=null && rs.next())
             {
                 String bddpass = rs.getString("userpassword");
@@ -224,7 +237,7 @@ public class TraitementPIDEP implements Traitement
         PreparedStatement ps = null;
         try
         {
-            ps = _bd.getPreparedStatement("SELECT poidsTotal \n" +
+            ps = bdMouvements.getPreparedStatement("SELECT poidsTotal \n" +
                     "FROM mouvements \n" +
                     "WHERE YEAR("+quand+") = YEAR(SYSDATE())\n" +
                     "ORDER BY RAND()\n" +
@@ -232,7 +245,7 @@ public class TraitementPIDEP implements Traitement
 
             ps.setInt(1, tailEch);
 
-            ResultSet rs = _bd.ExecuteQuery(ps);
+            ResultSet rs = bdMouvements.ExecuteQuery(ps);
             if(rs!=null && rs.next())
             {
                 connectionRserve();
@@ -286,11 +299,11 @@ public class TraitementPIDEP implements Traitement
         PreparedStatement ps = null;
         try
         {
-            ps = _bd.getPreparedStatement(requete);
+            ps = bdMouvements.getPreparedStatement(requete);
             ps.setInt(1, donnee);
             ps.setInt(2, donnee);
 
-            ResultSet rs = _bd.ExecuteQuery(ps);
+            ResultSet rs = bdMouvements.ExecuteQuery(ps);
             if(rs!=null && rs.next())
             {
                 Vector vec = new Vector();
@@ -359,7 +372,7 @@ public class TraitementPIDEP implements Traitement
         PreparedStatement ps = null;
         try
         {
-            ps = _bd.getPreparedStatement("SELECT DATEDIFF(dateDepart, dateArrivee) as difference \n" +
+            ps = bdMouvements.getPreparedStatement("SELECT DATEDIFF(dateDepart, dateArrivee) as difference \n" +
                     "FROM mouvements \n" +
                     "WHERE dateArrivee IS NOT NULL \n" +
                     "AND dateDepart IS NOT NULL \n" +
@@ -368,7 +381,7 @@ public class TraitementPIDEP implements Traitement
 
             ps.setInt(1, tailEch);
 
-            ResultSet rs = _bd.ExecuteQuery(ps);
+            ResultSet rs = bdMouvements.ExecuteQuery(ps);
             if(rs!=null && rs.next())
             {
 
@@ -389,6 +402,23 @@ public class TraitementPIDEP implements Traitement
                 chargeUtile.setP_value(getRServe().getTestConfVector(vec));
 
                 getRServe().RserveClose();
+
+                //Insertion dans BD_Decisions
+                String dec;
+                if(chargeUtile.getP_value() > 0.05)
+                {
+                    dec = "OK";
+                }
+                else
+                {
+                    dec = "NOK";
+                }
+
+                PreparedStatement prepstate = bdDecisions.getPreparedStatement("INSERT into decisions (id, typeRequete, p_value, decision, dateDecision) " +
+                        "VALUES (null, 'Test de conformite', ?, ?, SYSDATE());");
+                prepstate.setDouble(1, chargeUtile.getP_value());
+                prepstate.setString(2, dec);
+                bdDecisions.Execute(prepstate);
 
                 return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
             }
@@ -429,6 +459,23 @@ public class TraitementPIDEP implements Traitement
 
             getRServe().RserveClose();
 
+            //Insertion dans BD_Decisions
+            String dec;
+            if(chargeUtile.getP_value() > 0.05)
+            {
+                dec = "OK";
+            }
+            else
+            {
+                dec = "NOK";
+            }
+
+            PreparedStatement prepstate = bdDecisions.getPreparedStatement("INSERT into decisions (id, typeRequete, p_value, decision, dateDecision) " +
+                    "VALUES (null, 'Test d'homogeneite', ?, ?, SYSDATE());");
+            prepstate.setDouble(1, chargeUtile.getP_value());
+            prepstate.setString(2, dec);
+            bdDecisions.Execute(prepstate);
+
             return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
         }
         catch (SQLException throwables)
@@ -447,9 +494,9 @@ public class TraitementPIDEP implements Traitement
         {
             Vector<String> dest = new Vector();
             Vector<EchANOVA> echantillons = new Vector();
-            ps = _bd.getPreparedStatement("SELECT ville\n" +
+            ps = bdMouvements.getPreparedStatement("SELECT ville\n" +
                                                     "FROM destinations;");
-            ResultSet rs = _bd.ExecuteQuery(ps);
+            ResultSet rs = bdMouvements.ExecuteQuery(ps);
 
             if(rs!=null && rs.next())
             {
@@ -481,6 +528,23 @@ public class TraitementPIDEP implements Traitement
 
                 getRServe().RserveClose();
 
+                //Insertion dans BD_Decisions
+                String dec;
+                if(chargeUtile.get_pvalue() > 0.05)
+                {
+                    dec = "OK";
+                }
+                else
+                {
+                    dec = "NOK";
+                }
+
+                PreparedStatement prepstate = bdDecisions.getPreparedStatement("INSERT into decisions (id, typeRequete, p_value, decision, dateDecision) " +
+                        "VALUES (null, 'Test ANOVA', ?, ?, SYSDATE());");
+                prepstate.setDouble(1, chargeUtile.get_pvalue());
+                prepstate.setString(2, dec);
+                bdDecisions.Execute(prepstate);
+
                 return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
             }
         }
@@ -510,7 +574,7 @@ public class TraitementPIDEP implements Traitement
     {
         PreparedStatement ps = null;
 
-        ps = _bd.getPreparedStatement("SELECT destination, COUNT(*) as nombre \n" +
+        ps = bdMouvements.getPreparedStatement("SELECT destination, COUNT(*) as nombre \n" +
                 "FROM mouvements \n" +
                 "WHERE (dateArrivee BETWEEN ? AND ? ) \n" +
                 "OR (dateDepart BETWEEN ? AND ? ) \n" +
@@ -520,7 +584,7 @@ public class TraitementPIDEP implements Traitement
         ps.setString(3, debut);
         ps.setString(4, fin);
 
-        ResultSet rs = _bd.ExecuteQuery(ps);
+        ResultSet rs = bdMouvements.ExecuteQuery(ps);
 
         if(rs!=null && rs.next())
         {
@@ -545,7 +609,7 @@ public class TraitementPIDEP implements Traitement
     {
         PreparedStatement ps = null;
 
-        ps = _bd.getPreparedStatement("SELECT DATEDIFF(dateDepart, dateArrivee) as difference\n" +
+        ps = bdMouvements.getPreparedStatement("SELECT DATEDIFF(dateDepart, dateArrivee) as difference\n" +
                                                 "FROM mouvements\n" +
                                                 "WHERE dateArrivee IS NOT NULL\n" +
                                                 "AND dateDepart IS NOT NULL\n" +
@@ -556,7 +620,7 @@ public class TraitementPIDEP implements Traitement
         ps.setString(1, ville);
         ps.setInt(2, taille);
 
-        ResultSet rs = _bd.ExecuteQuery(ps);
+        ResultSet rs = bdMouvements.ExecuteQuery(ps);
         if(rs!=null && rs.next())
         {
 

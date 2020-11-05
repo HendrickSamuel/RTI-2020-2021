@@ -258,7 +258,7 @@ public class ClientAnalysisLayout extends JFrame
         if(rep.getCode() == 200)
         {
             DialogANOVA dial = new DialogANOVA(this, false, (DonneeGetStatInferANOVA) rep.getChargeUtile());
-            dial.setSize(500,300);
+            dial.setSize(700,200);
             dial.setVisible(true);
         }
         else

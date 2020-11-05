@@ -7,6 +7,7 @@ package Serveurs.DataAnalysis.Serveur;
 
 import Serveurs.Mouvement.Serveur.ConsoleSwing;
 import genericRequest.MyProperties;
+import lib.BeanDBAcces.BDDecisions;
 import lib.BeanDBAcces.BDMouvements;
 
 import javax.swing.*;
@@ -79,11 +80,13 @@ public class ServeurAnalysisLayout extends JFrame
 
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
-            BDMouvements bd = null;
+            BDMouvements bdM = null;
+            BDDecisions bdD = null;
             try
             {
-                bd = new BDMouvements(USER,PWD,"bd_mouvements");
-                serveur = new ServeurDataAnalysis(port, true, NbThreads, bd, cs);
+                bdM = new BDMouvements(USER,PWD,"bd_mouvements");
+                bdD = new BDDecisions(USER,PWD,"bd_decisions");
+                serveur = new ServeurDataAnalysis(port, true, NbThreads, bdM, bdD, cs);
                 serveur.StartServeur();
 
                 labelPort.setText("PORT: " + port);
