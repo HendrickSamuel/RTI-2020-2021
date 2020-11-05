@@ -5,12 +5,11 @@
 
 package Serveurs.DataAnalysis.Client;
 
-
-import protocol.PIDEP.DonneeGetStatInferTestHomog;
+import protocol.PIDEP.DonneeGetStatInferANOVA;
 import javax.swing.*;
 import java.awt.event.*;
 
-public class DialogTestHomog extends JDialog
+public class DialogANOVA extends JDialog
 {
     /********************************/
     /*           Variables          */
@@ -19,19 +18,17 @@ public class DialogTestHomog extends JDialog
     private JButton buttonOK;
     private JLabel titreLabel;
     private JLabel detailLabel;
-    private JLabel varLabel;
     private JLabel pvalueLabel;
-    private JLabel hLabel;
-    private JLabel desisionLabel;
-    private JLabel welchLabel;
+    private JLabel HLabel;
+    private JLabel decisionLabel;
 
-    private DonneeGetStatInferTestHomog donnee;
+    private  DonneeGetStatInferANOVA donnee;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DialogTestHomog()
+    public DialogANOVA()
     {
         setContentPane(contentPane);
         setModal(true);
@@ -39,18 +36,16 @@ public class DialogTestHomog extends JDialog
         initComponants();
     }
 
-    public DialogTestHomog(java.awt.Frame parent, boolean modal, DonneeGetStatInferTestHomog don)
+    public DialogANOVA(java.awt.Frame parent, boolean modal, DonneeGetStatInferANOVA don)
     {
         super(parent, modal);
         setContentPane(contentPane);
 
-        initComponants();
-
         donnee = don;
 
-        affichResult();
+        initComponants();
+        afficheResult();
     }
-
 
     /********************************/
     /*            Methodes          */
@@ -86,7 +81,6 @@ public class DialogTestHomog extends JDialog
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
-
     private void onOK()
     {
         dispose();
@@ -97,40 +91,32 @@ public class DialogTestHomog extends JDialog
         dispose();
     }
 
-    private void affichResult()
+    private void afficheResult()
     {
-        titreLabel.setText("Test d'hypothèse d'homogénéité");
+        titreLabel.setText("Test d'hypothèse de type ANOVA");
         detailLabel.setText("Taille des l'échantillons : " + donnee.get_tailleEch());
 
-        if(donnee.getVarMin() < donnee.getResultVariance() && donnee.getVarMax() > donnee.getResultVariance())
+        pvalueLabel.setText(String.valueOf(donnee.get_pvalue()));
+
+        if(donnee.get_pvalue() < 0.05)
         {
-            varLabel.setText("La valeur "+ donnee.getResultVariance() +" est dans les bornes ["+ donnee.getVarMin() +" - "+ donnee.getVarMax() +"]");
-            welchLabel.setText("le test homogénéité de moyenne se fera sans le correctif de Welch");
+            decisionLabel.setText("Différence significative, donc peu de chances de se tromper en rejetant H0");
         }
         else
         {
-            varLabel.setText("La valeur "+ donnee.getResultVariance() +" est hors des bornes ["+ donnee.getVarMin() +" - "+ donnee.getVarMax() +"]");
-            welchLabel.setText("le test homogénéité de moyenne se fera sans le avec de Welch");
+            decisionLabel.setText("Différence non significative, donc peu de chances de se tromper en gardant H0");
         }
 
-        if(donnee.getP_value() < 0.05)
-        {
-            desisionLabel.setText("Différence significative, donc peu de chances de se tromper en rejetant H0");
-        }
-        else
-        {
-            desisionLabel.setText("Différence non significative, donc peu de chances de se tromper en gardant H0");
-        }
-        pvalueLabel.setText(String.valueOf(donnee.getP_value()));
-        hLabel.setText("H0 : le temps moyen de stationnement d'un container est le même si il est à destination de Duisbourg ou Strasbourg");
+        HLabel.setText("H0 : le temps moyen de stationnement d'un container est le même selon les différentes destinations possibles");
     }
+
 
     /********************************/
     /*              Main            */
     /********************************/
     public static void main(String[] args)
     {
-        DialogTestHomog dialog = new DialogTestHomog();
+        DialogANOVA dialog = new DialogANOVA();
         dialog.pack();
         dialog.setVisible(true);
         System.exit(0);

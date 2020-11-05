@@ -10,7 +10,9 @@ import org.rosuda.REngine.REXPDouble;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
+import protocol.PIDEP.DonneeGetStatInferANOVA;
 import protocol.PIDEP.DonneeGetStatInferTestHomog;
+import protocol.PIDEP.EchANOVA;
 
 import java.util.Vector;
 
@@ -261,6 +263,39 @@ public class RServe
             }
 
             chargeUtile.setP_value(getRconnection().eval("res$p.value").asDouble());
+        }
+        catch (RserveException | REXPMismatchException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void getTestANOVAVector(Vector<EchANOVA> echantillons, DonneeGetStatInferANOVA chargeUtile)
+    {
+        try
+        {
+            String destination = "Destination <- c(\"" + echantillons.get(0).getVille() + "\"";
+            String jours = "Jours <- c(" + echantillons.get(0).getJours();
+
+            //Préparation pour le Data.frame
+            for( int i = 1 ; i < echantillons.size() ; i++)
+            {
+                destination = destination + ", \"" + echantillons.get(i).getVille() + "\"";
+                jours = jours + ", " + echantillons.get(i).getJours();
+            }
+
+            destination = destination + ")";
+            jours = jours + ")";
+
+            getRconnection().voidEval(destination);
+            getRconnection().voidEval(jours);
+
+            //Création du data.frame
+            getRconnection().voidEval("DataFrame <- data.frame(Destination, Jours)");
+            getRconnection().voidEval("modele <- lm(DataFrame$Jours~DataFrame$Destination)");
+            getRconnection().voidEval("resanova <- anova(modele)");
+
+            chargeUtile.set_pvalue(getRconnection().eval("pvalue <- resanova$`Pr(>F)`[1]").asDouble());
         }
         catch (RserveException | REXPMismatchException e)
         {

@@ -257,9 +257,9 @@ public class ClientAnalysisLayout extends JFrame
         }
         if(rep.getCode() == 200)
         {
-            //todo
-            AppLabelError.setText("OK reussite : StatInferANOVA");
-
+            DialogANOVA dial = new DialogANOVA(this, false, (DonneeGetStatInferANOVA) rep.getChargeUtile());
+            dial.setSize(500,300);
+            dial.setVisible(true);
         }
         else
         {

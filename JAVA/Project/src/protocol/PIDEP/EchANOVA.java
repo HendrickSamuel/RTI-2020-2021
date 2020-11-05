@@ -1,77 +1,68 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 03/11/2020
+//Date de la création : 05/11/2020
 
 package protocol.PIDEP;
 
 import java.io.Serializable;
-import genericRequest.DonneeRequete;
 
-public class DonneeGetStatInferANOVA implements DonneeRequete, Serializable
+public class EchANOVA implements Serializable
 {
-    private static final long serialVersionUID = -8005076257115631153L;
+    private static final long serialVersionUID = 8087440585766480376L;
 
     /********************************/
     /*           Variables          */
     /********************************/
-    private int _tailleEch;
-
-    private double _pvalue;
+    int jours;
+    String ville;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DonneeGetStatInferANOVA()
+    public EchANOVA()
     {
 
     }
 
-    public DonneeGetStatInferANOVA(int _tailleEch)
+    public EchANOVA(int jours, String ville)
     {
-        this._tailleEch = _tailleEch;
+        this.jours = jours;
+        this.ville = ville;
     }
 
-    public DonneeGetStatInferANOVA(double _pvalue)
-    {
-        this._pvalue = _pvalue;
-    }
 
     /********************************/
     /*            Getters           */
     /********************************/
-    public int get_tailleEch()
+    public int getJours()
     {
-        return _tailleEch;
+        return jours;
     }
 
-    public double get_pvalue()
+    public String getVille()
     {
-        return _pvalue;
+        return ville;
     }
 
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void set_tailleEch(int _tailleEch)
+    public void setVille(String ville)
     {
-        this._tailleEch = _tailleEch;
+        this.ville = ville;
     }
 
-    public void set_pvalue(double _pvalue)
+    public void setJours(int jours)
     {
-        this._pvalue = _pvalue;
+        this.jours = jours;
     }
 
 
     /********************************/
     /*            Methodes          */
     /********************************/
-    @Override
-    public void setFiledsFromString(String fields)
-    {
 
-    }
 }

@@ -440,6 +440,55 @@ public class TraitementPIDEP implements Traitement
 
     private Reponse traiteGET_STAT_INFER_ANOVA(DonneeGetStatInferANOVA chargeUtile, Client client)
     {
+        int tailEch = chargeUtile.get_tailleEch();
+
+        PreparedStatement ps = null;
+        try
+        {
+            Vector<String> dest = new Vector();
+            Vector<EchANOVA> echantillons = new Vector();
+            ps = _bd.getPreparedStatement("SELECT ville\n" +
+                                                    "FROM destinations;");
+            ResultSet rs = _bd.ExecuteQuery(ps);
+
+            if(rs!=null && rs.next())
+            {
+                do
+                {
+                    dest.add(rs.getString("ville"));
+                } while (rs.next());
+
+                for(int i = 0 ; i < dest.size() ; i++)
+                {
+                    Vector<Integer> ech = getEchHomog(tailEch, dest.get(i));
+
+                    if(ech == null || ech.size() < tailEch || ech.size() < 3)
+                    {
+                        return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR trop peu d'éléments", null);
+                    }
+                    else
+                    {
+                        for(int j = 0 ; j < ech.size() ; j++)
+                        {
+                            echantillons.add(new EchANOVA(ech.get(j) ,dest.get(i)));
+                        }
+                    }
+                }
+
+                connectionRserve();
+
+                getRServe().getTestANOVAVector(echantillons, chargeUtile);
+
+                getRServe().RserveClose();
+
+                return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
+            }
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
+
         return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
