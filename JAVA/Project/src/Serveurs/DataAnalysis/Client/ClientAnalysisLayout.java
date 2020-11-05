@@ -395,7 +395,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onAppLogout(java.awt.event.ActionEvent evt)
     {
-        getClient().setConnect(false);
+        getClient().sendLogout();
         AppPanel.setVisible(false);
         LoginPanel.setVisible(true);
     }

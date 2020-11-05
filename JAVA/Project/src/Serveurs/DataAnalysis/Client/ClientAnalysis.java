@@ -195,9 +195,13 @@ public class ClientAnalysis
 
         rep = readRep();
 
-        closeSocket();
-
         return rep;
+    }
+
+    public void sendLogout()
+    {
+        closeSocket();
+        setConnect(false);
     }
 
     public ReponsePIDEP sendGetStatDescrCont(int tailEch, boolean entree)
@@ -205,36 +209,15 @@ public class ClientAnalysis
         RequetePIDEP req = null;
         ReponsePIDEP rep = null;
 
-        dt = new DonneeLogin();
-
-        createDonneeLogin((DonneeLogin)dt);
+        dt = new DonneeGetStatDescrCont(tailEch, entree);
 
         req = new RequetePIDEP(dt);
-
-        connectServ();
 
         sendReq(req);
 
         rep = readRep();
 
-        if(rep.getCode() == 200) {
-
-            dt = new DonneeGetStatDescrCont(tailEch, entree);
-
-            req = new RequetePIDEP(dt);
-
-            sendReq(req);
-
-            rep = readRep();
-
-            closeSocket();
-
-            return rep;
-        }
-
-        closeSocket();
-
-        return null;
+        return rep;
     }
 
     public ReponsePIDEP sendGrCouleurRep(int donnee, boolean annee)
@@ -242,36 +225,15 @@ public class ClientAnalysis
         RequetePIDEP req = null;
         ReponsePIDEP rep = null;
 
-        dt = new DonneeLogin();
-
-        createDonneeLogin((DonneeLogin)dt);
+        dt = new DonneeGetGrCouleurRep(donnee, annee);
 
         req = new RequetePIDEP(dt);
-
-        connectServ();
 
         sendReq(req);
 
         rep = readRep();
 
-        if(rep.getCode() == 200) {
-
-            dt = new DonneeGetGrCouleurRep(donnee, annee);
-
-            req = new RequetePIDEP(dt);
-
-            sendReq(req);
-
-            rep = readRep();
-
-            closeSocket();
-
-            return rep;
-        }
-
-        closeSocket();
-
-        return null;
+        return rep;
     }
 
     public ReponsePIDEP sendGrCouleurComp(int annee)
@@ -279,36 +241,15 @@ public class ClientAnalysis
         RequetePIDEP req = null;
         ReponsePIDEP rep = null;
 
-        dt = new DonneeLogin();
-
-        createDonneeLogin((DonneeLogin)dt);
+        dt = new DonneeGetGrCouleurComp(annee);
 
         req = new RequetePIDEP(dt);
-
-        connectServ();
 
         sendReq(req);
 
         rep = readRep();
 
-        if(rep.getCode() == 200) {
-
-            dt = new DonneeGetGrCouleurComp(annee);
-
-            req = new RequetePIDEP(dt);
-
-            sendReq(req);
-
-            rep = readRep();
-
-            closeSocket();
-
-            return rep;
-        }
-
-        closeSocket();
-
-        return null;
+        return rep;
     }
 
     public ReponsePIDEP sendGetStatInferTestConf(int tailEch)
@@ -316,36 +257,15 @@ public class ClientAnalysis
         RequetePIDEP req = null;
         ReponsePIDEP rep = null;
 
-        dt = new DonneeLogin();
-
-        createDonneeLogin((DonneeLogin)dt);
+        dt = new DonneeGetStatInferTestConf(tailEch);
 
         req = new RequetePIDEP(dt);
-
-        connectServ();
 
         sendReq(req);
 
         rep = readRep();
 
-        if(rep.getCode() == 200) {
-
-            dt = new DonneeGetStatInferTestConf(tailEch);
-
-            req = new RequetePIDEP(dt);
-
-            sendReq(req);
-
-            rep = readRep();
-
-            closeSocket();
-
-            return rep;
-        }
-
-        closeSocket();
-
-        return null;
+        return rep;
     }
 
     public ReponsePIDEP sendGetStatInferTestHomog(int tailEch)
@@ -353,36 +273,15 @@ public class ClientAnalysis
         RequetePIDEP req = null;
         ReponsePIDEP rep = null;
 
-        dt = new DonneeLogin();
-
-        createDonneeLogin((DonneeLogin)dt);
+        dt = new DonneeGetStatInferTestHomog(tailEch);
 
         req = new RequetePIDEP(dt);
-
-        connectServ();
 
         sendReq(req);
 
         rep = readRep();
 
-        if(rep.getCode() == 200) {
-
-            dt = new DonneeGetStatInferTestHomog(tailEch);
-
-            req = new RequetePIDEP(dt);
-
-            sendReq(req);
-
-            rep = readRep();
-
-            closeSocket();
-
-            return rep;
-        }
-
-        closeSocket();
-
-        return null;
+        return rep;
     }
 
     public ReponsePIDEP sendGetStatInferANOVA(int tailEch)
@@ -390,36 +289,15 @@ public class ClientAnalysis
         RequetePIDEP req = null;
         ReponsePIDEP rep = null;
 
-        dt = new DonneeLogin();
-
-        createDonneeLogin((DonneeLogin)dt);
+        dt = new DonneeGetStatInferANOVA(tailEch);
 
         req = new RequetePIDEP(dt);
-
-        connectServ();
 
         sendReq(req);
 
         rep = readRep();
 
-        if(rep.getCode() == 200) {
-
-            dt = new DonneeGetStatInferANOVA(tailEch);
-
-            req = new RequetePIDEP(dt);
-
-            sendReq(req);
-
-            rep = readRep();
-
-            closeSocket();
-
-            return rep;
-        }
-
-        closeSocket();
-
-        return null;
+        return rep;
     }
 
     private void createDonneeLogin(DonneeLogin dt)
