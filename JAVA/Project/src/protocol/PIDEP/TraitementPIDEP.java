@@ -324,7 +324,6 @@ public class TraitementPIDEP implements Traitement
         String debut;
         String fin;
 
-        PreparedStatement ps = null;
         try
         {
             debut = annee + "-01-01";
@@ -361,11 +360,11 @@ public class TraitementPIDEP implements Traitement
         try
         {
             ps = _bd.getPreparedStatement("SELECT DATEDIFF(dateDepart, dateArrivee) as difference \n" +
-                                                    "FROM mouvements \n" +
-                                                    "WHERE dateArrivee IS NOT NULL \n" +
-                                                    "AND dateDepart IS NOT NULL \n" +
-                                                    "ORDER BY RAND()\n" +
-                                                    "LIMIT ?;");
+                    "FROM mouvements \n" +
+                    "WHERE dateArrivee IS NOT NULL \n" +
+                    "AND dateDepart IS NOT NULL \n" +
+                    "ORDER BY RAND()\n" +
+                    "LIMIT ?;");
 
             ps.setInt(1, tailEch);
 
@@ -377,10 +376,10 @@ public class TraitementPIDEP implements Traitement
 
                 do
                 {
-                    vec.add(rs.getDouble("difference"));
+                    vec.add(rs.getInt("difference"));
                 }while(rs.next());
 
-                if(vec.size() < tailEch || vec.size() < 2)
+                if(vec.size() < tailEch || vec.size() < 3)
                 {
                     return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR trop peu d'éléments", null);
                 }
@@ -404,6 +403,38 @@ public class TraitementPIDEP implements Traitement
 
     private Reponse traiteGET_STAT_INFER_TEST_HOMOG(DonneeGetStatInferTestHomog chargeUtile, Client client)
     {
+        int tailEch = chargeUtile.get_tailleEch();
+
+        try
+        {
+            Vector ech1 = null, ech2 = null;
+
+            ech1 = getEchHomog(tailEch, "Strasbourg");
+
+            if(ech1 == null || ech1.size() < tailEch || ech1.size() < 3)
+            {
+                return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR trop peu d'éléments", null);
+            }
+
+            ech2 = getEchHomog(tailEch, "Duisbourg");
+
+            if(ech2 == null || ech2.size() < tailEch || ech2.size() < 3)
+            {
+                return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR trop peu d'éléments", null);
+            }
+
+            connectionRserve();
+
+            getRServe().getTestHomogVector(ech1, ech2, chargeUtile);
+
+            getRServe().RserveClose();
+
+            return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
+        }
+        catch (SQLException throwables)
+        {
+            throwables.printStackTrace();
+        }
         return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR lors du traitement de la requete", null);
     }
 
@@ -426,7 +457,8 @@ public class TraitementPIDEP implements Traitement
         getRServe().connectionRserve(mp.getContent("RSERVE"));
     }
 
-    private Vector getTrimestre(String debut, String fin) throws SQLException {
+    private Vector getTrimestre(String debut, String fin) throws SQLException
+    {
         PreparedStatement ps = null;
 
         ps = _bd.getPreparedStatement("SELECT destination, COUNT(*) as nombre \n" +
@@ -434,12 +466,10 @@ public class TraitementPIDEP implements Traitement
                 "WHERE (dateArrivee BETWEEN ? AND ? ) \n" +
                 "OR (dateDepart BETWEEN ? AND ? ) \n" +
                 "GROUP BY destination;");
-        ps.setString(1, String.valueOf(debut));
-        ps.setString(2, String.valueOf(fin));
-        ps.setString(3, String.valueOf(debut));
-        ps.setString(4, String.valueOf(fin));
-
-        System.out.println(ps.toString());
+        ps.setString(1, debut);
+        ps.setString(2, fin);
+        ps.setString(3, debut);
+        ps.setString(4, fin);
 
         ResultSet rs = _bd.ExecuteQuery(ps);
 
@@ -455,6 +485,36 @@ public class TraitementPIDEP implements Traitement
                 cel.set_nombre(rs.getInt("nombre"));
 
                 vec.add(cel);
+            } while (rs.next());
+
+            return vec;
+        }
+        return null;
+    }
+
+    private Vector getEchHomog(int taille, String ville) throws SQLException
+    {
+        PreparedStatement ps = null;
+
+        ps = _bd.getPreparedStatement("SELECT DATEDIFF(dateDepart, dateArrivee) as difference\n" +
+                                                "FROM mouvements\n" +
+                                                "WHERE dateArrivee IS NOT NULL\n" +
+                                                "AND dateDepart IS NOT NULL\n" +
+                                                "AND UPPER(destination) = UPPER(?) \n" +
+                                                "ORDER BY RAND()\n" +
+                                                "LIMIT ?;");
+
+        ps.setString(1, ville);
+        ps.setInt(2, taille);
+
+        ResultSet rs = _bd.ExecuteQuery(ps);
+        if(rs!=null && rs.next())
+        {
+
+            Vector vec = new Vector();
+
+            do {
+                vec.add(rs.getInt("difference"));
             } while (rs.next());
 
             return vec;

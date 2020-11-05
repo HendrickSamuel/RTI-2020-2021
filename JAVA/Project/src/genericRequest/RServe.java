@@ -10,6 +10,7 @@ import org.rosuda.REngine.REXPDouble;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RserveException;
+import protocol.PIDEP.DonneeGetStatInferTestHomog;
 
 import java.util.Vector;
 
@@ -82,6 +83,7 @@ public class RServe
 
         try
         {
+            //Création de l'échantillon
             getRconnection().voidEval("vec <- c()");
 
             for(int i = 0 ; i < vec.size() ; i++)
@@ -90,6 +92,7 @@ public class RServe
                 getRconnection().voidEval("vec["+j+"] <- "+vec.get(i));
             }
 
+            //Calcul de la moyenne
             REXP result = getRconnection().eval("mean(vec)");
             moyenne = result.asDouble();
             return moyenne;
@@ -108,6 +111,7 @@ public class RServe
 
         try
         {
+            //Création de l'échantillon
             getRconnection().voidEval("vec <- c()");
 
             for(int i = 0 ; i < vec.size() ; i++)
@@ -116,6 +120,7 @@ public class RServe
                 getRconnection().voidEval("vec["+j+"] <- "+vec.get(i));
             }
 
+            //Calcul de la médiane
             REXP result = getRconnection().eval("median(vec)");
             mediane = result.asDouble();
             return mediane;
@@ -134,11 +139,13 @@ public class RServe
 
         try
         {
+            //Set la fonction du mode
             getRconnection().voidEval("getmode <- function(v) {\n" +
                                             "  uniqv <- unique(v)\n" +
                                             "  uniqv[which.max(tabulate(match(v, uniqv)))]\n" +
                                             "}");
 
+            //Création de l'échantillon
             getRconnection().voidEval("vec <- c()");
 
             for(int i = 0 ; i < vec.size() ; i++)
@@ -147,6 +154,7 @@ public class RServe
                 getRconnection().voidEval("vec["+j+"] <- "+vec.get(i));
             }
 
+            //Calcul du mode
             REXP result = getRconnection().eval("getmode(vec)");
             mode = result.asDouble();
             return mode;
@@ -165,10 +173,12 @@ public class RServe
 
         try
         {
+            //Set la fonction de l'écart-type
             getRconnection().voidEval("getEcartType <- function(v) {\n" +
                                             "  sqrt((length(v)-1)/length(v))*sd(v)\n" +
                                             "}");
 
+            //Création de l'échantillon
             getRconnection().voidEval("vec <- c()");
 
             for(int i = 0 ; i < vec.size() ; i++)
@@ -177,6 +187,7 @@ public class RServe
                 getRconnection().voidEval("vec["+j+"] <- "+vec.get(i));
             }
 
+            //Calcul de l'écart-type
             REXP result = getRconnection().eval("getEcartType(vec)");
             ecartType = result.asDouble();
             return ecartType;
@@ -195,6 +206,7 @@ public class RServe
 
         try
         {
+            //Création de l'échantillon
             getRconnection().voidEval("vec <- c()");
 
             for(int i = 0 ; i < vec.size() ; i++)
@@ -203,6 +215,7 @@ public class RServe
                 getRconnection().voidEval("vec["+j+"] <- "+vec.get(i));
             }
 
+            //Calcul de la p-value
             getRconnection().voidEval("value <- t.test(vec, mu = 10, alternative = \"two.sided\")");
             REXP result = getRconnection().eval("value$p.value");
             p_value = result.asDouble();
@@ -214,5 +227,44 @@ public class RServe
         }
 
         return Double.parseDouble(null);
+    }
+
+    public void getTestHomogVector(Vector ech1, Vector ech2, DonneeGetStatInferTestHomog chargeUtile)
+    {
+        try
+        {
+            //Création des échantillon
+            getRconnection().voidEval("ech1 <- c()");
+            getRconnection().voidEval("ech2 <- c()");
+
+            for(int i = 0 ; i < ech1.size() ; i++)
+            {
+                int j = i + 1;
+                getRconnection().voidEval("ech1["+j+"] <- "+ech1.get(i));
+                getRconnection().voidEval("ech2["+j+"] <- "+ech2.get(i));
+            }
+
+            //Test d'homogénéité variance
+            getRconnection().voidEval("result <- var.test(ech1, ech2)");
+            chargeUtile.setResultVariance(getRconnection().eval("result$statistic").asDouble());
+            chargeUtile.setVarMin(getRconnection().eval("qf(0.005,length(ech1)-1,length(ech2)-1)").asDouble());
+            chargeUtile.setVarMax(getRconnection().eval("qf(0.995,length(ech1)-1,length(ech2)-1)").asDouble());
+
+            //Homogénéité de moyenne
+            if(chargeUtile.getVarMin() < chargeUtile.getResultVariance() && chargeUtile.getVarMax() > chargeUtile.getResultVariance())
+            {
+                getRconnection().voidEval("res = t.test(ech1, ech2, alternative = \"two.sided\", paired = FALSE, var.equal = TRUE)");
+            }
+            else //sinon Test de Welch
+            {
+                getRconnection().voidEval("res = t.test(ech1, ech2, alternative = \"two.sided\", paired = FALSE, var.equal = FALSE)");
+            }
+
+            chargeUtile.setP_value(getRconnection().eval("res$p.value").asDouble());
+        }
+        catch (RserveException | REXPMismatchException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

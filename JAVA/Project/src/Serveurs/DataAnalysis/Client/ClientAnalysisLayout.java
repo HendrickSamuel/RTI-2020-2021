@@ -236,9 +236,9 @@ public class ClientAnalysisLayout extends JFrame
         }
         if(rep.getCode() == 200)
         {
-            //todo
-            AppLabelError.setText("OK reussite : StatInferHomog");
-
+            DialogTestHomog dial = new DialogTestHomog(this, false, (DonneeGetStatInferTestHomog) rep.getChargeUtile());
+            dial.setSize(700,300);
+            dial.setVisible(true);
         }
         else
         {

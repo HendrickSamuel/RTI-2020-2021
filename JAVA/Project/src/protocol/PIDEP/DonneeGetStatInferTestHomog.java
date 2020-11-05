@@ -17,6 +17,12 @@ public class DonneeGetStatInferTestHomog implements DonneeRequete, Serializable
     /********************************/
     private int _tailleEch;
 
+    private double resultVariance;
+    private double varMin;
+    private double varMax;
+
+    private double p_value;
+
 
     /********************************/
     /*         Constructeurs        */
@@ -31,6 +37,13 @@ public class DonneeGetStatInferTestHomog implements DonneeRequete, Serializable
         this._tailleEch = _tailleEch;
     }
 
+    public DonneeGetStatInferTestHomog(double resultVariance, double varMin, double varMax, double p_value)
+    {
+        this.resultVariance = resultVariance;
+        this.varMin = varMin;
+        this.varMax = varMax;
+        this.p_value = p_value;
+    }
 
     /********************************/
     /*            Getters           */
@@ -40,6 +53,26 @@ public class DonneeGetStatInferTestHomog implements DonneeRequete, Serializable
         return _tailleEch;
     }
 
+    public double getResultVariance()
+    {
+        return resultVariance;
+    }
+
+    public double getVarMin()
+    {
+        return varMin;
+    }
+
+    public double getVarMax()
+    {
+        return varMax;
+    }
+
+    public double getP_value()
+    {
+        return p_value;
+    }
+
 
     /********************************/
     /*            Setters           */
@@ -47,6 +80,26 @@ public class DonneeGetStatInferTestHomog implements DonneeRequete, Serializable
     public void set_tailleEch(int _tailleEch)
     {
         this._tailleEch = _tailleEch;
+    }
+
+    public void setResultVariance(double resultVariance)
+    {
+        this.resultVariance = resultVariance;
+    }
+
+    public void setVarMin(double varMin)
+    {
+        this.varMin = varMin;
+    }
+
+    public void setVarMax(double varMax)
+    {
+        this.varMax = varMax;
+    }
+
+    public void setP_value(double p_value)
+    {
+        this.p_value = p_value;
     }
 
 

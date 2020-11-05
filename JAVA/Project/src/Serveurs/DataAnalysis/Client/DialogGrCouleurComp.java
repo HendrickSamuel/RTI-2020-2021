@@ -12,7 +12,6 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import protocol.PIDEP.DonneeGetGrCouleurComp;
 import protocol.PIDEP.GrCouleur;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
