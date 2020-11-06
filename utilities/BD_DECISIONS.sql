@@ -21,6 +21,6 @@ FOREIGN KEY (typeRequete) REFERENCES TypeRequetes(typeRequete)
 );
 
 
-INSERT into TypeRequetes (typeRequete) VALUES ("Test de conformite");
-INSERT into TypeRequetes (typeRequete) VALUES ("Test d'homogeneite");
+INSERT into TypeRequetes (typeRequete) VALUES ("Test conformite");
+INSERT into TypeRequetes (typeRequete) VALUES ("Test homogeneite");
 INSERT into TypeRequetes (typeRequete) VALUES ("Test ANOVA");

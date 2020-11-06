@@ -415,7 +415,7 @@ public class TraitementPIDEP implements Traitement
                 }
 
                 PreparedStatement prepstate = bdDecisions.getPreparedStatement("INSERT into decisions (id, typeRequete, p_value, decision, dateDecision) " +
-                        "VALUES (null, 'Test de conformite', ?, ?, SYSDATE());");
+                        "VALUES (null, 'Test conformite', ?, ?, SYSDATE());");
                 prepstate.setDouble(1, chargeUtile.getP_value());
                 prepstate.setString(2, dec);
                 bdDecisions.Execute(prepstate);
@@ -471,7 +471,7 @@ public class TraitementPIDEP implements Traitement
             }
 
             PreparedStatement prepstate = bdDecisions.getPreparedStatement("INSERT into decisions (id, typeRequete, p_value, decision, dateDecision) " +
-                    "VALUES (null, 'Test d'homogeneite', ?, ?, SYSDATE());");
+                    "VALUES (null, 'Test homogeneite', ?, ?, SYSDATE());");
             prepstate.setDouble(1, chargeUtile.getP_value());
             prepstate.setString(2, dec);
             bdDecisions.Execute(prepstate);
