@@ -51,10 +51,11 @@ public class TraitementPIDEP implements Traitement
         set_hash(mp.getContent("HASH"));
     }
 
-    public TraitementPIDEP(BDMouvements bdM, BDDecisions bdD)
+    public TraitementPIDEP(BDMouvements bdM, BDDecisions bdD, RServe r)
     {
         this.bdMouvements = bdM;
         this.bdDecisions = bdD;
+        this._r = r;
         Security.addProvider(new BouncyCastleProvider());
         MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
         set_codeProvider(mp.getContent("PROVIDER"));
@@ -120,7 +121,7 @@ public class TraitementPIDEP implements Traitement
         this._hash = hash;
     }
 
-    private void setRServe(RServe r)
+    public void setRServe(RServe r)
     {
         _r = r;
     }
@@ -248,8 +249,6 @@ public class TraitementPIDEP implements Traitement
             ResultSet rs = bdMouvements.ExecuteQuery(ps);
             if(rs!=null && rs.next())
             {
-                connectionRserve();
-
                 Vector vec = new Vector();
 
                 do
@@ -261,8 +260,6 @@ public class TraitementPIDEP implements Traitement
                 chargeUtile.set_mediane(getRServe().getMedianeVector(vec));
                 chargeUtile.set_ecartType(getRServe().getEcartTypeVector(vec));
                 chargeUtile.set_mode(getRServe().getModeVector(vec));
-
-                getRServe().RserveClose();
 
                 return new ReponsePIDEP(ReponsePIDEP.OK,null, chargeUtile);
             }
@@ -397,11 +394,7 @@ public class TraitementPIDEP implements Traitement
                     return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR trop peu d'éléments", null);
                 }
 
-                connectionRserve();
-
                 chargeUtile.setP_value(getRServe().getTestConfVector(vec));
-
-                getRServe().RserveClose();
 
                 //Insertion dans BD_Decisions
                 String dec;
@@ -453,11 +446,8 @@ public class TraitementPIDEP implements Traitement
                 return new ReponsePIDEP(ReponsePIDEP.NOK,"ERREUR trop peu d'éléments", null);
             }
 
-            connectionRserve();
 
             getRServe().getTestHomogVector(ech1, ech2, chargeUtile);
-
-            getRServe().RserveClose();
 
             //Insertion dans BD_Decisions
             String dec;
@@ -522,11 +512,7 @@ public class TraitementPIDEP implements Traitement
                     }
                 }
 
-                connectionRserve();
-
                 getRServe().getTestANOVAVector(echantillons, chargeUtile);
-
-                getRServe().RserveClose();
 
                 //Insertion dans BD_Decisions
                 String dec;
@@ -560,14 +546,6 @@ public class TraitementPIDEP implements Traitement
     {
         System.out.println("traite404 Request not found");
         return new ReponsePIDEP(ReponsePIDEP.REQUEST_NOT_FOUND, "request could not be exeuted due to unsopported version.", null);
-    }
-
-    private void connectionRserve()
-    {
-        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
-
-        setRServe(new RServe());
-        getRServe().connectionRserve(mp.getContent("RSERVE"));
     }
 
     private Vector getTrimestre(String debut, String fin) throws SQLException

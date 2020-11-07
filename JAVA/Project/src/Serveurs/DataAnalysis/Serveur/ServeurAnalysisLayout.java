@@ -7,10 +7,12 @@ package Serveurs.DataAnalysis.Serveur;
 
 import Serveurs.Mouvement.Serveur.ConsoleSwing;
 import genericRequest.MyProperties;
+import genericRequest.RServe;
 import lib.BeanDBAcces.BDDecisions;
 import lib.BeanDBAcces.BDMouvements;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.sql.SQLException;
 
 public class ServeurAnalysisLayout extends JFrame
@@ -20,6 +22,9 @@ public class ServeurAnalysisLayout extends JFrame
     /*           Variables          */
     /********************************/
     private ServeurDataAnalysis serveur;
+    private Process process;
+    private RServe rServe;
+    private ConsoleSwing cs;
     private int port;
 
     private JTextArea textArea1;
@@ -73,10 +78,13 @@ public class ServeurAnalysisLayout extends JFrame
             buttonStartStop.setText("-- STOP --");
             textArea1.setText(null);
 
-            ConsoleSwing cs = new ConsoleSwing(textArea1);
+            cs = new ConsoleSwing(textArea1);
             MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
             port = Integer.parseInt(mp.getContent("PORT_STAT"));
             NbThreads = Integer.parseInt(mp.getContent("NBTHREADS_STAT"));
+            String pathR = mp.getContent("RSERVEPATH");
+            String hostR = mp.getContent("RSERVE");
+
 
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
@@ -86,14 +94,18 @@ public class ServeurAnalysisLayout extends JFrame
             {
                 bdM = new BDMouvements(USER,PWD,"bd_mouvements");
                 bdD = new BDDecisions(USER,PWD,"bd_decisions");
-                serveur = new ServeurDataAnalysis(port, true, NbThreads, bdM, bdD, cs);
+                process = new ProcessBuilder(pathR).start();
+                cs.Affiche("Demarrage du serveur Rserve");
+                rServe = new RServe(hostR);
+                cs.Affiche("Connexion au serveur Rserve");
+                serveur = new ServeurDataAnalysis(port, true, NbThreads, bdM, bdD, rServe, cs);
                 serveur.StartServeur();
 
                 labelPort.setText("PORT: " + port);
             }
-            catch (SQLException |ClassNotFoundException e)
+            catch (SQLException | ClassNotFoundException | IOException e)
             {
-                cs.Affiche("Could not find DataBase to start on");
+                cs.Affiche(e.getMessage());
                 buttonStartStop.setText("-- START --");
             }
         }
@@ -101,6 +113,11 @@ public class ServeurAnalysisLayout extends JFrame
         {
             serveur.StopServeur();
             serveur = null;
+            rServe.RserveClose();
+            cs.Affiche("Deconnexion du serveur Rserve");
+            process.destroy();
+            process = null;
+            cs.Affiche("Arret du serveur Rserve");
             buttonStartStop.setText("-- START --");
         }
     }

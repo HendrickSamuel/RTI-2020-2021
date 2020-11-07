@@ -7,6 +7,7 @@ package Serveurs.DataAnalysis.Serveur;
 
 import MyGenericServer.ConsoleServeur;
 import MyGenericServer.ServeurGenerique;
+import genericRequest.RServe;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDDecisions;
@@ -22,23 +23,26 @@ public class ServeurDataAnalysis extends ServeurGenerique
     /********************************/
     private BDMouvements _bdMouvement;
     private BDDecisions _bdDecision;
+    private RServe _rServe;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, BDDecisions _bdDecision, ConsoleServeur cs)
+    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, BDDecisions _bdDecision, RServe _rServe, ConsoleServeur cs)
     {
         super(port, connecte, NbThreads, cs, true);
         this._bdMouvement = _bdMouvements;
         this._bdDecision = _bdDecision;
+        this._rServe = _rServe;
     }
 
-    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, BDDecisions _bdDecision, ConsoleServeur cs, boolean isJavaCommunication)
+    public ServeurDataAnalysis(int port, boolean connecte, int NbThreads, BDMouvements _bdMouvements, BDDecisions _bdDecision, RServe _rServe, ConsoleServeur cs, boolean isJavaCommunication)
     {
         super(port, connecte, NbThreads, cs, isJavaCommunication);
         this._bdMouvement = _bdMouvements;
         this._bdDecision = _bdDecision;
+        this._rServe = _rServe;
     }
 
     /********************************/
@@ -79,6 +83,7 @@ public class ServeurDataAnalysis extends ServeurGenerique
         tp.setConsole(this._console);
         tp.setBdMouvements(this._bdMouvement);
         tp.setBdDecisions(this._bdDecision);
+        tp.setRServe(this._rServe);
         return tp;
     }
 

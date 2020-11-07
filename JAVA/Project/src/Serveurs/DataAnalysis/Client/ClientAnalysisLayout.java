@@ -24,8 +24,6 @@ public class ClientAnalysisLayout extends JFrame
     private JButton LoginCancelButton;
     private JPanel LoginPanel;
     private JPanel AppPanel;
-    private JLabel LoginErrorLabel;
-    private JLabel AppLabelError;
     private JRadioButton statDescContRadioButton;
     private JRadioButton histCompareRadioButton;
     private JRadioButton diagSectorielRadioButton;
@@ -50,6 +48,7 @@ public class ClientAnalysisLayout extends JFrame
     private JTextField StatInferHomogField;
     private JTextField StatInferANOVAField;
     private JButton AppLogoutButton;
+    private JLabel LabelError;
 
 
     /********************************/
@@ -148,7 +147,7 @@ public class ClientAnalysisLayout extends JFrame
         }
         else
         {
-            AppLabelError.setText(rep.getMessage());
+            LabelError.setText(rep.getMessage());
         }
     }
 
@@ -179,7 +178,7 @@ public class ClientAnalysisLayout extends JFrame
         }
         else
         {
-            AppLabelError.setText(rep.getMessage());
+            LabelError.setText(rep.getMessage());
         }
     }
 
@@ -200,7 +199,7 @@ public class ClientAnalysisLayout extends JFrame
         }
         else
         {
-            AppLabelError.setText(rep.getMessage());
+            LabelError.setText(rep.getMessage());
         }
     }
 
@@ -221,7 +220,7 @@ public class ClientAnalysisLayout extends JFrame
         }
         else
         {
-            AppLabelError.setText(rep.getMessage());
+            LabelError.setText(rep.getMessage());
         }
     }
 
@@ -242,7 +241,7 @@ public class ClientAnalysisLayout extends JFrame
         }
         else
         {
-            AppLabelError.setText(rep.getMessage());
+            LabelError.setText(rep.getMessage());
         }
     }
 
@@ -263,7 +262,7 @@ public class ClientAnalysisLayout extends JFrame
         }
         else
         {
-            AppLabelError.setText(rep.getMessage());
+            LabelError.setText(rep.getMessage());
         }
     }
 
@@ -370,6 +369,7 @@ public class ClientAnalysisLayout extends JFrame
         }
         if(rep.getCode() == 200)
         {
+            LabelError.setText("");
             statDescContRadioButton.setSelected(true);
             PanelGrCouleurRep.setVisible(false);
             PanelGrCouleurComp.setVisible(false);
@@ -383,7 +383,7 @@ public class ClientAnalysisLayout extends JFrame
         }
         else
         {
-            LoginErrorLabel.setText("Nom d'utilisateur ou mot de passe incorrecte");
+            LabelError.setText("Nom d'utilisateur ou mot de passe incorrecte");
         }
     }
 
@@ -391,6 +391,7 @@ public class ClientAnalysisLayout extends JFrame
     {
         userField.setText("");
         passwordField.setText("");
+        LabelError.setText("");
     }
 
     private void onAppLogout(java.awt.event.ActionEvent evt)
@@ -431,7 +432,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onstatDescCont(java.awt.event.ActionEvent evt)
     {
-        AppLabelError.setText("");
+        LabelError.setText("");
         PanelGrCouleurRep.setVisible(false);
         PanelStatInferTestConf.setVisible(false);
         PanelStatInferTestHomog.setVisible(false);
@@ -442,7 +443,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onhistCompare(java.awt.event.ActionEvent evt)
     {
-        AppLabelError.setText("");
+        LabelError.setText("");
         PanelGrCouleurRep.setVisible(false);
         PanelStatInferTestConf.setVisible(false);
         PanelStatInferTestHomog.setVisible(false);
@@ -453,7 +454,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void ondiagSectoriel(java.awt.event.ActionEvent evt)
     {
-        AppLabelError.setText("");
+        LabelError.setText("");
         PanelStatInferTestConf.setVisible(false);
         PanelStatInferTestHomog.setVisible(false);
         PanelStatInferANOVA.setVisible(false);
@@ -464,7 +465,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onstatInferTestConf(java.awt.event.ActionEvent evt)
     {
-        AppLabelError.setText("");
+        LabelError.setText("");
         PanelGrCouleurRep.setVisible(false);
         PanelStatInferTestHomog.setVisible(false);
         PanelStatInferANOVA.setVisible(false);
@@ -475,7 +476,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onstatInferTestHomog(java.awt.event.ActionEvent evt)
     {
-        AppLabelError.setText("");
+        LabelError.setText("");
         PanelGrCouleurRep.setVisible(false);
         PanelStatInferTestConf.setVisible(false);
         PanelStatInferANOVA.setVisible(false);
@@ -486,7 +487,7 @@ public class ClientAnalysisLayout extends JFrame
 
     private void onstatInferANOVA(java.awt.event.ActionEvent evt)
     {
-        AppLabelError.setText("");
+        LabelError.setText("");
         PanelGrCouleurRep.setVisible(false);
         PanelStatInferTestConf.setVisible(false);
         PanelStatInferTestHomog.setVisible(false);

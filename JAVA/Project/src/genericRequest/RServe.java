@@ -27,14 +27,14 @@ public class RServe
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public RServe()
-    {
-
-    }
-
     public RServe(RConnection _c)
     {
         this._c = _c;
+    }
+
+    public RServe(String host)
+    {
+        connectionRserve(host);
     }
 
 
@@ -59,27 +59,28 @@ public class RServe
     /********************************/
     /*            Methodes          */
     /********************************/
-    public void connectionRserve(String host)
+    private void connectionRserve(String host)
     {
         try
         {
             setRconnection(new RConnection(host));
-            System.out.println("Connection au serveur R reussie !");
+            System.out.println("Connexion au serveur R reussie !");
         }
         catch (RserveException e)
         {
             e.printStackTrace();
-            System.out.println("Erreur de connection au serveur R !");
+            System.out.println("Erreur de connexion au serveur R !");
         }
     }
 
     public void RserveClose()
     {
-        System.out.println("Déconnection du serveur R.");
+        System.out.println("Déconnexion du serveur R.");
         getRconnection().close();
     }
 
-    public double getMoyenneVector(Vector vec)
+
+    public synchronized double getMoyenneVector(Vector vec)
     {
         double moyenne;
 
@@ -107,7 +108,7 @@ public class RServe
         return Double.parseDouble(null);
     }
 
-    public double getMedianeVector(Vector vec)
+    public synchronized double getMedianeVector(Vector vec)
     {
         double mediane;
 
@@ -135,7 +136,7 @@ public class RServe
         return Double.parseDouble(null);
     }
 
-    public double getModeVector(Vector vec)
+    public synchronized double getModeVector(Vector vec)
     {
         double mode;
 
@@ -169,7 +170,7 @@ public class RServe
         return Double.parseDouble(null);
     }
 
-    public double getEcartTypeVector(Vector vec)
+    public synchronized double getEcartTypeVector(Vector vec)
     {
         double ecartType;
 
@@ -202,7 +203,7 @@ public class RServe
         return Double.parseDouble(null);
     }
 
-    public double getTestConfVector(Vector vec)
+    public synchronized double getTestConfVector(Vector vec)
     {
         double p_value;
 
@@ -231,7 +232,7 @@ public class RServe
         return Double.parseDouble(null);
     }
 
-    public void getTestHomogVector(Vector ech1, Vector ech2, DonneeGetStatInferTestHomog chargeUtile)
+    public synchronized void getTestHomogVector(Vector ech1, Vector ech2, DonneeGetStatInferTestHomog chargeUtile)
     {
         try
         {
@@ -270,7 +271,7 @@ public class RServe
         }
     }
 
-    public void getTestANOVAVector(Vector<EchANOVA> echantillons, DonneeGetStatInferANOVA chargeUtile)
+    public synchronized void getTestANOVAVector(Vector<EchANOVA> echantillons, DonneeGetStatInferANOVA chargeUtile)
     {
         try
         {
