@@ -72,6 +72,7 @@ transporteurSortant varchar(255),
 poidsTotal FLOAT,
 dateDepart DATE,
 destination varchar(255),
+etape boolean DEFAULT(false),
 FOREIGN KEY (idContainer) REFERENCES Containers(idContainer),
 FOREIGN KEY (transporteurEntrant) REFERENCES Transporteurs(idTransporteur),
 FOREIGN KEY (transporteurSortant) REFERENCES Transporteurs(idTransporteur),
@@ -445,3 +446,24 @@ VALUES ("QRST-GME6F-A489G4", "2-KEV-123", STR_TO_DATE("03,11,2020", "%d,%m,%Y"),
 
 INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination)
 VALUES ("UVWX-DM2PO-D069M3", "8-CHA-666", STR_TO_DATE("04,11,2020", "%d,%m,%Y"), "9-BTX-002", 250, STR_TO_DATE("05,11,2020", "%d,%m,%Y"), "Paris");
+
+INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination, etape)
+VALUES ("UVWX-DM2PO-D069M3", "9-BTX-002", null, null, 250, null, "Paris", true);
+
+INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination, etape)
+VALUES ("XNVB-DPZOD-D1J0E5", "9-BTX-002", null, null, 250, null, "Paris", true);
+
+INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination, etape)
+VALUES ("DEDE-JPOLE-D7J0M4", "9-BTX-002", null, null, 250, null, "Paris", true);
+
+INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination, etape)
+VALUES ("ABCD-X12XO-12CE24", "9-BTX-002", null, null, 250, null, "Paris", true);
+
+INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination, etape)
+VALUES ("EFGH-GM3LF-A456G4", "9-BTX-002", null, null, 250, null, "Paris", true);
+
+INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination, etape)
+VALUES ("IJKL-DM3PO-12D6M3", "9-BTX-002", null, null, 250, null, "Paris", true);
+
+INSERT into Mouvements (idContainer, transporteurEntrant, dateArrivee, transporteurSortant, poidsTotal, dateDepart, destination, etape)
+VALUES ("MNOP-XB8XO-Z35624", "9-BTX-002", null, null, 250, null, "Paris", true);

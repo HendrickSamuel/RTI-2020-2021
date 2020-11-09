@@ -75,6 +75,16 @@ public class TraitementIOBREP implements Traitement {
     /*            Methodes          */
     /********************************/
 
+    private void NewBoatStart()
+    {
+        containersList = new ArrayList<>();
+        treatedContainersList = new ArrayList<>();
+        containersListIn = new ArrayList<>();
+        treatedContainersListIn = new ArrayList<>();
+        startedLoading = false;
+        startedUnloading = false;
+    }
+
     @Override
     public Reponse traiteRequete(DonneeRequete donnee, Client client) throws ClassCastException {
         if(donnee instanceof protocol.IOBREP.DonneeLogin)
@@ -150,7 +160,13 @@ public class TraitementIOBREP implements Traitement {
     private Reponse traiteGetContainersIN(DonneeGetContainers chargeUtile, Client client)
     {
         try{
-            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM mouvements WHERE upper(transporteurEntrant) = upper(?) AND dateArrivee IS NULL and upper(destination) = upper('parc') ORDER BY RAND();");
+            PreparedStatement ps = _bdMouvement.getPreparedStatement(
+                    "SELECT * FROM mouvements " +
+                            "WHERE upper(transporteurEntrant) = upper(?) " +
+                            "AND dateArrivee IS NULL " +
+                            "AND etape = 1 " +
+                            "ORDER BY RAND();");
+
             ps.setString(1, chargeUtile.getIdBateau());
 
             System.out.println(ps);
@@ -223,14 +239,11 @@ public class TraitementIOBREP implements Traitement {
 
     private Reponse traiteBoatArrived(DonneeBoatArrived chargeUtile, Client client)
     {
-        containersList = new ArrayList<>();
-        treatedContainersList = new ArrayList<>();
-        containersListIn = new ArrayList<>();
-        treatedContainersListIn = new ArrayList<>();
         //Linitialisation des listes des containers
+        NewBoatStart();
 
         try {
-            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM transporteurs WHERE upper(idTransporteur) = upper(?);");
+            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM transporteurs WHERE upper(idTransporteur) = upper(?) AND types='B';");
             ps.setString(1, chargeUtile.getIdContainer());
             ResultSet rs = _bdMouvement.ExecuteQuery(ps);
             if(rs != null && rs.next())
@@ -266,7 +279,7 @@ public class TraitementIOBREP implements Traitement {
     private Reponse traiteBoatLeft(DoneeBoatLeft chargeUtile, Client client)
     {
         try {
-            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM transporteurs WHERE upper(idTransporteur) = upper(?);");
+            PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM transporteurs WHERE upper(idTransporteur) = upper(?) AND types ='B';");
             ps.setString(1, chargeUtile.getIdContainer());
             ResultSet rs = _bdMouvement.ExecuteQuery(ps);
             if(rs != null && rs.next())
@@ -305,7 +318,13 @@ public class TraitementIOBREP implements Traitement {
         {
             treatedContainersListIn.add(containersListIn.remove(containersListIn.indexOf(chargeUtile.getIdContainer())));
             try {
-                PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM parc WHERE etat = 0");
+                PreparedStatement ps = _bdMouvement.getPreparedStatement("SELECT * FROM parc " +
+                        "WHERE etat = 0 " +
+                        "OR ( upper(idContainer) = upper(?) " +
+                        "AND etat = 1)");
+
+                ps.setString(1, chargeUtile.getIdContainer());
+
                 ResultSet rs = _bdMouvement.ExecuteQuery(ps);
                 if(rs!= null && rs.next())
                 {
@@ -313,7 +332,6 @@ public class TraitementIOBREP implements Traitement {
                     rs.updateString("idContainer", chargeUtile.getIdContainer());
                     _bdMouvement.UpdateResult(rs);
 
-                    //todo: mettre à jour le mouvement avec le champs de date d'arrivee;
                 }
                 else
                 {
