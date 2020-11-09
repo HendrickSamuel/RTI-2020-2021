@@ -16,7 +16,7 @@ public class TestServeur {
         ServeurBateaux sb = new ServeurBateaux(5000,true, 5, null);
         try
         {
-            BDMouvements bd = new BDMouvements("root","root","bd_mouvements");
+            BDMouvements bd = new BDMouvements("root","","bd_mouvements");
             sb.set_bdMouvement(bd);
         }
         catch (SQLException | ClassNotFoundException throwables)
