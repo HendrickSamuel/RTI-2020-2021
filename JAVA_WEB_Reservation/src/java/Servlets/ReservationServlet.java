@@ -7,55 +7,40 @@ package Servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lib.BeanDBAcces.MysqlConnector;
 
-public class LoginServlet extends HttpServlet {
+/**
+ *
+ * @author hydro
+ */
+public class ReservationServlet extends HttpServlet {
 
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html"); 
-        PrintWriter sortie = response.getWriter();
-        try {
-            
-            //request.getParameter("");
-            MysqlConnector conn = new MysqlConnector("root", "root", "bd_mouvements");
-            PreparedStatement ps = conn.getPreparedStatement("SELECT * FROM logins WHERE upper(username) = upper(?);");
-            ps.setString(1, request.getParameter("username"));
-            sortie.println(ps);
-            ResultSet rs = conn.ExecuteQuery(ps);
-            if(rs.next())
-            {
-                sortie.println("<H1>"+ rs.getString("username") +"</H1>");
-                sortie.println("<H1>"+ rs.getString("userpassword") +"</H1>");
-                if(rs.getString("userpassword").equals(request.getParameter("password")))
-                {
-                    sortie.println("Connexion ok");
-                    response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/" + "Reservation.jsp");
-                }
-                else
-                {
-                    sortie.println("Connexion nok");
-                }
-            }
-            else
-            {
-                sortie.println("<H1> pas d'utilisateur </H1>");
-            }
-            sortie.close(); 
-
-        } catch (ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
-            sortie.println("<H1>"+ ex.getMessage() +"</H1>"); 
-            sortie.close(); 
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet ReservationServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet ReservationServlet at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
         }
     }
 
