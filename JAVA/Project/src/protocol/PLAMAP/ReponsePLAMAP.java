@@ -78,7 +78,6 @@ public class ReponsePLAMAP implements Reponse, Serializable
         this.chargeUtile = chargeUtile;
     }
 
-
     /********************************/
     /*            Methodes          */
     /********************************/

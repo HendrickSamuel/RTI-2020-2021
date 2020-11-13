@@ -10,25 +10,32 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Login page</title>
-        <link rel="stylesheet" type="text/css" href="./test.css"/>
+        <link rel="stylesheet" type="text/css" href="./inc/css/bootstrap.min.css"/>
     </head>
-    <body>
-        <h1>Login</h1>
-        <form action="./LoginServlet" method="POST">
-            <label for="">Company</label>
-            <input type="text" name="company"/>
-            <br>
-            <label>Username</label>
-            <input type="text" name="username"/> 
-            <br>
-            <label>Password</label>
-            <input type="text" name="password"/>
-            <br>
-            <label for="">1ere connexion ?</label>
-            <input type="checkbox" name="firstConnexion">
-            <br>
-            <input type="submit" value="Valide choix">
-            
-        </form>
+    <body class="bg-secondary">
+        <div class="mx-auto pt-5" style="width: 400px;">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Login</h5>
+                    <form action="./LoginServlet" method="POST">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" class="form-control" name="username"/> 
+                        </div>
+                        <div class="form-group">
+                            <l<label>Password</label>
+                            <input type="text" class="form-control" name="password"/>
+                        </div>
+                        
+                        <input type="checkbox" name="firstConnexion">
+                        <label for="">1ere connexion ?</label>
+                        <br>
+                        <input type="submit" class="btn btn-primary" value="Connexion">
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        
     </body>
 </html>

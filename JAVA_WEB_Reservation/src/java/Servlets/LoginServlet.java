@@ -25,32 +25,25 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("text/html"); 
         PrintWriter sortie = response.getWriter();
         try {
-            
-            //request.getParameter("");
             MysqlConnector conn = new MysqlConnector("root", "root", "bd_mouvements");
             PreparedStatement ps = conn.getPreparedStatement("SELECT * FROM logins WHERE upper(username) = upper(?);");
             ps.setString(1, request.getParameter("username"));
-            sortie.println(ps);
             ResultSet rs = conn.ExecuteQuery(ps);
             if(rs.next())
             {
-                sortie.println("<H1>"+ rs.getString("username") +"</H1>");
-                sortie.println("<H1>"+ rs.getString("userpassword") +"</H1>");
                 if(rs.getString("userpassword").equals(request.getParameter("password")))
                 {
-                    sortie.println("Connexion ok");
-                    response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/" + "Reservation.jsp");
+                    response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/" + "Societe.jsp");
                 }
                 else
                 {
-                    sortie.println("Connexion nok");
+                    response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/");
                 }
             }
             else
             {
-                sortie.println("<H1> pas d'utilisateur </H1>");
+                response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/");
             }
-            sortie.close(); 
 
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
