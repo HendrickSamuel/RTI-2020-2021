@@ -37,7 +37,6 @@ public class ServerLayout extends JFrame
 
     private ServeurMouvement serveur1;
     private ServeurMouvementPLAMAP serveur2;
-    private ThreadServer th2;
 
     private int port1;
     private int port2;
@@ -89,7 +88,7 @@ public class ServerLayout extends JFrame
             textArea1.setText(null);
 
             ConsoleSwing cs = new ConsoleSwing(textArea1);
-            MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
+            MyProperties mp = new MyProperties("./Confs/Serveur_Mouvement.conf");
             port1 = Integer.parseInt(mp.getContent("PORT1"));
             NbThreads = Integer.parseInt(mp.getContent("NBTHREADS_PORT1"));
 
@@ -127,7 +126,7 @@ public class ServerLayout extends JFrame
             textArea2.setText(null);
 
             ConsoleSwing cs = new ConsoleSwing(textArea2);
-            MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
+            MyProperties mp = new MyProperties("./Confs/Serveur_Mouvement.conf");
             port2 = Integer.parseInt(mp.getContent("PORT2"));
             NbThreads = Integer.parseInt(mp.getContent("NBTHREADS_PORT2"));
 

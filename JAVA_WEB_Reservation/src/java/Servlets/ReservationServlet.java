@@ -5,6 +5,7 @@
  */
 package Servlets;
 
+import Beans.ReponseReservation;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
@@ -41,6 +42,13 @@ public class ReservationServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(true);
+        if(session.getAttribute("logon.isDone") == null)
+        {
+             getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
+             return;
+        }
+        
         String source = request.getParameter("source");
         switch(source)
         {
@@ -119,14 +127,14 @@ public class ReservationServlet extends HttpServlet {
         }
     }
     
-    public void existingContainer(HttpServletRequest request, HttpServletResponse response) throws IOException
+    public void existingContainer(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
     {
         HttpSession session = request.getSession(true);
         session.setAttribute("container", request.getParameter("container"));
         reservation(request, response);
     }
     
-    public void newContainer(HttpServletRequest request, HttpServletResponse response) throws IOException
+    public void newContainer(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
     {
         HttpSession session = request.getSession(true);
         try {
@@ -148,10 +156,23 @@ public class ReservationServlet extends HttpServlet {
         }
     }
     
-    public void reservation(HttpServletRequest request, HttpServletResponse response) throws IOException
+    public void reservation(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
     {
         HttpSession session = request.getSession(true);
+        ReponseReservation rr = new ReponseReservation();
         try {
+            PreparedStatement verify = connection.getPreparedStatement("SELECT * FROM parc WHERE upper(idContainer) = upper(?) AND etat <> 0;");
+            verify.setString(1, request.getParameter("container"));
+            ResultSet verifyResultSet = connection.ExecuteQuery(verify);
+            if(verifyResultSet.next())
+            {
+                 rr.setResultat(false);
+                 rr.setMessage("C'est embarassant ... il semblerait que le container soit déjà dans le parc... ");
+                 session.setAttribute("reponse", rr);
+                 getServletContext().getRequestDispatcher("/Resultat.jsp").forward(request, response);
+                 return;
+            }
+            
             PreparedStatement ps = connection.getPreparedStatement("SELECT * FROM parc WHERE etat = 0;");
             ResultSet rs = connection.ExecuteQuery(ps);
             if(rs != null && rs.next())
@@ -161,10 +182,22 @@ public class ReservationServlet extends HttpServlet {
                 rs.updateString("destination", request.getParameter("destination"));
                 rs.updateInt("etat", 1);
                 connection.UpdateResult(rs);
+
+                rr.setResultat(true);
+                rr.setX(rs.getInt("x"));
+                rr.setY(rs.getInt("y"));
+                rr.setDateReservation(request.getParameter("date"));
+                rr.setDestination(request.getParameter("destination"));
+                session.setAttribute("reponse", rr);
                 
-                session.setAttribute("x", rs.getInt("x"));
-                session.setAttribute("y", rs.getInt("y"));
-                response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/" + "Resultat.jsp");
+                getServletContext().getRequestDispatcher("/Resultat.jsp").forward(request, response);
+            }
+            else
+            {
+                rr.setResultat(false);
+                rr.setMessage("Refus poli");
+                session.setAttribute("reponse", rr);
+                getServletContext().getRequestDispatcher("/Resultat.jsp").forward(request, response);
             }
         } catch (SQLException ex) {
             Logger.getLogger(ReservationServlet.class.getName()).log(Level.SEVERE, null, ex);

@@ -1,65 +1,48 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 15/10/2020
+//Date de la création : 15/11/2020
 
-package MyGenericServer;
+package protocol.BISAMAP;
 
-import javax.crypto.SecretKey;
+import genericRequest.DonneeRequete;
 
-public class Client
-{
+import javax.crypto.SealedObject;
+
+public class DonneeGetNextBill implements DonneeRequete {
+    private static final long serialVersionUID = -6690572510423430173L;
 
     /********************************/
     /*           Variables          */
     /********************************/
 
-    private boolean _loggedIn;
+    private SealedObject factureCryptee;
 
-    private SecretKey _sessionKey;
-    private SecretKey _hmacKey;
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public Client()
-    {
-        this._loggedIn = false;
+    public DonneeGetNextBill() {
     }
 
     /********************************/
     /*            Getters           */
     /********************************/
-    public boolean is_loggedIn()
-    {
-        return _loggedIn;
-    }
-
-    public SecretKey get_sessionKey() {
-        return _sessionKey;
-    }
-
-    public SecretKey get_hmacKey() {
-        return _hmacKey;
+    public SealedObject getFactureCryptee() {
+        return factureCryptee;
     }
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void set_loggedIn(boolean _loggedIn)
-    {
-        this._loggedIn = _loggedIn;
-    }
-
-    public void set_sessionKey(SecretKey _sessionKey) {
-        this._sessionKey = _sessionKey;
-    }
-
-    public void set_hmacKey(SecretKey _hmacKey) {
-        this._hmacKey = _hmacKey;
+    public void setFactureCryptee(SealedObject factureCryptee) {
+        this.factureCryptee = factureCryptee;
     }
 
     /********************************/
     /*            Methodes          */
     /********************************/
+    @Override
+    public void setFiledsFromString(String fields) {
 
+    }
 }

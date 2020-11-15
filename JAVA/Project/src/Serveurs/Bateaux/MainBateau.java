@@ -14,7 +14,7 @@ public class MainBateau {
 
     public static void main(String[] args)
     {
-        MyProperties mp = new MyProperties("./Serveur_Bateau.conf");
+        MyProperties mp = new MyProperties("./Confs/Serveur_Bateau.conf");
         int port = Integer.parseInt(mp.getContent("PORT"));
         int nbThreads = Integer.parseInt(mp.getContent("NBTHREADS"));
         String user = mp.getContent("BDUSER");

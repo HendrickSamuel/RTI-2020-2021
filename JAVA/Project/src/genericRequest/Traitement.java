@@ -11,6 +11,7 @@ import MyGenericServer.Client;
 import MyGenericServer.ConsoleServeur;
 import lib.BeanDBAcces.DataSource;
 
+import java.io.Serializable;
 import java.net.Socket;
 
 public interface Traitement

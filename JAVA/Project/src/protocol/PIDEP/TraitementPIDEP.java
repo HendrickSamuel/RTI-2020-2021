@@ -46,7 +46,7 @@ public class TraitementPIDEP implements Traitement
     public TraitementPIDEP()
     {
         Security.addProvider(new BouncyCastleProvider());
-        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+        MyProperties mp = new MyProperties("./Confs/Serveur_Analysis.conf"); //todo: passer ça par serveur psq pas tres generique ici
         set_codeProvider(mp.getContent("PROVIDER"));
         set_hash(mp.getContent("HASH"));
     }

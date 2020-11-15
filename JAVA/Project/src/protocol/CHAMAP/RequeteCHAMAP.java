@@ -1,65 +1,38 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 15/10/2020
+//Date de la création : 15/11/2020
 
-package MyGenericServer;
+package protocol.CHAMAP;
 
-import javax.crypto.SecretKey;
+import genericRequest.DonneeRequete;
+import genericRequest.Requete;
 
-public class Client
+public class RequeteCHAMAP implements Requete
 {
+    private static final long serialVersionUID = -3329135473673422204L;
 
     /********************************/
     /*           Variables          */
     /********************************/
 
-    private boolean _loggedIn;
-
-    private SecretKey _sessionKey;
-    private SecretKey _hmacKey;
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public Client()
-    {
-        this._loggedIn = false;
-    }
 
     /********************************/
     /*            Getters           */
     /********************************/
-    public boolean is_loggedIn()
-    {
-        return _loggedIn;
-    }
-
-    public SecretKey get_sessionKey() {
-        return _sessionKey;
-    }
-
-    public SecretKey get_hmacKey() {
-        return _hmacKey;
-    }
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void set_loggedIn(boolean _loggedIn)
-    {
-        this._loggedIn = _loggedIn;
-    }
-
-    public void set_sessionKey(SecretKey _sessionKey) {
-        this._sessionKey = _sessionKey;
-    }
-
-    public void set_hmacKey(SecretKey _hmacKey) {
-        this._hmacKey = _hmacKey;
-    }
 
     /********************************/
     /*            Methodes          */
     /********************************/
-
+    @Override
+    public DonneeRequete getChargeUtile() {
+        return null;
+    }
 }

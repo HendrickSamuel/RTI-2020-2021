@@ -7,5 +7,11 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/bd_mouvements</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="bd_compta@localhost" uuid="0d485380-cdbd-452e-bd2f-d88f9a570fea">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/bd_compta</jdbc-url>
+    </data-source>
   </component>
 </project>

@@ -9,9 +9,10 @@ package genericRequest;
 
 import MyGenericServer.ConsoleServeur;
 
+import java.io.Serializable;
 import java.net.Socket;
 
-public interface Requete
+public interface Requete extends Serializable
 {
     public DonneeRequete getChargeUtile();
 }

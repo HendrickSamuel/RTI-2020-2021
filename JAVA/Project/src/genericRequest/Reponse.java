@@ -7,7 +7,9 @@
 
 package genericRequest;
 
-public interface Reponse
+import java.io.Serializable;
+
+public interface Reponse extends Serializable
 {
     public int getCode();
 }

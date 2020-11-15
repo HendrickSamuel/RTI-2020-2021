@@ -79,7 +79,7 @@ public class ServeurAnalysisLayout extends JFrame
             textArea1.setText(null);
 
             cs = new ConsoleSwing(textArea1);
-            MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+            MyProperties mp = new MyProperties("./Confs/Serveur_Analysis.conf");
             port = Integer.parseInt(mp.getContent("PORT_STAT"));
             NbThreads = Integer.parseInt(mp.getContent("NBTHREADS_STAT"));
             String pathR = mp.getContent("RSERVEPATH");

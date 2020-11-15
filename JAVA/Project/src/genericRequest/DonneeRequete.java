@@ -7,8 +7,10 @@
 
 package genericRequest;
 
+import java.io.Serializable;
+
 //Moyen de regrouper toutes les classes l'implementant
-public interface DonneeRequete
+public interface DonneeRequete extends Serializable
 {
     public void setFiledsFromString(String fields);
 }

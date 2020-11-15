@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Servlets;
 
 import java.io.IOException;
@@ -16,12 +11,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import lib.BeanDBAcces.MysqlConnector;
 
 public class LoginServlet extends HttpServlet {
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession(true);
+        session.invalidate();
+        
         response.setContentType("text/html"); 
         PrintWriter sortie = response.getWriter();
         try {
@@ -33,16 +32,36 @@ public class LoginServlet extends HttpServlet {
             {
                 if(rs.getString("userpassword").equals(request.getParameter("password")))
                 {
+                    session = request.getSession(true);
+                    session.setAttribute("logon.isDone", request.getParameter("username")); 
+
                     response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/" + "Societe.jsp");
+                    return;
                 }
                 else
                 {
                     response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/");
+                    return;
                 }
             }
             else
             {
-                response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/");
+                if(request.getParameter("firstConnexion")!=null && request.getParameter("firstConnexion").equals("on"))
+                {
+                    ps = conn.getPreparedStatement("INSERT into logins (username,userpassword) VALUES (?,?);");
+                    ps.setString(1, request.getParameter("username"));
+                    ps.setString(2, request.getParameter("password"));
+                    conn.Execute(ps);
+                    
+                    session = request.getSession(true);
+                    session.setAttribute("logon.isDone", request.getParameter("username"));
+                    
+                    response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/" + "Societe.jsp");
+                    return;
+                }
+                else
+                    response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Reservation/");
+                return;
             }
 
         } catch (ClassNotFoundException | SQLException ex) {
