@@ -5,15 +5,30 @@
 
 package Serveurs.Compta.Serveur;
 
-public class ServeurComptaBISAMAP {
+import MyGenericServer.ConsoleServeur;
+import MyGenericServer.ServeurGenerique;
+import genericRequest.Reponse;
+import genericRequest.Traitement;
+import lib.BeanDBAcces.MysqlConnector;
+import protocol.BISAMAP.ReponseBISAMAP;
+import protocol.BISAMAP.TraitementBISAMAP;
+import protocol.CHAMAP.TraitementCHAMAP;
+import security.SecurityHelper;
+
+public class ServeurComptaBISAMAP extends ServeurGenerique {
 
     /********************************/
     /*           Variables          */
     /********************************/
+    private MysqlConnector bd_comtpa;
+    private SecurityHelper securityHelper;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public ServeurComptaBISAMAP(int port, boolean connecte, int NbThreads, ConsoleServeur cs, boolean isJavaCommunication) {
+        super(port, connecte, NbThreads, cs, isJavaCommunication);
+    }
 
     /********************************/
     /*            Getters           */
@@ -22,9 +37,24 @@ public class ServeurComptaBISAMAP {
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setBd_comtpa(MysqlConnector bd_comtpa) {
+        this.bd_comtpa = bd_comtpa;
+    }
+
+    public void setSecurityHelper(SecurityHelper securityHelper) {
+        this.securityHelper = securityHelper;
+    }
 
     /********************************/
     /*            Methodes          */
     /********************************/
+    @Override
+    public Traitement CreationTraitement() {
+        return new TraitementBISAMAP(_console, bd_comtpa, securityHelper);
+    }
 
+    @Override
+    public Reponse CreateBusyResponse() {
+        return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Not enought ressources to allocate to you" ,null);
+    }
 }

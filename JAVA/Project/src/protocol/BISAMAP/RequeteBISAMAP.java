@@ -5,19 +5,31 @@
 
 package protocol.BISAMAP;
 
-public class RequeteBISAMAP {
+import genericRequest.DonneeRequete;
+import genericRequest.Requete;
+
+public class RequeteBISAMAP implements Requete {
 
     /********************************/
     /*           Variables          */
     /********************************/
 
+    private DonneeRequete chargeUtile;
+
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public RequeteBISAMAP(DonneeRequete chargeUtile) {
+        this.chargeUtile = chargeUtile;
+    }
 
     /********************************/
     /*            Getters           */
     /********************************/
+    @Override
+    public DonneeRequete getChargeUtile() {
+        return chargeUtile;
+    }
 
     /********************************/
     /*            Setters           */

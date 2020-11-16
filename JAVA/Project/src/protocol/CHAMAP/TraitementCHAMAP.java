@@ -36,8 +36,6 @@ public class TraitementCHAMAP implements Traitement
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public TraitementCHAMAP() {
-    }
 
     public TraitementCHAMAP(String _codeProvider, String _hash, MysqlConnector bd_compta, ConsoleServeur _cs) {
         this._codeProvider = _codeProvider;

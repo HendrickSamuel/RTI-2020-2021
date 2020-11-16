@@ -37,6 +37,11 @@ public class TraitementBISAMAP implements Traitement {
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public TraitementBISAMAP(ConsoleServeur _cs, MysqlConnector bd_compta, SecurityHelper _securityHelper) {
+        this._cs = _cs;
+        this.bd_compta = bd_compta;
+        this._securityHelper = _securityHelper;
+    }
 
     /********************************/
     /*            Getters           */
@@ -57,6 +62,8 @@ public class TraitementBISAMAP implements Traitement {
     public Reponse traiteRequete(DonneeRequete Requete, Client client) throws ClassCastException {
         if(Requete instanceof DonneeLogin)
             return traiteLOGIN((DonneeLogin)Requete, client);
+        if(Requete instanceof DonneeGetNextBill)
+            return traiteNextBill((DonneeGetNextBill)Requete, client);
 
         return traite404();
     }
@@ -129,17 +136,19 @@ public class TraitementBISAMAP implements Traitement {
             if(rs.next())
             {
                 Facture facture = new Facture();
+                facture.set_societe(rs.getString("societe"));
 
                 chargeUtile.setFactureCryptee(_securityHelper.cipherObject(facture, client.get_sessionKey()));
+                return new ReponseBISAMAP(ReponseBISAMAP.OK, null , chargeUtile);
             }
             else
             {
-
+                return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Aucune facture n'est disponible", null);
             }
         } catch (SQLException | IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | NoSuchProviderException | IllegalBlockSizeException throwables) {
             throwables.printStackTrace();
         }
-        return null;
+        return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Une erreur s'est produite", null);
     }
 
     private Reponse traite404()

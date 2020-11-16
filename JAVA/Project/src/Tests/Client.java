@@ -8,55 +8,71 @@
 package Tests;
 
 import genericRequest.DonneeRequete;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import protocol.BISAMAP.*;
+import protocol.BISAMAP.DonneeLogin;
 import protocol.TRAMAP.*;
+import security.SecurityHelper;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.*;
+import java.security.cert.CertificateException;
 import java.util.Date;
 
 public class Client
 {
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) throws NoSuchProviderException, NoSuchAlgorithmException, IOException, CertificateException, KeyStoreException {
+        Security.addProvider(new BouncyCastleProvider());
+        SecurityHelper securityHelper = new SecurityHelper();
+        securityHelper.initKeyStore("./Confs/ClientKeyVault","password");
+
+        SecretKey secretKey = null;
+
         ObjectInputStream ois;
         ObjectOutputStream oos;
         Socket cliSock;
 
-        System.out.println("Veuillez selectionner votre action: ");
-        System.out.println("1. Login");
-        System.out.println("2. InputLory");
-        System.out.println("3. InputLory Without Reservation");
-        System.out.println("4. DonneeList");
-        System.out.println("5. Logout");
+        MessageDigest md = MessageDigest.getInstance("SHA-256", "BC");
+
+        //Création du message digest salé
+        md.update("sam".getBytes());
+
+        //Création du sel
+        long temps = (new Date()).getTime();
+        double alea = Math.random();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream bdos = new DataOutputStream(baos);
+        bdos.writeLong(temps);
+        bdos.writeDouble(alea);
+
+        //Ajout du sel
+        md.update(baos.toByteArray());
+
+
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(System.in));
-        DonneeRequete dt = null;
-        try
-        {
-            String name = reader.readLine();
-            int option = Integer.parseInt(name);
-            switch (option)
-            {
-                case 1: dt = new DonneeLogin("Sam","superSecurePass123"); break;
-                case 2: dt = new DonneeInputLory("test","blabla",""); break;
-                case 3: dt = new DonneeInputLoryWithoutReservation("Container", "immatriculation", "societe", "destination"); break;
-                case 4: dt = new DonneeListOperations(new Date(), new Date(), "Societe", "Destination"); break;
-            }
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+        SecurityHelper sc = new SecurityHelper();
 
-        RequeteTRAMAP req = null;
-        req = new RequeteTRAMAP(dt);
+        DonneeLogin dl = new DonneeLogin();
+        dl.set_nom("Samuel");
+        dl.set_pwdDigest(md.digest());
+        dl.set_aleatoire(alea);
+        dl.set_temps(temps);
+
+        RequeteBISAMAP req = new RequeteBISAMAP(dl);
+
 
         // Connexion au serveur
         ois=null; oos=null; cliSock = null;
         try
         {
-            cliSock = new Socket("192.168.1.3", 50001);
+            cliSock = new Socket("192.168.1.197", 5001);
             System.out.println(cliSock.getInetAddress().toString());
         }
         catch (UnknownHostException e)
@@ -78,15 +94,25 @@ public class Client
             System.err.println("Erreur réseau ? [" + e.getMessage() + "]");
         }
         // Lecture de la réponse
-        ReponseTRAMAP rep = null;
+        ReponseBISAMAP rep = null;
         try
         {
             ois = new ObjectInputStream(cliSock.getInputStream());
-            rep = (ReponseTRAMAP)ois.readObject();
+            rep = (ReponseBISAMAP)ois.readObject();
             System.out.println(" *** Reponse reçue : " + rep.getCode());
             if(rep.getMessage() != null)
             {
                 System.out.println("Message reçu: " + rep.getMessage());
+                return;
+            }
+            else
+            {
+                DonneeLogin donneel = (DonneeLogin)rep.getChargeUtile();
+                secretKey = securityHelper.decipherSecretKey(donneel.get_sessionKey(), "ClientKeyVault","password");
+                if(secretKey == null)
+                    System.out.println("PROBLEME");
+                else
+                    System.out.println("OK");
             }
             reader.readLine();
         }
@@ -97,6 +123,61 @@ public class Client
         catch (IOException e)
         {
             System.out.println("--- erreur IO = " + e.getMessage());
+        } catch (UnrecoverableKeyException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+
+        DonneeGetNextBill dgnb = new DonneeGetNextBill();
+        RequeteBISAMAP reqbis = new RequeteBISAMAP(dgnb);
+
+        try
+        {
+            oos = new ObjectOutputStream(cliSock.getOutputStream());
+            oos.writeObject(reqbis); oos.flush();
+        }
+        catch (IOException e)
+        {
+            System.err.println("Erreur réseau ? [" + e.getMessage() + "]");
+        }
+        // Lecture de la réponse
+        ReponseBISAMAP rep2 = null;
+        try
+        {
+            ois = new ObjectInputStream(cliSock.getInputStream());
+            rep2 = (ReponseBISAMAP)ois.readObject();
+            System.out.println(" *** Reponse reçue : " + rep2.getCode());
+            if(rep.getMessage() != null)
+            {
+                System.out.println("Message reçu: " + rep2.getMessage());
+            }
+            else
+            {
+                DonneeGetNextBill dd =  (DonneeGetNextBill)rep2.getChargeUtile();
+                if(dd == null)
+                    System.out.println("AUTRE PROBLEME");
+
+                Facture facture = (Facture)securityHelper.decipherObject(dd.getFactureCryptee(), secretKey);
+                System.out.println("ok");
+            }
+            reader.readLine();
+        }
+        catch (ClassNotFoundException e)
+        {
+            System.out.println("--- erreur sur la classe = " + e.getMessage());
+        }
+        catch (IOException e)
+        {
+            System.out.println("--- erreur IO = " + e.getMessage());
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
         }
     }
 }
