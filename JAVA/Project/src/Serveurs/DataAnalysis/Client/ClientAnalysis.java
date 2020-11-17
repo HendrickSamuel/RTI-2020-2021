@@ -41,7 +41,7 @@ public class ClientAnalysis
     public ClientAnalysis()
     {
         Security.addProvider(new BouncyCastleProvider());
-        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+        MyProperties mp = new MyProperties("./Confs/Serveur_Analysis.conf");
         set_codeProvider(mp.getContent("PROVIDER"));
         set_hash(mp.getContent("HASH"));
     }
@@ -110,7 +110,7 @@ public class ClientAnalysis
     /********************************/
     private void connectServ()
     {
-        MyProperties mp = new MyProperties("./Serveur_Analysis.conf");
+        MyProperties mp = new MyProperties("./Confs/Serveur_Analysis.conf");
         String HOST = mp.getContent("IPSERV");
         int PORT = Integer.parseInt(mp.getContent("PORT_STAT"));
 

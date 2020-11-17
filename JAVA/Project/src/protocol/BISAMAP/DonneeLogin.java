@@ -61,6 +61,7 @@ public class DonneeLogin implements DonneeRequete {
         return _hmac;
     }
 
+
     /********************************/
     /*            Setters           */
     /********************************/
@@ -87,6 +88,7 @@ public class DonneeLogin implements DonneeRequete {
     public void set_hmac(byte[] _hmac) {
         this._hmac = _hmac;
     }
+
 
     /********************************/
     /*            Methodes          */

@@ -94,9 +94,9 @@ public class ServerLayout extends JFrame
             textArea1.setText(null);
 
             ConsoleSwing cs = new ConsoleSwing(textArea1);
-            MyProperties mp = new MyProperties("./Confs/Serveur_Mouvement.conf"); //todo: changer
-            port1 = Integer.parseInt(mp.getContent("PORT1"));
-            NbThreads = Integer.parseInt(mp.getContent("NBTHREADS_PORT1"));
+            MyProperties mp = new MyProperties("./Confs/Serveur_Compta.conf"); //todo: changer
+            port1 = Integer.parseInt(mp.getContent("PORT_BISAMAP"));
+            NbThreads = Integer.parseInt(mp.getContent("NBTREADS_BISAMAP"));
 
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");

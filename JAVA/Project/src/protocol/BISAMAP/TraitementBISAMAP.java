@@ -16,13 +16,15 @@ import security.SecurityHelper;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
+import javax.crypto.SealedObject;
 import java.io.IOException;
 import java.security.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class TraitementBISAMAP implements Traitement {
 
@@ -64,6 +66,16 @@ public class TraitementBISAMAP implements Traitement {
             return traiteLOGIN((DonneeLogin)Requete, client);
         if(Requete instanceof DonneeGetNextBill)
             return traiteNextBill((DonneeGetNextBill)Requete, client);
+        if(Requete instanceof DonneeValidateBill)
+            return traiteValidateBill((DonneeValidateBill)Requete, client);
+        if(Requete instanceof DonneeListBills)
+            return traiteListBills((DonneeListBills)Requete, client);
+        if(Requete instanceof DonneeSendBills)
+            return traiteSendBills((DonneeSendBills)Requete, client);
+        if(Requete instanceof DonneeRecPay)
+            return traiteRecPay((DonneeRecPay)Requete, client);
+        if(Requete instanceof DonneeListWaiting)
+            return traiteListWaiting((DonneeListWaiting)Requete, client);
 
         return traite404();
     }
@@ -135,8 +147,7 @@ public class TraitementBISAMAP implements Traitement {
 
             if(rs.next())
             {
-                Facture facture = new Facture();
-                facture.set_societe(rs.getString("societe"));
+               Facture facture = this.factureFromResultSet(rs);
 
                 chargeUtile.setFactureCryptee(_securityHelper.cipherObject(facture, client.get_sessionKey()));
                 return new ReponseBISAMAP(ReponseBISAMAP.OK, null , chargeUtile);
@@ -151,9 +162,203 @@ public class TraitementBISAMAP implements Traitement {
         return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Une erreur s'est produite", null);
     }
 
+    private Reponse traiteValidateBill(DonneeValidateBill chargeUtile, Client client)
+    {
+        try {
+            if(_securityHelper.verifySignature(chargeUtile.get_content().getBytes(), chargeUtile.get_signature(), "ClientKeyEntry")) //todo: pas en dur
+            {
+                PreparedStatement ps = bd_compta.getPreparedStatement("SELECT * FROM facture WHERE id = ? AND facture_validee = false");
+                ps.setInt(1, chargeUtile.get_factureNumber());
+                ResultSet rs = bd_compta.ExecuteQuery(ps);
+                if(rs.next())
+                {
+                    rs.updateBoolean("facture_validee",true);
+                    rs.updateString("comptable_validateur", chargeUtile.get_comtpable());
+                    bd_compta.UpdateResult(rs);
+                    return new ReponseBISAMAP(ReponseBISAMAP.OK, null, chargeUtile);
+                }
+                else
+                {
+                    return new ReponseBISAMAP(ReponseBISAMAP.NOK, "La facture ne correspond pas", null);
+                }
+
+            }
+            else
+            {
+                return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Signature non valide", null);
+            }
+        } catch (KeyStoreException | NoSuchProviderException | NoSuchAlgorithmException | InvalidKeyException | SignatureException | SQLException e) {
+            e.printStackTrace();
+        }
+        return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Erreur lors de la requet", null);
+    }
+
+    private Reponse traiteListBills(DonneeListBills chargeUtile, Client client)
+    {
+        try{
+            if(_securityHelper.verifySignature(chargeUtile.get_content().getBytes(),
+                    chargeUtile.get_signature(), "ClientKeyEntry"))
+            {
+                PreparedStatement ps = bd_compta.getPreparedStatement("SELECT * FROM facture WHERE date_facture BETWEEN ? AND ? AND facture_payee = false AND facture_validee = false;");
+                ps.setDate(1, new java.sql.Date(chargeUtile.get_dateDepart().getTime()));
+                ps.setDate(2, new java.sql.Date(chargeUtile.get_dateFin().getTime()));
+                ResultSet rs = bd_compta.ExecuteQuery(ps);
+                ArrayList<SealedObject> factures = new ArrayList<>();
+                while(rs.next())
+                {
+                    Facture facture = factureFromResultSet(rs);
+
+                    factures.add(_securityHelper.cipherObject(facture, client.get_sessionKey()));
+                }
+                chargeUtile.set_factures(factures);
+                return new ReponseBISAMAP(ReponseBISAMAP.OK, null, chargeUtile);
+            }
+            else
+            {
+                return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Signature non valide", null);
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException | KeyStoreException | SQLException | NoSuchPaddingException | IOException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Erreur lors de la requet", null);
+    }
+
+    private Reponse traiteSendBills(DonneeSendBills chargeUtile, Client client)
+    {
+        List<Integer> facts = chargeUtile.get_facturesToIgnore();
+        try{
+            if(_securityHelper.verifySignature(chargeUtile.get_content().getBytes(), chargeUtile.get_signature(), "ClientKeyEntry"))
+            {
+                PreparedStatement ps = bd_compta.getPreparedStatement("SELECT * FROM facture WHERE facture_validee");
+                ResultSet rs = bd_compta.ExecuteQuery(ps);
+                while (rs.next())
+                {
+                    if(facts == null || (facts!= null && !facts.contains(rs.getInt("id"))))
+                    {
+                        rs.updateBoolean("facture_envoyee", true);
+                        bd_compta.UpdateResult(rs);
+                    }
+                    else
+                    {
+                        if(facts != null)
+                            facts.remove(rs.getInt("id"));
+                    }
+                }
+                chargeUtile.set_facturesToIgnore(facts); //renvoi des factures non traitées
+                return new ReponseBISAMAP(ReponseBISAMAP.OK, null, chargeUtile);
+            }
+            else
+            {
+                return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Signature non valide", null);
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException | KeyStoreException | SQLException e) {
+            e.printStackTrace();
+        }
+        return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Erreur lors de la requet", null);
+    }
+
+    private Reponse traiteRecPay(DonneeRecPay chargeUtile, Client client)
+    {
+        try{
+            if(_securityHelper.verifyHMAC(chargeUtile.get_content().getBytes(), chargeUtile.get_hmac(), client.get_hmacKey()))
+            {
+                String infos = new String(_securityHelper.decipherMessage(chargeUtile.get_infosBancaireCryptees(), client.get_sessionKey()));
+                PreparedStatement ps = bd_compta.getPreparedStatement("SELECT * FROM facture WHERE id = ?;");
+                ps.setInt(1, chargeUtile.get_facture());
+                ResultSet rs = bd_compta.ExecuteQuery(ps);
+                if(rs.next())
+                {
+                    PreparedStatement psMontant =
+                            bd_compta.getPreparedStatement(
+                    "SELECT TRUNCATE(TRUNCATE(SUM(prix_htva),2)+TRUNCATE(SUM(prix_htva),2)*(f.tva/100), 2) as montant " +
+                            "FROM items_facture " +
+                            "INNER JOIN facture f on items_facture.facture = f.id " +
+                            "WHERE facture = 1 " +
+                            "GROUP BY facture");
+                    ResultSet resMontant = bd_compta.ExecuteQuery(psMontant);
+                    if(resMontant.next())
+                    {
+                        float montantAPayer = resMontant.getFloat("montant");
+                        if(chargeUtile.get_montant() > montantAPayer-0.1 && chargeUtile.get_montant() < montantAPayer+0.1)
+                        {
+                            rs.updateString("moyen_payement",infos);
+                            rs.updateBoolean("facture_payee",true);
+                            bd_compta.UpdateResult(rs);
+                            return new ReponseBISAMAP(ReponseBISAMAP.OK, null, chargeUtile);
+                        }
+                        else
+                            return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Mauvais montant à payer - " + montantAPayer, null);
+                    }
+                    else
+                        return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Aucun montant à payer", null);
+                }
+                else
+                    return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Facture non existante ou déjà payée", null);
+            }
+            else
+                return new ReponseBISAMAP(ReponseBISAMAP.NOK, "HMAC non valide", null);
+        } catch (NoSuchAlgorithmException | NoSuchProviderException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | SQLException e) {
+            e.printStackTrace();
+            return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Erreur lors de la requete: " + e.getMessage(), null);
+        }
+    }
+
+    private Reponse traiteListWaiting(DonneeListWaiting chargeUtile, Client client)
+    {
+        try{
+            if(_securityHelper.verifySignature(chargeUtile.get_content().getBytes(), chargeUtile.get_signature(), "ClientKeyVault"))
+            {
+                PreparedStatement ps;
+                if(chargeUtile.get_nature() == DonneeListWaiting.Duree)
+                {
+                    int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
+                    int year = Calendar.getInstance().get(Calendar.YEAR);
+                    String query = "SELECT * FROM facture WHERE facture_envoi = true AND facture_payee = false AND mois < ? AND annee <= ?;";
+                    ps = bd_compta.getPreparedStatement(query);
+                    ps.setInt(1, month);
+                    ps.setInt(2, year);
+                }
+                else
+                {
+                    String query = "SELECT * FROM facture WHERE facture_envoi = true AND facture_payee = false AND upper(societe) = upper(?);";
+                    ps = bd_compta.getPreparedStatement(query);
+                    ps.setString(1, chargeUtile.get_societe());
+                }
+
+                ResultSet rs = bd_compta.ExecuteQuery(ps);
+                ArrayList<SealedObject> factures = new ArrayList<SealedObject>();
+                while(rs.next())
+                {
+                    Facture facture = factureFromResultSet(rs);
+                    factures.add(_securityHelper.cipherObject(facture, client.get_sessionKey()));
+                }
+                chargeUtile.set_factures(factures);
+                return new ReponseBISAMAP(ReponseBISAMAP.OK, null, chargeUtile);
+            }
+            else
+            {
+                return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Signature non valide", null);
+            }
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException | KeyStoreException | SQLException | NoSuchPaddingException | IOException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Erreur lors de la requet", null);
+    }
+
     private Reponse traite404()
     {
         System.out.println("traite404 Request not found");
         return new ReponseBISAMAP(ReponseBISAMAP.REQUEST_NOT_FOUND, "404 request not found", null);
+    }
+
+    private Facture factureFromResultSet(ResultSet rs) throws SQLException {
+        Facture facture = new Facture();
+        facture.set_societe(rs.getString("societe"));
+        facture.set_id(rs.getInt("id"));
+        facture.set_annee(rs.getDate("date_facture").getYear());
+        facture.set_mois(rs.getDate("date_facture").getMonth()+1);
+        facture.set_tva(rs.getFloat("tva"));
+
+        return facture;
     }
 }

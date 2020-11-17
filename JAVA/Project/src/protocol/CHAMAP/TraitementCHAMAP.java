@@ -156,7 +156,7 @@ public class TraitementCHAMAP implements Traitement
         {
             try {
                 for (int i = 0; i < chargeUtile.get_containers().size(); i++) {
-                    PreparedStatement ps = bd_compta.getPreparedStatement("SELECT * FROM facture WHERE upper(societe) = upper(?) AND mois = ?");
+                    PreparedStatement ps = bd_compta.getPreparedStatement("SELECT * FROM facture WHERE upper(societe) = upper(?) AND MONTH(date_facture) = ?");
                     ps.setString(1, societe);
                     ps.setInt(2, month);
                     ResultSet rs = bd_compta.ExecuteQuery(ps);
@@ -168,10 +168,8 @@ public class TraitementCHAMAP implements Traitement
                     else
                     {
                         PreparedStatement insertStatement = bd_compta.getPreparedStatement("INSERT INTO facture " +
-                                "(societe, mois, annee, tva) VALUES (?,?,?,21f)");
+                                "(societe, date_facture, tva) VALUES (?,SYSDATE(),21f)");
                         insertStatement.setString(1, societe);
-                        insertStatement.setInt(2, month);
-                        insertStatement.setInt(3, Calendar.getInstance().get(Calendar.YEAR));
 
                         bd_compta.Execute(insertStatement);
 

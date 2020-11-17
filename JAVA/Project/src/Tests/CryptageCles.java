@@ -6,6 +6,7 @@
 package Tests;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import security.SecurityHelper;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
@@ -18,6 +19,8 @@ import java.util.Calendar;
 public class CryptageCles {
 
     public static void main(String[] args) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, UnrecoverableKeyException {
+        Security.addProvider(new BouncyCastleProvider());
+        SecurityHelper sc = new SecurityHelper();
         KeyStore ks = KeyStore.getInstance("JKS");
         ks.load(new FileInputStream("./Confs/ComptaKeyVault"), "password".toCharArray());
 
@@ -28,6 +31,17 @@ public class CryptageCles {
         keygen.init(new SecureRandom());
         SecretKey cleSession =  keygen.generateKey();
         System.out.println(cleSession);
+        byte[] hmac = sc.createHMAC("toto".getBytes(), cleSession);
+
+        if(sc.verifyHMAC("toto".getBytes(), hmac, cleSession))
+        {
+            System.out.println("OK");
+        }
+        else
+        {
+            System.out.println("NOK");
+
+        }
 
         //byte[] message = "coucou thomas, ceci est un message secret".getBytes();
 

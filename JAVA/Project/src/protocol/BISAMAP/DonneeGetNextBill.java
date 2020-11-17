@@ -17,6 +17,7 @@ public class DonneeGetNextBill implements DonneeRequete {
     /********************************/
 
     private SealedObject factureCryptee;
+    private transient Facture _facture;
 
     /********************************/
     /*         Constructeurs        */
@@ -31,11 +32,19 @@ public class DonneeGetNextBill implements DonneeRequete {
         return factureCryptee;
     }
 
+    public Facture get_facture() {
+        return _facture;
+    }
+
     /********************************/
     /*            Setters           */
     /********************************/
     public void setFactureCryptee(SealedObject factureCryptee) {
         this.factureCryptee = factureCryptee;
+    }
+
+    public void set_facture(Facture _facture) {
+        this._facture = _facture;
     }
 
     /********************************/

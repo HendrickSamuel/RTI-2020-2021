@@ -14,6 +14,7 @@ import protocol.PLAMAP.DonneeLoginCont;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ThreadClientConnecte extends ThreadClient
 {
@@ -91,16 +92,20 @@ public class ThreadClientConnecte extends ThreadClient
                 {
                     this.AfficheServeur("Erreur de def de classe [" + e.getMessage() + "]");
                 }
+                catch (SocketException e)
+                {
+                    inCommunication = false;
+                    this.AfficheServeur("Le client s'est deconnecte");
+                }
                 catch (IOException e)
                 {
+                    inCommunication = false;
                     if(e instanceof EOFException)
                     {
-                        inCommunication = false;
                         this.AfficheServeur("Le client s'est deconnecte");
                     }
                     else
                     {
-                        inCommunication = false;
                         e.printStackTrace();
                     }
                 }

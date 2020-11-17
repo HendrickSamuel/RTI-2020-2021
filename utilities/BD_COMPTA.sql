@@ -20,18 +20,21 @@ email varchar(255),
 fonction varchar(255) /*manutentionnaire, chef d'équipe, préposé(e), chef de poste, comptable, chefcomptable, directeur(rice), …)*/
 );
 
+INSERT INTO Personnel VALUES ("test","nom","prenom", "Samuel", "sam", "email", "fonction");
+
 CREATE TABLE Facture(
 id INT AUTO_INCREMENT PRIMARY KEY,
 societe varchar(255),
-mois INT CHECK (mois BETWEEN 1 AND 12),
-annee INT,
+date_facture Date,
 tva float,
 facture_validee boolean,
 comptable_validateur varchar(255),
 facture_envoyee boolean,
-moyen_envoi varchar(255),
+moyen_payement varchar(255),
 facture_payee boolean
 );
+
+INSERT INTO Facture VALUES (1, "test", STR_TO_DATE("15,11,2020", "%d,%m,%Y"), 21, 0, null, 0, null, 0);
 
 CREATE TABLE Items_Facture(
 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -42,6 +45,8 @@ destination varchar(255), /*idem*/
 prix_htva float,
 FOREIGN KEY (facture) REFERENCES Facture(id)
 );
+
+INSERT INTO Items_Facture VALUES (1, 1, 1, "cont", "dest", 22);
 
 CREATE TABLE Tarifs(
 id VARCHAR(255) PRIMARY KEY,
