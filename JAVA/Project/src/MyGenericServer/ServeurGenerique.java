@@ -29,6 +29,8 @@ public abstract class ServeurGenerique
 
     protected boolean isJavaCommunication;
 
+    protected boolean _error = false;
+
     /********************************/
     /*         Constructeurs        */
     /********************************/
@@ -69,8 +71,8 @@ public abstract class ServeurGenerique
 
         CreationPoolThreads(this._sourceTaches);
 
+        if(!_error)
         _threadServer.start();
-
     }
 
     public void StopServeur()
@@ -88,7 +90,7 @@ public abstract class ServeurGenerique
 
     public void CreationPoolThreads(SourceTaches sourceTaches)
     {
-        for(int i = 0; i < _nbMaxConnections; i++)
+        for(int i = 0; i < _nbMaxConnections && !_error; i++)
         {
             try
             {
@@ -101,7 +103,8 @@ public abstract class ServeurGenerique
                 o.set_javaObjectsCommunication(this.isJavaCommunication);
 
                 listeThreadsEnfants.add(o);
-                o.start();
+                if(!_error)
+                    o.start();
             }
             catch (IOException | ClassNotFoundException e)
             {

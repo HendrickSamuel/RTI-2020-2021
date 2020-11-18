@@ -13,6 +13,7 @@ import lib.BeanDBAcces.MysqlConnector;
 import protocol.CHAMAP.ReponseCHAMAP;
 import protocol.CHAMAP.TraitementCHAMAP;
 import protocol.TRAMAP.ReponseTRAMAP;
+import security.SecurityHelper;
 
 public class ServeurComptaCHAMAP extends ServeurGenerique {
 
@@ -20,24 +21,21 @@ public class ServeurComptaCHAMAP extends ServeurGenerique {
     /*           Variables          */
     /********************************/
     private MysqlConnector _bd;
-    private String _provider;
-    private String _hash;
+    private SecurityHelper _sc;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public ServeurComptaCHAMAP(int port, boolean connecte, int NbThreads, MysqlConnector bd, ConsoleServeur cs, String provider, String hash ,boolean isJavaCommunication ) {
+    public ServeurComptaCHAMAP(int port, boolean connecte, int NbThreads, MysqlConnector bd, ConsoleServeur cs, SecurityHelper sc ,boolean isJavaCommunication ) {
         super(port, connecte, NbThreads, cs, isJavaCommunication);
         this._bd = bd;
-        this._provider = provider;
-        this._hash = hash;
+        this._sc = sc;
     }
 
-    public ServeurComptaCHAMAP(int port, boolean connecte, int NbThreads, MysqlConnector bd, ConsoleServeur cs, String provider, String hash) {
+    public ServeurComptaCHAMAP(int port, boolean connecte, int NbThreads, MysqlConnector bd, ConsoleServeur cs, SecurityHelper sc) {
         super(port, connecte, NbThreads, cs, true);
         this._bd = bd;
-        this._provider = provider;
-        this._hash = hash;
+        this._sc = sc;
     }
 
     /********************************/
@@ -54,7 +52,7 @@ public class ServeurComptaCHAMAP extends ServeurGenerique {
     @Override
     public Traitement CreationTraitement() {
 
-        return new TraitementCHAMAP(_provider, _hash, _bd, _console);
+        return new TraitementCHAMAP(_sc, _bd, _console);
     }
 
     @Override

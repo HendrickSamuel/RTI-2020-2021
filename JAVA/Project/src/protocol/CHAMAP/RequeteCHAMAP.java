@@ -16,14 +16,21 @@ public class RequeteCHAMAP implements Requete
     /*           Variables          */
     /********************************/
 
+    private DonneeRequete _chargeUtile;
+
     /********************************/
     /*         Constructeurs        */
     /********************************/
-
+    public RequeteCHAMAP(DonneeRequete _chargeUtile) {
+        this._chargeUtile = _chargeUtile;
+    }
     /********************************/
     /*            Getters           */
     /********************************/
-
+    @Override
+    public DonneeRequete getChargeUtile() {
+        return _chargeUtile;
+    }
     /********************************/
     /*            Setters           */
     /********************************/
@@ -31,8 +38,5 @@ public class RequeteCHAMAP implements Requete
     /********************************/
     /*            Methodes          */
     /********************************/
-    @Override
-    public DonneeRequete getChargeUtile() {
-        return null;
-    }
+
 }

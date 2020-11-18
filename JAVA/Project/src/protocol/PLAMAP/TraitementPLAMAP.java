@@ -11,9 +11,21 @@ import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
+import protocol.CHAMAP.DonneeMakeBill;
+import protocol.CHAMAP.ReponseCHAMAP;
+import protocol.CHAMAP.RequeteCHAMAP;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 public class TraitementPLAMAP implements Traitement
 {
@@ -23,20 +35,17 @@ public class TraitementPLAMAP implements Traitement
     /********************************/
     private BDMouvements _bd;
     private ConsoleServeur _cs;
+    private Socket _compta;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public TraitementPLAMAP()
-    {
 
-    }
-
-    public TraitementPLAMAP(BDMouvements _bd)
-    {
+    public TraitementPLAMAP(BDMouvements _bd, ConsoleServeur _cs, Socket _compta) {
         this._bd = _bd;
+        this._cs = _cs;
+        this._compta = _compta;
     }
-
 
     /********************************/
     /*            Getters           */
@@ -182,10 +191,36 @@ public class TraitementPLAMAP implements Traitement
 
     private Reponse traiteGETLISTE(DonneeGetList chargeUtile, Client client)
     {
-        //todo
         System.out.println("traiteGETLISTE");
         System.out.println(chargeUtile.toString());
-        return null;
+
+        try{
+            PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM parc WHERE etat = 2 " +
+                    "AND upper(destination) = upper(?) " +
+                    "ORDER BY dateArrivee DESC LIMIT ?");
+            ps.setString(1, chargeUtile.getDestination());
+            ps.setInt(2, chargeUtile.getNombreMax());
+            ResultSet rs = _bd.ExecuteQuery(ps);
+            ArrayList<Container> containers = new ArrayList<>();
+            while(rs.next())
+            {
+                Container container = new Container(rs.getString("id"),
+                        rs.getInt("x"), rs.getInt("y"));
+                containers.add(container);
+            }
+            if(containers.size() > 0)
+            {
+                chargeUtile.setListCont(containers);
+                return new ReponsePLAMAP(ReponsePLAMAP.OK, null, chargeUtile);
+            }
+            else
+            {
+                return new ReponsePLAMAP(ReponsePLAMAP.NOK, "Aucun container en départ", null);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return new ReponsePLAMAP(ReponsePLAMAP.NOK, "Erreur: " + throwables.getMessage(), null);
+        }
     }
 
     private Reponse traiteSENDWEIGHT(DonneeSendWeight chargeUtile, Client client)
@@ -233,7 +268,100 @@ public class TraitementPLAMAP implements Traitement
     {
         System.out.println("traiteSIGNALDEP");
         System.out.println(chargeUtile.toString());
-        return null;
+        ArrayList<Integer> mouvements = new ArrayList<>();
+        String destination = "";
+        String societe = "";
+
+        try{
+            PreparedStatement societeps = _bd.getPreparedStatement("SELECT idSociete FROM transporteurs WHERE upper(idTransporteur) = upper(?);");
+            societeps.setString(1, chargeUtile.getIdTransporteur());
+            ResultSet resultSet = _bd.ExecuteQuery(societeps);
+            if(resultSet.next())
+            {
+                societe = resultSet.getString("idSociete");
+            }
+            else
+            {
+                return new ReponsePLAMAP(ReponsePLAMAP.NOK, "TRANSPORTEUR innexistant", null);
+            }
+
+            for(String container : chargeUtile.getListIdCont())
+            {
+                PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM parc WHERE upper(idContainer) = upper(?) AND etat = 2");
+                ps.setString(1, container);
+                ResultSet rs = _bd.ExecuteQuery(ps);
+                if(rs.next())
+                {
+                    rs.updateInt("etat",0);
+                    rs.updateNull("idContainer");
+                    rs.updateNull("dateReservation");
+                    rs.updateNull("numeroReservation");
+                    rs.updateNull("dateArrivee");
+
+                    destination = rs.getString("destination");
+                    _bd.UpdateResult(rs);
+
+                    PreparedStatement insertMouv = _bd.getPreparedStatement("SELECT * FROM mouvements " +
+                            "WHERE dateDepart = null AND upper(idContainer) = upper(?);");
+                    insertMouv.setString(2, container);
+                    ResultSet res = _bd.ExecuteQuery(ps);
+                    if(res.next())
+                    {
+                        mouvements.add(res.getInt("id"));
+                        res.updateDate("dateDepart", new Date(Calendar.getInstance().getTime().getTime()));
+                        res.updateString("transporteurSortant", chargeUtile.getIdTransporteur());
+                    }
+                }
+                else
+                {
+                    return new ReponsePLAMAP(ReponsePLAMAP.NOK, "Nous n'avons pas pu retrouver le container dans le parc", null);
+                }
+            }
+
+            //threading de
+            String finalDestination = destination;
+            String finalSociete = societe;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    SendMakeBill(chargeUtile.getListIdCont(), mouvements, chargeUtile.getIdTransporteur(), finalSociete, finalDestination);
+                }
+            }).start();
+
+            return new ReponsePLAMAP(ReponsePLAMAP.OK,null, chargeUtile);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return new ReponsePLAMAP(ReponsePLAMAP.NOK, "Une erreur s'est produite durant le traitement de votre requete", null);
+    }
+
+    private void SendMakeBill(List<String> containers, List<Integer> mouvements, String transporteur, String societe, String destination)
+    {
+        DonneeMakeBill dmb = new DonneeMakeBill();
+        dmb.set_containers(containers);
+        dmb.set_mouvements(mouvements);
+        dmb.set_transporteur(transporteur);
+        dmb.set_societe(societe);
+        dmb.set_destination(destination);
+
+        RequeteCHAMAP requeteCHAMAP = new RequeteCHAMAP(dmb);
+
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(_compta.getOutputStream());
+            ObjectInputStream ois = new ObjectInputStream(_compta.getInputStream());
+
+            oos.writeObject(requeteCHAMAP);
+            oos.flush();
+
+            ReponseCHAMAP reponseCHAMAP = (ReponseCHAMAP) ois.readObject();
+            if(reponseCHAMAP.getCode() != 200)
+            {
+                AfficheTraitement(reponseCHAMAP.getMessage()); //todo: prevoir un systeme de renvoi
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private Reponse traite404()

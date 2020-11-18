@@ -7,11 +7,15 @@ package Serveurs.Mouvement.Serveur;
 
 import MyGenericServer.ConsoleServeur;
 import MyGenericServer.ServeurGenerique;
+import genericRequest.MyProperties;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDMouvements;
 import protocol.PLAMAP.ReponsePLAMAP;
 import protocol.PLAMAP.TraitementPLAMAP;
+
+import java.io.IOException;
+import java.net.Socket;
 
 public class ServeurMouvementPLAMAP extends ServeurGenerique
 {
@@ -61,10 +65,26 @@ public class ServeurMouvementPLAMAP extends ServeurGenerique
     @Override
     public Traitement CreationTraitement()
     {
-        TraitementPLAMAP tp = new TraitementPLAMAP();
-        tp.set_bd(get_bd());
-        tp.setConsole(this._console);
-        return tp;
+        MyProperties mp = new MyProperties("./Confs/Serveur_Compta.conf"); //todo: changer
+        int port = Integer.parseInt(mp.getContent("PORT_CHAMAP"));
+        String ip = mp.getContent("SERVER_CHAMAPs_IP");
+        try {
+            Socket socket = new Socket(ip, port);
+
+            TraitementPLAMAP tp = new TraitementPLAMAP(get_bd(), this._console, socket);
+            return tp;
+        } catch (IOException e) {
+            _error = true;
+            if(this._console != null)
+            {
+                _console.Affiche(e.getMessage());
+            }
+            else
+            {
+                System.out.println(e.getMessage());
+            }
+            return null;
+        }
     }
 
     @Override

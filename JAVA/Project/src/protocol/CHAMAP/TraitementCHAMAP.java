@@ -11,6 +11,7 @@ import genericRequest.DonneeRequete;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.MysqlConnector;
+import security.SecurityHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -28,8 +29,7 @@ public class TraitementCHAMAP implements Traitement
     /********************************/
     /*           Variables          */
     /********************************/
-    private String _codeProvider;
-    private String _hash;
+    private SecurityHelper _sc;
     private MysqlConnector bd_compta;
     private ConsoleServeur _cs;
 
@@ -37,11 +37,10 @@ public class TraitementCHAMAP implements Traitement
     /*         Constructeurs        */
     /********************************/
 
-    public TraitementCHAMAP(String _codeProvider, String _hash, MysqlConnector bd_compta, ConsoleServeur _cs) {
-        this._codeProvider = _codeProvider;
-        this._hash = _hash;
+    public TraitementCHAMAP(SecurityHelper _sc, MysqlConnector bd_compta, ConsoleServeur _cs) {
         this.bd_compta = bd_compta;
         this._cs = _cs;
+        this._sc = _sc;
     }
 
     /********************************/
@@ -51,12 +50,12 @@ public class TraitementCHAMAP implements Traitement
     /********************************/
     /*            Setters           */
     /********************************/
-    public void set_codeProvider(String _codeProvider) {
-        this._codeProvider = _codeProvider;
+    public void set_sc(SecurityHelper _sc) {
+        this._sc = _sc;
     }
 
-    public void set_hash(String _hash) {
-        this._hash = _hash;
+    public void set_cs(ConsoleServeur _cs) {
+        this._cs = _cs;
     }
 
     public void setBd_compta(MysqlConnector bd_compta) {
@@ -115,19 +114,7 @@ public class TraitementCHAMAP implements Traitement
             {
                 String bddpass = rs.getString("userpassword");
 
-                // confection d'un digest local
-                MessageDigest md = MessageDigest.getInstance(_hash, _codeProvider); //pas de getter et setter pour ne pas exposer
-                md.update(bddpass.getBytes());
-
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                DataOutputStream bdos = new DataOutputStream(baos);
-                bdos.writeLong(temps);
-                bdos.writeDouble(alea);
-                md.update(baos.toByteArray());
-
-                byte[] msgDLocal = md.digest();
-
-                if(MessageDigest.isEqual(msgD, msgDLocal))
+                if(_sc.CompareDigests(msgD, bddpass.getBytes(), temps, alea))
                 {
                     client.set_loggedIn(true);
                     return new ReponseCHAMAP(ReponseCHAMAP.OK, null, null);

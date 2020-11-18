@@ -117,13 +117,7 @@ public class ServerLayout extends JFrame
             {
                 cs.Affiche("Could not find DataBase to start on");
                 toggleServer1.setText("-- START --");
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (CertificateException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (KeyStoreException e) {
+            } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
                 e.printStackTrace();
             }
         }
@@ -137,7 +131,6 @@ public class ServerLayout extends JFrame
 
     private void ToggleServer2(java.awt.event.ActionEvent evt)
     {
-        /*
         if(serveur2 == null)
         {
             int NbThreads = 0;
@@ -145,17 +138,17 @@ public class ServerLayout extends JFrame
             textArea2.setText(null);
 
             ConsoleSwing cs = new ConsoleSwing(textArea2);
-            MyProperties mp = new MyProperties("./Confs/Serveur_Mouvement.conf");
-            port2 = Integer.parseInt(mp.getContent("PORT2"));
-            NbThreads = Integer.parseInt(mp.getContent("NBTHREADS_PORT2"));
+            MyProperties mp = new MyProperties("./Confs/Serveur_Compta.conf");
+            port2 = Integer.parseInt(mp.getContent("PORT_CHAMAP"));
+            NbThreads = Integer.parseInt(mp.getContent("NBTREADS_CHAMAP"));
 
             String USER = mp.getContent("BDUSER");
             String PWD = mp.getContent("BDPWD");
             BDMouvements bd = null;
             try
             {
-                bd = new BDMouvements(USER,PWD,"bd_mouvements");
-                serveur2 = new ServeurComptaCHAMAP(port2, true, NbThreads, bd, cs, false);
+                bd = new BDMouvements(USER,PWD,"bd_compta");
+                serveur2 = new ServeurComptaCHAMAP(port2, true, NbThreads, bd, cs, new SecurityHelper());
                 serveur2.StartServeur();
 
                 labelPort2.setText("PORT: " + port2);
@@ -173,6 +166,5 @@ public class ServerLayout extends JFrame
             serveur2 = null;
             toggleServer2.setText("-- START --");
         }
-        */
     }
 }
