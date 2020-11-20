@@ -20,7 +20,8 @@ email varchar(255),
 fonction varchar(255) /*manutentionnaire, chef d'équipe, préposé(e), chef de poste, comptable, chefcomptable, directeur(rice), …)*/
 );
 
-INSERT INTO Personnel VALUES ("test","nom","prenom", "Samuel", "sam", "email", "fonction");
+INSERT INTO Personnel VALUES ("test1","nom","prenom", "Samuel", "sam", "email", "fonction");
+INSERT INTO Personnel VALUES ("test2","nom","prenom", "Kevin", "kev", "email", "fonction");
 
 CREATE TABLE Facture(
 id INT AUTO_INCREMENT PRIMARY KEY,

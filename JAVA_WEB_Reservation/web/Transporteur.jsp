@@ -11,7 +11,7 @@
 
 <jsp:useBean id="bean" class="lib.BeanDBAcces.MysqlConnector">
     <jsp:setProperty name="bean" property="username" value="root"/>
-    <jsp:setProperty name="bean" property="password" value="root"/>
+    <jsp:setProperty name="bean" property="password" value=""/>
     <jsp:setProperty name="bean" property="database" value="bd_mouvements"/>
 </jsp:useBean>
 

@@ -1,8 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+//Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
+//Groupe : 2302                                                
+//Projet : R.T.I.                                 
+//Date de la création : 10/11/2020
+
 package Servlets;
 
 import Beans.ReponseReservation;
@@ -33,7 +33,7 @@ public class ReservationServlet extends HttpServlet {
         super.init(config);
         
         try {
-            connection = new MysqlConnector("root","root","bd_mouvements");
+            connection = new MysqlConnector("root","","bd_mouvements");
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(ReservationServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

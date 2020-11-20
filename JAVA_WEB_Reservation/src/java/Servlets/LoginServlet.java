@@ -1,3 +1,8 @@
+//Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
+//Groupe : 2302                                                
+//Projet : R.T.I.                                 
+//Date de la création : 10/11/2020
+
 package Servlets;
 
 import java.io.IOException;
@@ -24,7 +29,7 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("text/html"); 
         PrintWriter sortie = response.getWriter();
         try {
-            MysqlConnector conn = new MysqlConnector("root", "root", "bd_mouvements");
+            MysqlConnector conn = new MysqlConnector("root", "", "bd_mouvements");
             PreparedStatement ps = conn.getPreparedStatement("SELECT * FROM logins WHERE upper(username) = upper(?);");
             ps.setString(1, request.getParameter("username"));
             ResultSet rs = conn.ExecuteQuery(ps);
