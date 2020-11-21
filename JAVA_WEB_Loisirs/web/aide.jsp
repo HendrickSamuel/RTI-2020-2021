@@ -16,7 +16,7 @@
         <div class="mx-auto pt-5" style="width: 400px;">
             <div class="card" style="width: 25rem;">
                 <div class="card-body">
-                    <h5 style='text-align: center' class="card-title">PFM Loisirs : Aide</h5>
+                    <h5 style='text-align: center; text-decoration: underline;' class="card-title">PFM Loisirs : Aide</h5>
                     <br>
                     <label style='text-align: center'>Le texte qui aide à comprendre comment ça fonctionne</label>
                     <br>

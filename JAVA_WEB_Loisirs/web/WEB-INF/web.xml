@@ -8,6 +8,10 @@
         <servlet-name>ServletNewPwd</servlet-name>
         <servlet-class>Servlets.ServletNewPwd</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ServletInit</servlet-name>
+        <servlet-class>Servlets.ServletInit</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>ServletLogin</servlet-name>
         <url-pattern>/ServletLogin</url-pattern>
@@ -15,6 +19,10 @@
     <servlet-mapping>
         <servlet-name>ServletNewPwd</servlet-name>
         <url-pattern>/ServletNewPwd</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ServletInit</servlet-name>
+        <url-pattern>/ServletInit</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

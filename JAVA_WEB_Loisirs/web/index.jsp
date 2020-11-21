@@ -16,7 +16,7 @@
         <div class="mx-auto pt-5" style="width: 400px;">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 style='text-align: center' class="card-title">Bienvenue sur PFM Loisirs</h5>
+                    <h5 style='text-align: center; text-decoration: underline;' class="card-title">Bienvenue sur PFM Loisirs</h5>
                     <%
                         if(session.getAttribute("erreur") != null)
                         {
