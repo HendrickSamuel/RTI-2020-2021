@@ -27,7 +27,7 @@ public class ServletInit extends HttpServlet
     {
         HttpSession session = request.getSession(false);
         //Pour si on veux accéder à la page sans avoir de session
-        if(session == null)
+        if(session.getAttribute("username") == null)
         {
             response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/");
             return; 
@@ -36,7 +36,11 @@ public class ServletInit extends HttpServlet
         response.setContentType("text/html"); 
         PrintWriter sortie = response.getWriter();
         
-        initCadie(session, sortie);
+        //initialisation du caddie uniquement si il est login
+        if(session.getAttribute("userid") == null)
+        {
+            initCadie(session, sortie);
+        }
 
         //Si on appuie sur confirmer
         if(request.getParameter("conf") != null)
@@ -93,7 +97,7 @@ public class ServletInit extends HttpServlet
         }
         catch (ClassNotFoundException | SQLException ex) 
         {
-            Logger.getLogger(ServletLogin.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServletInit.class.getName()).log(Level.SEVERE, null, ex);
             sortie.println("<H1>"+ ex.getMessage() +"</H1>"); 
             sortie.close(); 
         }  

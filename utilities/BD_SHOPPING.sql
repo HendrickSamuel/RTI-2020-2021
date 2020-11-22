@@ -5,7 +5,6 @@ USE BD_MOUVEMENTS;
 
 SET storage_engine=INNODB;
 
-DROP TABLE IF EXISTS Res_Nat;
 DROP TABLE IF EXISTS Caddie;
 DROP TABLE IF EXISTS Client;
 DROP TABLE IF EXISTS Article;
@@ -14,11 +13,6 @@ CREATE TABLE Client (
 id INT AUTO_INCREMENT PRIMARY KEY,
 username varchar(255),
 userpassword varchar(255)
-);
-
-CREATE TABLE Res_Nat(
-id date PRIMARY KEY,
-quantite INT
 );
 
 CREATE TABLE Article(

@@ -34,11 +34,10 @@ public class ServletLogin extends HttpServlet
         //Si bouton pour aller sur le site
         if(request.getParameter("con") != null)
         {   //Si le username ou le password son vide
-            if(request.getParameter("username").length() < 1 || request.getParameter("password").length() < 1)
+            if(request.getParameter("username").length() < 1)
             {
                 session = request.getSession(true);
-                session.setAttribute("username", request.getParameter("username"));
-                session.setAttribute("erreur", "Veuiller encoder un nom d'utilisateur ou un mot de passe");
+                session.setAttribute("erreur", "Veuiller encoder un nom d'utilisateur");
                 response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/");
                 return; 
             }
@@ -46,23 +45,42 @@ public class ServletLogin extends HttpServlet
             {
                 try 
                 {
-                    MysqlConnector conn = new MysqlConnector("root", "", "bd_shopping");
-                    PreparedStatement ps = conn.getPreparedStatement("SELECT * FROM client WHERE upper(username) = upper(?);");
-                    ps.setString(1, request.getParameter("username"));
-                    ResultSet rs = conn.ExecuteQuery(ps);
-                    //Si le username existe
-                    if(rs.next())
-                    {   //Si les mots de passes correspondent
-                        if(rs.getString("userpassword").equals(request.getParameter("password")))
-                        {
-                            session = request.getSession(true);
-                            session.setAttribute("username", request.getParameter("username"));
-                            session.setAttribute("userid", rs.getString("id"));
+                    if(request.getParameter("password").length() < 1)
+                    {
+                        session = request.getSession(true);
+                        session.setAttribute("username", request.getParameter("username"));
+                        
+                        response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/" + "init.jsp");
+                        return;
+                    }
+                    else
+                    {
+                        MysqlConnector conn = new MysqlConnector("root", "", "bd_shopping");
+                        PreparedStatement ps = conn.getPreparedStatement("SELECT * FROM client WHERE upper(username) = upper(?);");
+                        ps.setString(1, request.getParameter("username"));
+                        ResultSet rs = conn.ExecuteQuery(ps);
+                        //Si le username existe
+                        if(rs.next())
+                        {   //Si les mots de passes correspondent
+                            if(rs.getString("userpassword").equals(request.getParameter("password")))
+                            {
+                                session = request.getSession(true);
+                                session.setAttribute("username", request.getParameter("username"));
+                                session.setAttribute("userid", rs.getString("id"));
 
-                            response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/" + "init.jsp");
-                            return;
+                                response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/" + "init.jsp");
+                                return;
+                            }
+                            else //Sinon le mot de passe est incorrect
+                            {
+                                session = request.getSession(true);
+                                session.setAttribute("username", request.getParameter("username"));
+                                session.setAttribute("erreur", "Nom d'utilisateur ou mot de passe incorrecte");
+                                response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/");
+                                return;
+                            }
                         }
-                        else //Sinon le mot de passe est incorrect
+                        else //Sinon le usename n'existe pas
                         {
                             session = request.getSession(true);
                             session.setAttribute("username", request.getParameter("username"));
@@ -70,14 +88,6 @@ public class ServletLogin extends HttpServlet
                             response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/");
                             return;
                         }
-                    }
-                    else //Sinon le usename n'existe pas
-                    {
-                        session = request.getSession(true);
-                        session.setAttribute("username", request.getParameter("username"));
-                        session.setAttribute("erreur", "Nom d'utilisateur ou mot de passe incorrecte");
-                        response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/");
-                        return;
                     }
                 }
                 catch (ClassNotFoundException | SQLException ex) 
