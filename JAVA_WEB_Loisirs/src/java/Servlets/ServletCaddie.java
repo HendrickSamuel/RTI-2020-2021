@@ -270,10 +270,9 @@ public class ServletCaddie extends HttpServlet
     private void verifCaddie(PrintWriter sortie)
     {
 
-        try 
+    try 
         {
-            PreparedStatement ps = connection.getPreparedStatement("SELECT id_article, quantite, TIMESTAMPDIFF(MINUTE,date_res,current_timestamp()) as duree FROM caddie WHERE id_client = ? AND acheter = 0;");
-            ps.setString(1, id);
+            PreparedStatement ps = connection.getPreparedStatement("SELECT id_client, id_article, quantite, TIMESTAMPDIFF(MINUTE,date_res,current_timestamp()) as duree FROM caddie WHERE acheter = 0;");
             ResultSet rs = connection.ExecuteQuery(ps);
             //Si l'utilisateur a un caddie on le met a jour
             if(rs.next())
@@ -298,7 +297,7 @@ public class ServletCaddie extends HttpServlet
                         }
 
                         ps = connection.getPreparedStatement("DELETE FROM caddie WHERE id_client = ? AND id_article = ? AND acheter = 0;");
-                        ps.setString(1, id);
+                        ps.setString(1, rs.getString("id_client"));
                         ps.setString(2, rs.getString("id_article"));
                         connection.Execute(ps);
                     }    

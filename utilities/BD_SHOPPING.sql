@@ -31,7 +31,7 @@ date_res timestamp,
 acheter boolean DEFAULT FALSE,
 FOREIGN KEY (id_client) REFERENCES Client(id),
 FOREIGN KEY (id_article) REFERENCES Article(id),
-PRIMARY KEY (id_client, id_article)
+PRIMARY KEY (id_client, id_article, date_res)
 );
 
 INSERT INTO Client VALUES (null, "Samuel", "sam");
