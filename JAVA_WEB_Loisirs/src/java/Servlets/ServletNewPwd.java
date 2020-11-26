@@ -26,7 +26,7 @@ public class ServletNewPwd extends HttpServlet
     {
         HttpSession session = request.getSession(false);
         //Pour si on veux accéder à la page sans avoir de session
-        if(session == null)
+        if(session.getAttribute("username") == null)
         {
             response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/");
             return; 

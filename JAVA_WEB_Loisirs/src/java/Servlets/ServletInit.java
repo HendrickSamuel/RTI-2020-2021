@@ -27,7 +27,7 @@ public class ServletInit extends HttpServlet
     {
         HttpSession session = request.getSession(false);
         //Pour si on veux accéder à la page sans avoir de session
-        if(session == null)
+        if(session.getAttribute("username") == null)
         {
             response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/");
             return; 
@@ -36,7 +36,11 @@ public class ServletInit extends HttpServlet
         response.setContentType("text/html"); 
         PrintWriter sortie = response.getWriter();
         
-        initCadie(session, sortie);
+        //initialisation du caddie uniquement si il est login
+        if(session.getAttribute("userid") == null)
+        {
+            initCadie(session, sortie);
+        }
 
         //Si on appuie sur confirmer
         if(request.getParameter("conf") != null)
@@ -58,8 +62,7 @@ public class ServletInit extends HttpServlet
         try 
         {
             MysqlConnector conn = new MysqlConnector("root", "", "bd_shopping");
-            PreparedStatement ps = conn.getPreparedStatement("SELECT id_article, quantite, TIMESTAMPDIFF(MINUTE,date_res,current_timestamp()) as duree FROM caddie WHERE id_client = ? AND acheter = 0;");
-            ps.setString(1, (String)session.getAttribute("userid"));
+            PreparedStatement ps = conn.getPreparedStatement("SELECT id_client, id_article, quantite, TIMESTAMPDIFF(MINUTE,date_res,current_timestamp()) as duree FROM caddie WHERE acheter = 0;");
             ResultSet rs = conn.ExecuteQuery(ps);
             //Si l'utilisateur a un caddie on le met a jour
             if(rs.next())
@@ -84,7 +87,7 @@ public class ServletInit extends HttpServlet
                         }
 
                         ps = conn.getPreparedStatement("DELETE FROM caddie WHERE id_client = ? AND id_article = ? AND acheter = 0;");
-                        ps.setString(1, (String)session.getAttribute("userid"));
+                        ps.setString(1, rs.getString("id_client"));
                         ps.setString(2, rs.getString("id_article"));
                         conn.Execute(ps);
                     }    
@@ -93,7 +96,7 @@ public class ServletInit extends HttpServlet
         }
         catch (ClassNotFoundException | SQLException ex) 
         {
-            Logger.getLogger(ServletLogin.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServletInit.class.getName()).log(Level.SEVERE, null, ex);
             sortie.println("<H1>"+ ex.getMessage() +"</H1>"); 
             sortie.close(); 
         }  

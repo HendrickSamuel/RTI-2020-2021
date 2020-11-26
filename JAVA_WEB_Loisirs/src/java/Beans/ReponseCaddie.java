@@ -8,11 +8,49 @@ package Beans;
 
 public class ReponseCaddie 
 {
-
+    /********************************/
+    /*           Variables          */
+    /********************************/
+    public static int error = 400;
+    public static int ok = 200;
     
+    private int _code;
+    private String _message;
+    
+    
+    /********************************/
+    /*         Constructeurs        */
+    /********************************/
     public ReponseCaddie() 
     {
-        
+        _code = 0;
+    }
+
+    
+    /********************************/
+    /*            Getters           */
+    /********************************/
+    public int getCode() 
+    {
+        return _code;
+    }
+
+    public String getMessage() 
+    {
+        return _message;
     }
     
+    
+    /********************************/
+    /*            Setters           */
+    /********************************/
+    public void setCode(int _code) 
+    {
+        this._code = _code;
+    }
+
+    public void setMessage(String _message) 
+    {
+        this._message = _message;
+    }
 }
