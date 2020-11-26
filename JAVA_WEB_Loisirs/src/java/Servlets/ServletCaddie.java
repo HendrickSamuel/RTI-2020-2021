@@ -35,7 +35,7 @@ public class ServletCaddie extends HttpServlet
         
         try 
         {
-            connection = new MysqlConnector("root","","bd_shopping");
+            connection = new MysqlConnector("root","root","bd_shopping");
         } 
         catch (ClassNotFoundException | SQLException ex) 
         {

@@ -55,7 +55,7 @@ public class ServletLogin extends HttpServlet
                     }
                     else
                     {
-                        MysqlConnector conn = new MysqlConnector("root", "", "bd_shopping");
+                        MysqlConnector conn = new MysqlConnector("root", "root", "bd_shopping");
                         PreparedStatement ps = conn.getPreparedStatement("SELECT * FROM client WHERE upper(username) = upper(?);");
                         ps.setString(1, request.getParameter("username"));
                         ResultSet rs = conn.ExecuteQuery(ps);

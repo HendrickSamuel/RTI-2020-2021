@@ -39,6 +39,43 @@ public class ServletPayement extends HttpServlet
         //Pour voir si le choix est abandonner
         if(request.getParameter("abandon") != null)
         {
+            try 
+            {
+                MysqlConnector conn = new MysqlConnector("root", "root", "bd_shopping");
+                PreparedStatement ps = conn.getPreparedStatement("SELECT id_article, quantite FROM caddie WHERE id_client = ? AND acheter = 0;");
+                ps.setString(1, String.valueOf(session.getAttribute("userid")));
+                ResultSet rs = conn.ExecuteQuery(ps);
+                //Si l'utilisateur a un caddie on le met a jour
+                while(rs.next())
+                {
+                    if(!rs.getString("id_article").equals("art000001") && !rs.getString("id_article").equals("art000002"))
+                    {
+                        ps = conn.getPreparedStatement("SELECT quantite FROM article WHERE id = ?;");
+                        ps.setString(1, rs.getString("id_article"));
+                        ResultSet rsUp = conn.ExecuteQuery(ps);
+
+                        rsUp.next();
+                        int quantite = rsUp.getInt("quantite")+rs.getInt("quantite");
+
+                        ps = conn.getPreparedStatement("UPDATE article SET quantite = ? WHERE id = ?;");
+                        ps.setString(1, String.valueOf(quantite));
+                        ps.setString(2, rs.getString("id_article"));
+                        conn.Execute(ps);
+                    }
+
+                    ps = conn.getPreparedStatement("DELETE FROM caddie WHERE id_client = ? AND id_article = ? AND acheter = 0;");
+                    ps.setString(1, String.valueOf(session.getAttribute("userid")));
+                    ps.setString(2, rs.getString("id_article"));
+                    conn.Execute(ps);
+                }
+            }
+            catch (ClassNotFoundException | SQLException ex) 
+            {
+                Logger.getLogger(ServletInit.class.getName()).log(Level.SEVERE, null, ex);
+                sortie.println("<H1>"+ ex.getMessage() +"</H1>"); 
+                sortie.close(); 
+            }  
+            
             session.invalidate();
             response.sendRedirect(request.getScheme() + "://"+request.getServerName() + ":" + request.getServerPort()+ "/JAVA_WEB_Loisirs/");
             return; 

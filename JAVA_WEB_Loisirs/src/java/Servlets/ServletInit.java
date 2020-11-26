@@ -36,11 +36,9 @@ public class ServletInit extends HttpServlet
         response.setContentType("text/html"); 
         PrintWriter sortie = response.getWriter();
         
-        //initialisation du caddie uniquement si il est login
-        if(session.getAttribute("userid") == null)
-        {
-            initCadie(session, sortie);
-        }
+
+        initCadie(session, sortie);
+
 
         //Si on appuie sur confirmer
         if(request.getParameter("conf") != null)
@@ -61,7 +59,7 @@ public class ServletInit extends HttpServlet
 
         try 
         {
-            MysqlConnector conn = new MysqlConnector("root", "", "bd_shopping");
+            MysqlConnector conn = new MysqlConnector("root", "root", "bd_shopping");
             PreparedStatement ps = conn.getPreparedStatement("SELECT id_client, id_article, quantite, TIMESTAMPDIFF(MINUTE,date_res,current_timestamp()) as duree FROM caddie WHERE acheter = 0;");
             ResultSet rs = conn.ExecuteQuery(ps);
             //Si l'utilisateur a un caddie on le met a jour
