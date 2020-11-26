@@ -29,7 +29,7 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("text/html"); 
         PrintWriter sortie = response.getWriter();
         try {
-            MysqlConnector conn = new MysqlConnector("root", "", "bd_mouvements");
+            MysqlConnector conn = new MysqlConnector("root", "root", "bd_mouvements");
             PreparedStatement ps = conn.getPreparedStatement("SELECT * FROM logins WHERE upper(username) = upper(?);");
             ps.setString(1, request.getParameter("username"));
             ResultSet rs = conn.ExecuteQuery(ps);

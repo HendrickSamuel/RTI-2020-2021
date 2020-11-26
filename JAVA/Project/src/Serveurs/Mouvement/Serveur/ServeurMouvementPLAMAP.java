@@ -65,9 +65,9 @@ public class ServeurMouvementPLAMAP extends ServeurGenerique
     @Override
     public Traitement CreationTraitement()
     {
-        MyProperties mp = new MyProperties("./Confs/Serveur_Compta.conf"); //todo: changer
+        MyProperties mp = new MyProperties("./Confs/Serveur_Compta.conf");
         int port = Integer.parseInt(mp.getContent("PORT_CHAMAP"));
-        String ip = mp.getContent("SERVER_CHAMAPs_IP");
+        String ip = mp.getContent("SERVER_CHAMAP_IP");
         try {
             Socket socket = new Socket(ip, port);
 
