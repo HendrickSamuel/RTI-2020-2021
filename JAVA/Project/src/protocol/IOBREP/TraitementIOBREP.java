@@ -483,7 +483,7 @@ public class TraitementIOBREP implements Traitement {
                     rs.updateString("transporteurSortant",chargeUtile.getIdBateau());
                     rs.updateDate("dateDepart", new java.sql.Date(Calendar.getInstance().getTime().getTime()));
                     _bdMouvement.UpdateResult(rs);
-                    //todo: utiliser un update plutot q'un select ?
+
                     PreparedStatement pre = _bdMouvement.getPreparedStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?);");
                     pre.setString(1, container);
                     ResultSet res = _bdMouvement.ExecuteQuery(pre);

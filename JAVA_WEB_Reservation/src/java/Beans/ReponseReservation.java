@@ -11,6 +11,7 @@ public class ReponseReservation {
     private String message;
     private String dateReservation;
     private String destination;
+    private String numerReservation;
     private int x;
     private int y;
 
@@ -64,6 +65,13 @@ public class ReponseReservation {
     public void setDestination(String destination) {
         this.destination = destination;
     }
-    
+
+    public String getNumerReservation() {
+        return numerReservation;
+    }
+
+    public void setNumerReservation(String numerReservation) {
+        this.numerReservation = numerReservation;
+    }
     
 }

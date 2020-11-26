@@ -50,7 +50,7 @@ public class ClientCompta {
     /********************************/
     public ClientCompta() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
         Security.addProvider(new BouncyCastleProvider());
-        MyProperties mp = new MyProperties("./Confs/Serveur_Compta.conf"); //todo: changer
+        MyProperties mp = new MyProperties("./Confs/Serveur_Compta.conf");
         _port = Integer.parseInt(mp.getContent("PORT_BISAMAP"));
         _serverIp = mp.getContent("SERVER_BISAMAP_IP");
 

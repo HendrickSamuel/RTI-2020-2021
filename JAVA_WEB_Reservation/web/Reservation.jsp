@@ -12,7 +12,7 @@
 
 <jsp:useBean id="bean" class="lib.BeanDBAcces.MysqlConnector">
     <jsp:setProperty name="bean" property="username" value="root"/>
-    <jsp:setProperty name="bean" property="password" value=""/>
+    <jsp:setProperty name="bean" property="password" value="root"/>
     <jsp:setProperty name="bean" property="database" value="bd_mouvements"/>
 </jsp:useBean>
 
@@ -34,7 +34,7 @@
                         <input type="hidden" name="new" value="false">
                         <input type="hidden" name="source" value="container">
                         <div class="form-group">
-                            <label for="">Societes existantes</label>
+                            <label for="">Containers existantes</label>
                             <select name="container" class="form-control">
                                 <%
                                 bean.Init();

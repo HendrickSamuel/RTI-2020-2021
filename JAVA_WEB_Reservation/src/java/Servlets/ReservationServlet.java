@@ -7,13 +7,11 @@ package Servlets;
 
 import Beans.ReponseReservation;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
@@ -33,7 +31,7 @@ public class ReservationServlet extends HttpServlet {
         super.init(config);
         
         try {
-            connection = new MysqlConnector("root","","bd_mouvements");
+            connection = new MysqlConnector("root","root","bd_mouvements");
         } catch (ClassNotFoundException | SQLException ex) {
             Logger.getLogger(ReservationServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -177,15 +175,18 @@ public class ReservationServlet extends HttpServlet {
             ResultSet rs = connection.ExecuteQuery(ps);
             if(rs != null && rs.next())
             {
+                String resNumber = GenString();
                 rs.updateString("idContainer", request.getParameter("container"));
                 rs.updateDate("dateReservation", Date.valueOf(request.getParameter("date")));
                 rs.updateString("destination", request.getParameter("destination"));
                 rs.updateInt("etat", 1);
+                rs.updateString("numeroReservation", resNumber);
                 connection.UpdateResult(rs);
 
                 rr.setResultat(true);
                 rr.setX(rs.getInt("x"));
                 rr.setY(rs.getInt("y"));
+                rr.setNumerReservation(resNumber);
                 rr.setDateReservation(request.getParameter("date"));
                 rr.setDestination(request.getParameter("destination"));
                 session.setAttribute("reponse", rr);
@@ -202,6 +203,21 @@ public class ReservationServlet extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(ReservationServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public String GenString()
+    {
+        int leftLimit = 97; // 'a'
+        int rightLimit = 122; // 'z'
+        int targetStringLength = 15;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+          .limit(targetStringLength)
+          .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+          .toString().toUpperCase();
+ 
+        return generatedString;
     }
     
     

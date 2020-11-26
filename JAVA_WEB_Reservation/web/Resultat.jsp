@@ -33,6 +33,7 @@
                     <p>
                         Une réservation à été faite à l'emplacement: 
                         ${reponse.x} - ${reponse.y} <br>
+                        avec le numero de reservation: ${reponse.numerReservation} <br>
                         pour la destination: ${reponse.destination}  <br>
                         à la date du: ${reponse.dateReservation} <br>
                         
