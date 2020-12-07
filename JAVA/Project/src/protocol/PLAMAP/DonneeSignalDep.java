@@ -91,7 +91,7 @@ public class DonneeSignalDep implements DonneeRequete, Serializable
                 case "idTransporteur": this.setIdTransporteur(row[1]); break;
                 case "ListIdCont":
                     ArrayList<String> al = new ArrayList<String>();
-                    String[] champs = row[1].split("|");
+                    String[] champs = row[1].split("/");
                     for(String champ : champs)
                     {
                         al.add(champ);

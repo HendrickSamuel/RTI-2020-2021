@@ -123,6 +123,21 @@ void ParcourChaine::getData(char *retour, int *type, char **succes, char **messa
 }
 
 
+//Retourne la taille de la liste reçue par le serveur Mouvement
+int  ParcourChaine::getTailleList(char *list)
+{
+    char *pch;
+    int taille = 0;
+    int place = 0;
+
+    while( (pch = myTokenizer(list, '/', &place)) != NULL)
+    {
+        taille++;
+    }
+    return taille;
+}
+
+
 //Séparateur de chaine de caractère
 char* ParcourChaine::myTokenizer(char *tampon, char token, int *place)
 {

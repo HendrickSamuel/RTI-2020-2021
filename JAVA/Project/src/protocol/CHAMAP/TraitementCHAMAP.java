@@ -153,9 +153,9 @@ public class TraitementCHAMAP implements Traitement
                         MakeBill(idFacture, chargeUtile.get_mouvements().get(i), chargeUtile.get_containers().get(i), chargeUtile.get_destination());
                     }
                     else
-                    {
+                    { //todo : faire tarif
                         PreparedStatement insertStatement = bd_compta.getPreparedStatement("INSERT INTO facture " +
-                                "(societe, date_facture, tva) VALUES (?,SYSDATE(),21f)");
+                                "(societe, date_facture, tva) VALUES (?,SYSDATE(),21)");
                         insertStatement.setString(1, societe);
 
                         bd_compta.Execute(insertStatement);

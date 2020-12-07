@@ -427,6 +427,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                     {
                         char* liste = ParcourChaine::getMessage(retour);
 
+                        PT->nbrEnv = ParcourChaine::getTailleList(liste);
+
                         freePTMess();
                         PT->message = new char[strlen("4#true#%")+strlen(liste)+1];
                         strcpy(PT->message, "4#true#");
@@ -469,6 +471,9 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
 
             case OutputDone:
                 {
+                    cout << "getNbrElem : " << PT->idCont.getNombreElements() << endl;
+                    cout << "capacite : " << PT->capacite << endl;
+                    cout << "nbrEnv : " << PT->nbrEnv << endl;
                     if(PT->idCont.getNombreElements() == PT->capacite || PT->idCont.getNombreElements() == PT->nbrEnv) 
                     {
                         char* id = NULL;
@@ -674,6 +679,7 @@ void * fctThread(void * param)
 
     socketMouv.sendString(mes, tail);
 
+    cout << "Attente de connexion avec le serveur mouvement" << endl;
     retour = socketMouv.receiveString(MTU, '#', '%');
 
     //verification si la connexion est OK

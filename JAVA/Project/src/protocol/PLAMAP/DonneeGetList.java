@@ -99,16 +99,20 @@ public class DonneeGetList implements DonneeRequete, Serializable
     {
         String s = getType() + "#";
 
-        for(int i = 0 ; i < getListCont().size() ; i++)
+        if(getListCont() != null)
         {
-            s = s + getListCont().get(i).toString();
+            for (int i = 0; i < getListCont().size(); i++)
+            {
+                s = s + getListCont().get(i).toString();
+            }
         }
 
         return s;
     }
 
     @Override
-    public void setFiledsFromString(String fields) {
+    public void setFiledsFromString(String fields)
+    {
         String[] parametres = fields.split("#");
         String[] row;
         for(int i = 1; i < parametres.length; i++)

@@ -204,7 +204,7 @@ public class TraitementPLAMAP implements Traitement
             ArrayList<Container> containers = new ArrayList<>();
             while(rs.next())
             {
-                Container container = new Container(rs.getString("id"),
+                Container container = new Container(rs.getString("idContainer"),
                         rs.getInt("x"), rs.getInt("y"));
                 containers.add(container);
             }
@@ -287,6 +287,7 @@ public class TraitementPLAMAP implements Traitement
 
             for(String container : chargeUtile.getListIdCont())
             {
+                System.out.println("id container = " + container);
                 PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM parc WHERE upper(idContainer) = upper(?) AND etat = 2");
                 ps.setString(1, container);
                 ResultSet rs = _bd.ExecuteQuery(ps);
@@ -303,7 +304,7 @@ public class TraitementPLAMAP implements Traitement
 
                     PreparedStatement insertMouv = _bd.getPreparedStatement("SELECT * FROM mouvements " +
                             "WHERE dateDepart = null AND upper(idContainer) = upper(?);");
-                    insertMouv.setString(2, container);
+                    insertMouv.setString(1, container);
                     ResultSet res = _bd.ExecuteQuery(ps);
                     if(res.next())
                     {

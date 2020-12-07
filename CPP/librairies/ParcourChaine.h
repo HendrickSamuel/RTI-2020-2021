@@ -36,6 +36,7 @@ class ParcourChaine
         static int getType(char *retour);
         static char* getSucces(char *retour);
         static char* getMessage(char *retour);
+		static int getTailleList(char *list);
         static void getCoordonees(char *retour, int *coordonees);
         static void getData(char *retour, int *type, char **succes, char **message);
         static char* myTokenizer(char *tampon, char token, int *place);
