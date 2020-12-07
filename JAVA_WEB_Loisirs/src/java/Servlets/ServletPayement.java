@@ -106,7 +106,7 @@ public class ServletPayement extends HttpServlet
     {
         try 
         {
-            MysqlConnector conn = new MysqlConnector("root", "", "bd_shopping");
+            MysqlConnector conn = new MysqlConnector("root", "root", "bd_shopping");
             PreparedStatement ps = conn.getPreparedStatement("SELECT * FROM client WHERE id = ?;");
             ps.setString(1, (String)session.getAttribute("userid"));
             ResultSet rs = conn.ExecuteQuery(ps);
