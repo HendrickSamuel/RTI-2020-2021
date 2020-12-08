@@ -40,7 +40,6 @@ public class TraitementPLAMAP implements Traitement
     /********************************/
     /*         Constructeurs        */
     /********************************/
-
     public TraitementPLAMAP(BDMouvements _bd, ConsoleServeur _cs, Socket _compta) {
         this._bd = _bd;
         this._cs = _cs;
