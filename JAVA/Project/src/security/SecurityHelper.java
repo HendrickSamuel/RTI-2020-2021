@@ -157,7 +157,26 @@ public class SecurityHelper {
         return MessageDigest.isEqual(bytes, hmacMessage);
     }
 
+    public  byte[] createDigest(String message) throws NoSuchProviderException, NoSuchAlgorithmException, IOException {
+        MessageDigest md = MessageDigest.getInstance(_algoDigest, _codeProvider);
+        md.update(message.getBytes());
 
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        md.update(baos.toByteArray());
+        return md.digest();
+    }
+
+    public boolean CompareSimpleDigests(byte[] digested, byte[] toDigest) throws NoSuchProviderException, NoSuchAlgorithmException, IOException {
+        MessageDigest md = MessageDigest.getInstance(_algoDigest, _codeProvider);
+        md.update(toDigest);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        md.update(baos.toByteArray());
+
+        byte[] msgDLocal = md.digest();
+        return MessageDigest.isEqual(digested, msgDLocal);
+    }
 
 
 }

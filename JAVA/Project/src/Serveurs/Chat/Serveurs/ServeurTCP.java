@@ -12,6 +12,8 @@ import genericRequest.Traitement;
 import lib.BeanDBAcces.BDCompta;
 import protocol.PFMCOP.ReponsePFMCOP;
 import protocol.PFMCOP.TraitementPFMCOP;
+import security.SecurityHelper;
+
 
 public class ServeurTCP extends ServeurGenerique
 {
@@ -19,6 +21,7 @@ public class ServeurTCP extends ServeurGenerique
     /*           Variables          */
     /********************************/
     private BDCompta _bdCompta;
+    private SecurityHelper securityHelper;
 
 
     /********************************/
@@ -39,6 +42,11 @@ public class ServeurTCP extends ServeurGenerique
         return _bdCompta;
     }
 
+    public SecurityHelper getSecurityHelper()
+    {
+        return securityHelper;
+    }
+
 
     /********************************/
     /*            Setters           */
@@ -48,6 +56,10 @@ public class ServeurTCP extends ServeurGenerique
         _bdCompta = bd;
     }
 
+    public void setSecurityHelper(SecurityHelper securityHelper)
+    {
+        this.securityHelper = securityHelper;
+    }
 
     /********************************/
     /*            Methodes          */
@@ -58,6 +70,7 @@ public class ServeurTCP extends ServeurGenerique
         TraitementPFMCOP tp = new TraitementPFMCOP();
         tp.setConsole(this._console);
         tp.set_bd(this._bdCompta);
+        tp.set_sh(this.securityHelper);
         return tp;
     }
 

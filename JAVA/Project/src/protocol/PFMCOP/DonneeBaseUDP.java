@@ -1,54 +1,53 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 08/12/2020
+//Date de la création : 10/12/2020
 
 package protocol.PFMCOP;
 
 import genericRequest.DonneeRequete;
-import genericRequest.Requete;
+
 import java.io.Serializable;
 
-public class RequetePFMCOP  implements Requete, Serializable
+public class DonneeBaseUDP  implements DonneeRequete, Serializable
 {
-    private static final long serialVersionUID = 1653735157842857748L;
+    private static final long serialVersionUID = 9055160069921171691L;
 
     /********************************/
     /*           Variables          */
     /********************************/
-    private DonneeRequete chargeUtile;
+    private String _username;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public RequetePFMCOP()
+    public DonneeBaseUDP()
     {
 
     }
 
-    public RequetePFMCOP(DonneeRequete chargeUtile)
+    public DonneeBaseUDP(String _username)
     {
-        this.chargeUtile = chargeUtile;
+        this._username = _username;
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
-    @Override
-    public DonneeRequete getChargeUtile()
+    public String get_username()
     {
-        return chargeUtile;
+        return _username;
     }
 
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void setChargeUtile(DonneeRequete chargeUtile)
+    public void set_username(String _username)
     {
-        this.chargeUtile = chargeUtile;
+        this._username = _username;
     }
 
 
@@ -58,15 +57,16 @@ public class RequetePFMCOP  implements Requete, Serializable
     @Override
     public String toString()
     {
-        return chargeUtile.getClass().getName() + "##" + chargeUtile;
+        return "username{=}" + get_username();
     }
 
-    public void setFiledsFromString(String fields) throws ClassNotFoundException, IllegalAccessException, InstantiationException
-    {
-        String[] parametres = fields.split("##");
 
-        System.out.println("Objet reçu: " + parametres[0]);
-        setChargeUtile((DonneeRequete)Class.forName(parametres[0]).newInstance());
-        this.getChargeUtile().setFiledsFromString(parametres[1]);
+    @Override
+    public void setFiledsFromString(String fields)
+    {
+        String[] row;
+        row = fields.split("\\{=}");
+
+        this.set_username(row[1]);
     }
 }

@@ -81,5 +81,35 @@ public class ReponsePFMCOP implements Reponse, Serializable
     /********************************/
     /*            Methodes          */
     /********************************/
+    @Override
+    public String toString()
+    {
+        return this.getClass().getName() + "##codeRetour==" + getCode() + "##message==" + getMessage() + "##chargeUtile==" + chargeUtile.getClass().getName() + "#" + getChargeUtile();
+    }
 
+
+    public void setFiledsFromString(String fields) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        String[] parametres = fields.split("##");
+        String[] row;
+        for (int i = 1; i < parametres.length; i++)
+        {
+            row = parametres[i].split("==");
+            switch (row[0]) {
+                case "codeRetour":
+                    this.setCodeRetour(Integer.parseInt(row[1]));
+                    break;
+                case "message":
+                    System.out.println("Objet reçu: " + row[1]);
+                    this.setMessage(row[1]);
+                    break;
+                case "chargeUtile":
+                    String[] recu = row[1].split("#");
+                    System.out.println("Objet reçu: " + recu[0]);
+                    setChargeUtile((DonneeRequete)Class.forName(recu[0]).newInstance());
+                    this.getChargeUtile().setFiledsFromString(row[1]);
+                    break;
+            }
+        }
+    }
 }
+

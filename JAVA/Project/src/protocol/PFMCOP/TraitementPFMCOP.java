@@ -8,12 +8,12 @@ package protocol.PFMCOP;
 import MyGenericServer.Client;
 import MyGenericServer.ConsoleServeur;
 import genericRequest.DonneeRequete;
+import genericRequest.MyProperties;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDCompta;
-import protocol.TRAMAP.ReponseTRAMAP;
+import protocol.PLAMAP.ReponsePLAMAP;
 import security.SecurityHelper;
-
 import java.io.IOException;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
@@ -29,7 +29,7 @@ public class TraitementPFMCOP  implements Traitement
     /********************************/
     private BDCompta _bd;
     private ConsoleServeur _cs;
-    private Socket _chat;
+    private SecurityHelper _securityHelper;
 
 
     /********************************/
@@ -40,16 +40,16 @@ public class TraitementPFMCOP  implements Traitement
 
     }
 
-    public TraitementPFMCOP(ConsoleServeur _cs, Socket _chat)
+    public TraitementPFMCOP(ConsoleServeur _cs, SecurityHelper _securityHelper)
     {
         this._cs = _cs;
-        this._chat = _chat;
+        this._securityHelper = _securityHelper;
     }
 
-    public TraitementPFMCOP(ConsoleServeur _cs, Socket _chat, BDCompta _bd)
+    public TraitementPFMCOP(ConsoleServeur _cs, SecurityHelper _securityHelper, BDCompta _bd)
     {
         this._cs = _cs;
-        this._chat = _chat;
+        this._securityHelper = _securityHelper;
         this._bd = _bd;
     }
 
@@ -67,6 +67,10 @@ public class TraitementPFMCOP  implements Traitement
         return _cs;
     }
 
+    public SecurityHelper get_sh()
+    {
+        return _securityHelper;
+    }
 
     /********************************/
     /*            Setters           */
@@ -81,6 +85,13 @@ public class TraitementPFMCOP  implements Traitement
     {
         this._cs = cs;
     }
+
+    public void set_sh(SecurityHelper sh)
+    {
+        _securityHelper = sh;
+    }
+
+
     /********************************/
     /*            Methodes          */
     /********************************/
@@ -118,12 +129,16 @@ public class TraitementPFMCOP  implements Traitement
     private Reponse traiteLOGINGROUP(DonneeLoginGroup chargeUtile, Client client)
     {
         System.out.println("traiteLOGINGROUP");
-        System.out.println(chargeUtile.toString());
+        System.out.println(chargeUtile);
 
         String username = chargeUtile.get_username();
         byte[] pwdDigest = chargeUtile.get_pwdDigest();
         long time = chargeUtile.get_temps();
         double alea = chargeUtile.get_aleatoire();
+        if(client.is_loggedIn())
+        {
+            return new ReponsePFMCOP(ReponsePFMCOP.NOK, "Le client est deja connecte dans le serveur", chargeUtile);
+        }
 
         try
         {
@@ -134,16 +149,20 @@ public class TraitementPFMCOP  implements Traitement
             {
                 String bddpass = rs.getString("userpassword");
 
-                SecurityHelper sh = new SecurityHelper();
-
-                if(sh.CompareDigests(pwdDigest, sh.createSaltedDigest(bddpass, time, alea), time, alea))
+                if(get_sh().CompareDigests(pwdDigest, bddpass.getBytes(), time, alea))
                 {
                     client.set_loggedIn(true);
-                    return new ReponsePFMCOP(ReponsePFMCOP.OK, null, null);
+
+                    MyProperties mp = new MyProperties("./Confs/Serveur_Chat.conf");
+
+                    chargeUtile.set_adresse(mp.getContent("IPSERV"));
+                    chargeUtile.set_port(Integer.parseInt(mp.getContent("PORT_CHAT")));
+
+                    return new ReponsePFMCOP(ReponsePFMCOP.OK, null, chargeUtile);
                 }
                 else
                 {
-                    return new ReponsePFMCOP(ReponsePFMCOP.NOK, "Mot de passe ou nom d'utilisateur erroné", null);
+                    return new ReponsePFMCOP(ReponsePFMCOP.NOK, "Mot de passe ou nom d'utilisateur errone", chargeUtile);
                 }
             }
         }
@@ -151,7 +170,7 @@ public class TraitementPFMCOP  implements Traitement
         {
             throwables.printStackTrace();
         }
-        return new ReponsePFMCOP(ReponsePFMCOP.NOK, "ERREUR lors du traitement de la requete", null);
+        return new ReponsePFMCOP(ReponsePFMCOP.NOK, "ERREUR lors du traitement de la requete", chargeUtile);
     }
 
     private Reponse traitePOSTQUESTION(DonneePostQuestion chargeUtile, Client client)

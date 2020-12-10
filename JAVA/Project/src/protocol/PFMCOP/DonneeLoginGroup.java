@@ -6,8 +6,8 @@
 package protocol.PFMCOP;
 
 import genericRequest.DonneeRequete;
-
 import java.io.Serializable;
+import java.util.Base64;
 
 public class DonneeLoginGroup  implements DonneeRequete, Serializable
 {
@@ -22,7 +22,7 @@ public class DonneeLoginGroup  implements DonneeRequete, Serializable
     private double _aleatoire;
 
     private String _adresse;
-    private String _port;
+    private int _port;
 
 
     /********************************/
@@ -33,7 +33,7 @@ public class DonneeLoginGroup  implements DonneeRequete, Serializable
 
     }
 
-    public DonneeLoginGroup(String _adresse, String _port)
+    public DonneeLoginGroup(String _adresse, int _port)
     {
         this._adresse = _adresse;
         this._port = _port;
@@ -76,7 +76,7 @@ public class DonneeLoginGroup  implements DonneeRequete, Serializable
         return _adresse;
     }
 
-    public String get_port()
+    public int get_port()
     {
         return _port;
     }
@@ -110,7 +110,7 @@ public class DonneeLoginGroup  implements DonneeRequete, Serializable
         _adresse = adresse;
     }
 
-    public void set_port(String port)
+    public void set_port(int port)
     {
         _port = port;
     }
@@ -119,9 +119,29 @@ public class DonneeLoginGroup  implements DonneeRequete, Serializable
     /*            Methodes          */
     /********************************/
     @Override
+    public String toString()
+    {
+        return "username{=}" + get_username() + "#pwdDigest{=}" + Base64.getEncoder().encodeToString(get_pwdDigest()) + "#temps{=}" + get_temps() + "#aleatoire{=}" + get_aleatoire() + "#adresse{=}" + get_adresse() + "#port{=}" + get_port() + "\n";
+    }
+
+    @Override
     public void setFiledsFromString(String fields)
     {
-
+        String[] parametres = fields.split("#");
+        String[] row;
+        for(int i = 1; i < parametres.length; i++)
+        {
+            row = parametres[i].split("\\{=}");
+            switch (row[0])
+            {
+                case "username": this.set_username(row[1]); break;
+                case "pwdDigest": this.set_pwdDigest(Base64.getDecoder().decode(row[1])); break;
+                case "temps": this.set_temps(Long.parseLong(row[1])); break;
+                case "aleatoire": this.set_aleatoire(Double.parseDouble(row[1])); break;
+                case "adresse": this.set_adresse(row[1]); break;
+                case "port": this.set_port(Integer.parseInt(row[1])); break;
+            }
+        }
     }
 
 }
