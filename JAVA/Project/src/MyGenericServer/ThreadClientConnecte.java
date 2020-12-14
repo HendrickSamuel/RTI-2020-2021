@@ -133,6 +133,7 @@ public class ThreadClientConnecte extends ThreadClient
 
                     String message = readAllBytes(dis);
                     this.AfficheServeur("Recu ==> " + message);
+                    System.out.println("Recu ==> [" + message + "]");
                     DonneeRequete req = parseString(message);
                     this.AfficheServeur("Requete lue par le serveur, instance de " + req.getClass().getName());
 
