@@ -220,7 +220,17 @@ int main(int argc, char *argv[])
     groupSock.sin_addr.s_addr = inet_addr("234.5.5.9");
     groupSock.sin_port = htons(5011);
 
-    struct in_addr localInterface;
+    struct ip_mreq mreq;
+mreq.imr_multiaddr.s_addr = inet_addr("234.5.5.9");
+mreq.imr_interface.s_addr = (inet_addr("192.168.1.47"));
+
+if (setsockopt(hSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0)
+{
+    perror("setsockopt -_-");
+    exit(1);
+}
+
+    /*struct in_addr localInterface;
     struct hostent *infosHost;
     infosHost = gethostbyname("localhost");
     memcpy(&localInterface.s_addr, infosHost->h_addr, infosHost->h_length);
@@ -231,7 +241,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
     else
-      printf("Setting the local interface...OK\n");
+      printf("Setting the local interface...OK\n");*/
 
 
 cout << "avant creation message " << endl;

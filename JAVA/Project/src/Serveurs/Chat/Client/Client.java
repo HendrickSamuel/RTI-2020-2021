@@ -273,6 +273,9 @@ public class Client
             adresseGroupe = InetAddress.getByName(_serverIp);
             socketGroupe = new MulticastSocket(_port);
             socketGroupe.joinGroup(adresseGroupe);
+            /*socketGroupe.setNetworkInterface(NetworkInterface.getByInetAddress(adresseGroupe));*/
+            socketGroupe.setTimeToLive ((byte) 64);
+
             thr = new ThreadReception (get_login(), socketGroupe, _cs, get_jl());
             thr.set_enMarche(true);
             thr.start();
@@ -286,7 +289,7 @@ public class Client
         }
         catch (IOException e)
         {
-            get_cs().Affiche("Erreur :-( : " + e.getMessage());
+            get_cs().Affiche("Erreur - Func ConnectUDP : " + e.getMessage());
         }
     }
 
