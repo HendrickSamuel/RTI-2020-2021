@@ -59,15 +59,13 @@ void    afficheEnteteChat();
 void    afficheEnteteLogin();
 void    afficheChat();
 void    afficheTest();
-bool    afficheMenu(int* choix);
+int     afficheMenu();
 char*   postQuestion(char*);
 char*   answerQuestion(char*);
 char*   postEvent(char*);
 
-
 char*   createDigest(char* pdw, long time, double random);
-bool    lireNombre(int *pN, int min, int max);
-short   LireChaine(char *, int);
+int     lireNombre(int *pN, int min, int max);
 char*   genAleat(int len);
 void    decodeEtIsereMessage(char* message);
 
@@ -77,7 +75,6 @@ void    decodeEtIsereMessage(char* message);
 /********************************/
 
 pthread_mutex_t mutexListes;
-pthread_mutex_t mutexCOut;
 
 pthread_t thread;
 
@@ -95,7 +92,6 @@ Liste<char*> listChat;
 int main(int argc, char *argv[])
 {
     int port;
-    int tail;
      
     char nom[MAXSTRING];
     char pwd[MAXSTRING];
@@ -106,7 +102,6 @@ int main(int argc, char *argv[])
 
     char *portTmp = NULL;
     char *adresse = NULL;
-    char *message = NULL;
     SocketsClient  socketCli;
 
     //Armement du signal
@@ -141,12 +136,11 @@ int main(int argc, char *argv[])
     {
        socketCli.initSocket(adresse, port);
     }
-    catch(...)
+    catch(BaseException ex)
     {
-        cout << "Erreur création socket" << endl;
+        cout << ex.getMessage() << endl;
         exit(0);
     }
-    printf("Creation de la socket TCP OK\n");
 
     //do
     //{
@@ -179,28 +173,28 @@ int main(int argc, char *argv[])
         char aleat [20];
         sprintf(aleat, "%lf", random);
         
-        tail = strlen("protocol.PFMCOP.DonneeLoginGroup##username{=}#pwdDigest{=}#temps{=}#aleatoire{=}#adresse{=}null#port{=}0") + 1 + strlen(nom) + strlen(digestBase64) + strlen(temps) + strlen(aleat);
-        message = (char*)malloc(tail);
-        strcpy(message, "protocol.PFMCOP.DonneeLoginGroup##username{=}");
-        strcat(message, nom);
-        strcat(message, "#pwdDigest{=}");
-        strcat(message, digestBase64);
-        strcat(message, "#temps{=}");
-        strcat(message, temps);
-        strcat(message, "#aleatoire{=}");
-        strcat(message, aleat);
-        strcat(message, "#adresse{=}null#port{=}0");
-        message[tail-1] = '\n';
+        int tail = strlen("protocol.PFMCOP.DonneeLoginGroup##username{=}#pwdDigest{=}#temps{=}#aleatoire{=}#adresse{=}null#port{=}0") + 1 + strlen(nom) + strlen(digestBase64) + strlen(temps) + strlen(aleat);
+        char * mes = (char*)malloc(tail);
+        strcpy(mes, "protocol.PFMCOP.DonneeLoginGroup##username{=}");
+        strcat(mes, nom);
+        strcat(mes, "#pwdDigest{=}");
+        strcat(mes, digestBase64);
+        strcat(mes, "#temps{=}");
+        strcat(mes, temps);
+        strcat(mes, "#aleatoire{=}");
+        strcat(mes, aleat);
+        strcat(mes, "#adresse{=}null#port{=}0");
+        mes[tail-1] = '\n';
 
         //envoie et réception
-        socketCli.sendString(message, tail);
+        socketCli.sendString(mes, tail);
 
         //retour = socket.receiveString(MTU, '#', '%');
 
         free(digestBase64);
         digestBase64 = NULL;
-        free(message);
-        message = NULL;
+        free(mes);
+        mes = NULL;
 
     //} while ();
  
@@ -208,12 +202,13 @@ int main(int argc, char *argv[])
 
     //init mutex
     pthread_mutex_init(&mutexListes, NULL);
-    pthread_mutex_init(&mutexCOut, NULL);
-
-    pthread_mutex_lock(&mutexCOut);
 
     //creation du thread
     pthread_create(&thread, NULL, threadReception, NULL);
+
+    //on réarme le signal SIGUSR2 pour le main
+    sigdelset(&mask, SIGUSR2);
+	sigprocmask(SIG_SETMASK, &mask,NULL);
 
     //connexion au chat
     int hSocket;    /* Handle de la socket */ 
@@ -226,7 +221,7 @@ int main(int argc, char *argv[])
     else 
         printf("Creation de la socket UDP OK\n");
 
-    unsigned char multicastTTL = 10;
+    unsigned char multicastTTL = 1;
     setsockopt(hSocket, IPPROTO_IP, IP_MULTICAST_TTL, (void *) &multicastTTL, sizeof(multicastTTL));
 
     
@@ -246,12 +241,25 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    tail = strlen("protocol.PFMCOP.DonneeBaseUDP##username{=} rejoint le groupe") + strlen(nom) + 1;
-    message = (char*)malloc(tail);
+    /*struct in_addr localInterface;
+    struct hostent *infosHost;
+    infosHost = gethostbyname("localhost");
+    memcpy(&localInterface.s_addr, infosHost->h_addr, infosHost->h_length);
+    //localInterface.s_addr = inet_addr("234.5.5.9");
+    if(setsockopt(hSocket, IPPROTO_IP, IP_MULTICAST_IF, (char *)&localInterface, sizeof(localInterface)) < 0)
+    {
+        perror("Setting local interface error");
+        exit(1);
+    }
+    else
+      printf("Setting the local interface...OK\n");*/
+
+
+    char *message = NULL;
+    message = (char*)malloc(strlen("protocol.PFMCOP.DonneeBaseUDP##username{=} rejoint le groupe") + strlen(nom));
     strcpy(message, "protocol.PFMCOP.DonneeBaseUDP##username{=}");
     strcat(message, nom);
     strcat(message, " rejoint le groupe");
-    message[tail-1] = '\0';
 
     int cnt = sendto(hSocket, message, strlen(message), 0, (struct sockaddr*) &groupSock, sizeof(groupSock));
   	if(cnt < 0) 
@@ -261,76 +269,66 @@ int main(int argc, char *argv[])
 	}
     free(message);  
     message = NULL; 
+    //sleep(5);
 
-    //on réarme le signal SIGUSR2 pour le main
-    sigdelset(&mask, SIGUSR2);
-    sigprocmask(SIG_SETMASK, &mask,NULL);
 
 avantBoucle:
-    int stop = 0;
-    int choix;
-    while (stop == 0)
+    int choix = 1;
+    while (choix != 0)
     {
-        effEcran();
-        afficheEntete();
-        afficheEnteteChat();
-        afficheTest();
+        //effEcran();
 
-        if(!afficheMenu(&choix))
-        {
-            goto avantBoucle;
-        }
+        //afficheEntete();
+       // afficheEnteteChat();
+        afficheTest();
+        choix = afficheMenu();
+
         //on masque le signal SIGUSR2 pour le main
         sigaddset(&mask, SIGUSR2);
         sigprocmask(SIG_SETMASK, &mask,NULL);
 
         switch(choix)
         {
-            case 0:
-                stop = 1;
-                break;
-
             case 1:
                 message = postQuestion(nom);
-                cnt = sendto(hSocket, message, strlen(message), 0, (struct sockaddr*) &groupSock, sizeof(groupSock));
-                free(message);
-                message = NULL;
                 break;
 
             case 2:
                 message = answerQuestion(nom);
-                cnt = sendto(hSocket, message, strlen(message), 0, (struct sockaddr*) &groupSock, sizeof(groupSock));
-                free(message);
-                message = NULL;
                 break;
 
             case 3:
                 message = postEvent(nom);
-                cnt = sendto(hSocket, message, strlen(message), 0, (struct sockaddr*) &groupSock, sizeof(groupSock));
-                free(message);
-                message = NULL;
                 break;
 
             default:
                 break;
-        }     
+        }
 
+        if(choix == 1 || choix == 2 || choix == 3)
+        {
+            cnt = sendto(hSocket, message, strlen(message), 0, (struct sockaddr*) &groupSock, sizeof(groupSock));
+            if(cnt < 0) 
+            {
+                perror("sendto");
+                exit(1);
+            }
+            free(message);
+            message = NULL;
+        }
+        
         //on réarme le signal SIGUSR2 pour le main
         sigdelset(&mask, SIGUSR2);
         sigprocmask(SIG_SETMASK, &mask,NULL);
     }
     
-    if(stop == 0)
-    {
+    if(choix != 0)
         goto avantBoucle;
-    }
 
-    tail = strlen("protocol.PFMCOP.DonneeBaseUDP##username{=} rejoint le groupe") + strlen(nom) + 1;
-    message = (char*)malloc(tail);
+    message = (char*)malloc(strlen("protocol.PFMCOP.DonneeBaseUDP##username{=} rejoint le groupe") + strlen(nom));
     strcpy(message, "protocol.PFMCOP.DonneeBaseUDP##username{=}");
     strcat(message, nom);
     strcat(message, " quitte le groupe");
-    message[tail-1] = '\n';
     
     cnt = sendto(hSocket, message, strlen(message), 0, (struct sockaddr*) &groupSock, sizeof(groupSock));
   	if(cnt < 0) 
@@ -354,8 +352,7 @@ avantBoucle:
 
 void effEcran()
 {
-    cout << "\033[2J";
-    affChaine("", 1, 1);
+    cout << "\033[2J" ;
 }
 
 void affChaine(const char *pChaine,int Lig,int Col)
@@ -365,26 +362,27 @@ void affChaine(const char *pChaine,int Lig,int Col)
 
 void afficheEntete()
 {
-	cout << "***************************************************************************************************************************************************" << endl;
-	cout << "*                              Application Chat PFM                                                                                               *" << endl;
+	affChaine("****************************************************************************************************************************************************", 1, 1);
+	cout << endl << "*                              Application Chat PFM                                                                                               *" << endl;
 	cout << "***************************************************************************************************************************************************" << endl;
 }
 
 void afficheEnteteChat()
 {
-	cout << "*            Questions                                      *                                  Chat                                               *" << endl;
-    cout << "***************************************************************************************************************************************************" << endl;
+	affChaine("**            Questions                                      *                                  Chat                                               *", 4, 1);
+    cout << endl << "***************************************************************************************************************************************************" << endl;
 }
 
 void afficheEnteteLogin()
 {
-	cout << "*                                                                     Login                                                                       *" << endl;
-    cout << "***************************************************************************************************************************************************" << endl;
+	affChaine("**                                                                     Login                                                                       *",4 , 1);
+    cout << endl << "***************************************************************************************************************************************************" << endl;
 }
 
 void afficheChat()
 {
     pthread_mutex_lock(&mutexListes);
+
 
     Iterateur<char*> itQ(listQuestions);
     Iterateur<char*> itC(listChat);
@@ -429,62 +427,62 @@ void afficheTest()
 {
     pthread_mutex_lock(&mutexListes);
 
+
     Iterateur<char*> itQ(listQuestions);
     Iterateur<char*> itC(listChat);
     itQ.reset();
     itC.reset();
-
-    cout << endl << "Questions : " << endl;
+    int i = 0;
+    cout << "Questions : " << endl;
     while(!itQ.end())
     {
+
         cout << (itQ) << endl;
 
         itQ++;
+
     }
 
-    cout << endl << "Chat : " << endl;
+    cout << "Chat : " << endl;
     while(!itC.end())
     {
+
         cout << (itC) << endl;
 
         itC++;
+
     }
+   // cout << endl << "*                                                           *                                                                                     *" << endl;
+   // cout << "***************************************************************************************************************************************************" << endl;
+
     pthread_mutex_unlock(&mutexListes);
 }
 
-bool afficheMenu(int* choix)
+int afficheMenu()
 {
+    int choix;
     cout << endl << endl;
     cout << "\t" << "0 : Quitter" << endl;
     cout << "\t" << "1 : Post question" << endl;
     cout << "\t" << "2 : Answer question" << endl;
     cout << "\t" << "3 : Post event" << endl;
     cout << "\t\t" << "Faites votre choix : ";
-
-    pthread_mutex_unlock(&mutexCOut);
-
-    if(!lireNombre(choix, 0, 4))
-    {
-        pthread_mutex_lock(&mutexCOut);
-        return false; 
-    }
-
-    pthread_mutex_lock(&mutexCOut);
-    return true;
+    if(!lireNombre(&choix, 0, 4))
+        cout << "erreur" << endl << "\t\t" << "Faites votre choix : "; 
+    return choix;
 }
 
 char* postQuestion(char* nom)
 {
-    int tail;
     char *message = NULL;
     char question[50];
 
     cout << endl << endl;
     cout << "\t" << "Quel est votre question : ";
-    LireChaine(question, 50);
+    cin >> question;
 
-    tail = strlen("protocol.PFMCOP.DonneePostQuestion##tag{=}FRDMS#msgDigest{=}H1CH25Gc7VwSPH9QfT/M6BjLDPbnfC+VqKNelR4D/bk=#user{=}#message{=}") + strlen(nom) + strlen(question) + 2;
-    message = (char*)malloc(tail);
+
+    message = (char*)malloc(strlen("protocol.PFMCOP.DonneePostQuestion##tag{=}FRDMS#msgDigest{=}H1CH25Gc7VwSPH9QfT/M6BjLDPbnfC+VqKNelR4D/bk=#user{=}#message{=}") + strlen(nom) + strlen(question) + 2);
     strcpy(message, "protocol.PFMCOP.DonneePostQuestion##tag{=}");
     char* alea = genAleat(5) ;
     strcat(message, alea);
@@ -492,7 +490,7 @@ char* postQuestion(char* nom)
     strcat(message, nom);
     strcat(message, "#message{=}");
     strcat(message, question);
-    message[tail] = '\0';
+    message[strlen(message)] = '\0';
 
     free(alea);
     alea = NULL;
@@ -502,43 +500,40 @@ char* postQuestion(char* nom)
 
 char* answerQuestion(char* nom)
 {
-    int tail;
     char *message = NULL;
     char idQuest[10];
     char reponse[50];
 
     cout << endl << endl;
     cout << "\t" << "Quel est l'id de la question : ";
-    LireChaine(idQuest, 10);
+    cin >> idQuest;
     cout << "\t" << "Quel est la reponse : ";
-    LireChaine(reponse, 50);
+    cin >> reponse;
 
 
-    tail = strlen("protocol.PFMCOP.DonneeAnswerQuestion##tag{=}GGSNT#user{=}#message{=}") + strlen(nom) + strlen(reponse) + 2;
-    message = (char*)malloc(tail);
+    message = (char*)malloc(strlen("protocol.PFMCOP.DonneeAnswerQuestion##tag{=}GGSNT#user{=}#message{=}") + strlen(nom) + strlen(reponse) + 2);
     strcpy(message, "protocol.PFMCOP.DonneeAnswerQuestion##tag{=}");
     strcat(message, idQuest);
     strcat(message, "#user{=}");
     strcat(message, nom);
     strcat(message, "#message{=}");
     strcat(message, reponse);
-    message[tail] = '\0';
+    message[strlen(message)] = '\0';
 
     return message;
 }
 
 char* postEvent(char* nom)
 {
-    int tail;
     char *message = NULL;
     char event[50];
 
     cout << endl << endl;
     cout << "\t" << "Quel est l'evenement : ";
-    LireChaine(event, 50);
+    cin >> event;
 
-    tail = strlen("protocol.PFMCOP.DonneePostEvent##tag{=}IVKJTKZQ#user{=}#message{=}") + strlen(nom) + strlen(event) + 2;
-    message = (char*)malloc(tail);
+
+    message = (char*)malloc(strlen("protocol.PFMCOP.DonneePostEvent##tag{=}IVKJTKZQ#user{=}#message{=}") + strlen(nom) + strlen(event) + 2);
     strcpy(message, "protocol.PFMCOP.DonneePostEvent##tag{=}");
     char* alea = genAleat(8) ;
     strcat(message, alea);
@@ -546,7 +541,7 @@ char* postEvent(char* nom)
     strcat(message, nom);
     strcat(message, "#message{=}");
     strcat(message, event);
-    message[tail] = '\0';
+    message[strlen(message)] = '\0';
 
     free(alea);
     alea = NULL;
@@ -562,11 +557,10 @@ char* createDigest(char* pdw, long time, double random)
     return digest;
 }
 
-bool lireNombre(int *pN, int min, int max)
+int lireNombre(int *pN, int min, int max)
 {
     char c;
-    int i=0, s=1;
-    bool ok=true;
+    int i=0, s=1, ok=1;
     *pN=0;
 
     fflush(stdin);
@@ -595,7 +589,7 @@ bool lireNombre(int *pN, int min, int max)
         }
         else
         {
-            ok=false;
+            ok=0;
         }
     }
 
@@ -603,46 +597,15 @@ bool lireNombre(int *pN, int min, int max)
 
     if(*pN<min || *pN>max)
     {
-        ok=false;
+        ok=0;
     }
     if(i==0)
     {
-        ok=false;
-    }
-
-    return ok;
-}
-
-short LireChaine(char *pc, int max)
-{
-    char c;
-    char v[50];
-    char *pv=&v[0];
-    short ok;
-    int i=0;
-
-    fflush(stdin);
-    c=getchar();
-    while ((i < 49) && (c != '\n'))
-    {
-        *pv=c;
-        pv++;
-        i++;
-        c=getchar();
-    }
-    *pv='\0';
-
-    i = strlen(v);
-    if(i > max-1)
-    {
         ok=0;
     }
-    else
-    {
-        strcpy(pc,v);
-        ok=1;
-    }
+
     return ok;
+
 }
 
 char* genAleat(int len)
@@ -687,15 +650,10 @@ void* threadReception(void *param)
 {
     //cout << "le thread est cree" << endl;
 
-    //Masquage des signaux
-	sigset_t mask;
-	sigfillset(&mask);
-    sigdelset(&mask, SIGINT);
-	sigprocmask(SIG_SETMASK, &mask,NULL);	
-
     struct sockaddr_in addr;
     unsigned int addrlen;
     int sock, cnt;
+    //struct ip_mreq mreq;
     char message[MTU];
 
     /* set up socket */
@@ -716,7 +674,13 @@ void* threadReception(void *param)
         perror("bind");
 	    exit(1);
     }    
-     
+    /*mreq.imr_multiaddr.s_addr = inet_addr("234.5.5.9");         
+    mreq.imr_interface.s_addr = htonl(5011);         
+    if(setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0) 
+    {
+	    perror("setsockopt mreq");
+	    exit(1);
+    }*/         
     while (1) 
     {
  	    cnt = recvfrom(sock, message, sizeof(message), 0, (struct sockaddr *) &addr, &addrlen);
@@ -731,12 +695,12 @@ void* threadReception(void *param)
             break;
         }
         message[cnt] = '\0';
+	    //printf("%s: message = \"%s\"\n", inet_ntoa(addr.sin_addr), message);
+
 		
         decodeEtIsereMessage(message);
 
-        pthread_mutex_lock(&mutexCOut);
         kill(getpid(),SIGUSR2);
-        pthread_mutex_unlock(&mutexCOut);
     }
 
     return NULL;
@@ -752,227 +716,168 @@ void decodeEtIsereMessage(char* message)
     comp = ParcourChaine::myTokenizer(message, '#', &place);
     if(strcmp(comp, "protocol.PFMCOP.DonneeBaseUDP") == 0)
     {
-        place = 0;
-        int tail;
         free(comp);
         comp = NULL;
-
-        comp = ParcourChaine::myTokenizer(message, '}', &place);
+        /*comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        tail = strlen(message) + 1;
-        char * mes = (char*)malloc(tail);
+        char * mes = (char*)malloc(strlen(comp)+1);
         strcpy(mes, comp);
-        mes[tail] = '\0';
-
+        mes[strlen(comp)] = '\0';
         free(comp);
-        comp = NULL;
-
-        listChat.insere(mes);
+        comp = NULL;*/
+        listChat.insere(message);
     }
     else if(strcmp(comp, "protocol.PFMCOP.DonneePostQuestion") == 0)
     {
-        place = 0;
-        int tail;
-
         free(comp);
         comp = NULL;
-
-        comp = ParcourChaine::myTokenizer(message, '}', &place);
+        /*comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        tail = strlen(comp) + 1;
-        char * tag = (char*)malloc(tail);
+        char * tag = (char*)malloc(strlen(comp));
         strcpy(tag, comp);
-        tag[tail] = '\0';
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        tail = strlen(comp) + 1;
-        char * user = (char*)malloc(tail);
+        char * user = (char*)malloc(strlen(comp));
         strcpy(user, comp);
-        user[tail] = '\0';
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        tail = strlen(comp) + 1;
-        char * mes = (char*)malloc(tail);
+        char * mes = (char*)malloc(strlen(comp));
         strcpy(mes, comp);
-        mes[tail] = '\0';
         free(comp);
         comp = NULL;
 
-        tail = strlen(tag) + strlen(mes) + 4;
-        char* quest = (char*)malloc(tail);
+        char* quest = (char*)malloc(strlen(tag) + strlen(mes) + 4);
         strcpy(quest, tag);
         strcat(quest, " : ");
         strcat(quest, mes);
-        quest[tail] = '\0';
+        quest[strlen(quest)] = '\0';
 
-        tail = strlen(user) + strlen(mes) + 4;
-        char* chat = (char*)malloc(tail);
+        char* chat = (char*)malloc(strlen(user) + strlen(mes) + 4);
         strcpy(chat, user);
         strcat(chat, " : ");
         strcat(chat, mes);
-        chat[tail] = '\0';
+        chat[strlen(chat)] = '\0';*/
 
+        listQuestions.insere(message);
+        listChat.insere(message);
 
-        listQuestions.insere(quest);
-        listChat.insere(chat);
-
-        free(tag);
+        /*free(tag);
         tag = NULL;
         free(user);
         user = NULL;
         free(mes);
-        mes = NULL;
+        mes = NULL;*/
     }
     else if(strcmp(comp, "protocol.PFMCOP.DonneeAnswerQuestion") == 0)
     {
-        place = 0;
-        int tail;
-
         free(comp);
         comp = NULL;
-
-        comp = ParcourChaine::myTokenizer(message, '}', &place);
+        /*comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        tail = strlen(comp) + 1;
-        char * tag = (char*)malloc(tail);
+        char * tag = (char*)malloc(strlen(comp));
         strcpy(tag, comp);
-        tag[tail] = '\0';
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        tail = strlen(comp) + 1;
-        char * user = (char*)malloc(tail);
+        char * user = (char*)malloc(strlen(comp));
         strcpy(user, comp);
-        user[tail] = '\0';
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        tail = strlen(comp) + 1;
-        char * mes = (char*)malloc(tail);
+        char * mes = (char*)malloc(strlen(comp));
         strcpy(mes, comp);
-        mes[tail] = '\0';
         free(comp);
         comp = NULL;
 
-        tail = strlen(tag) + strlen(mes) + strlen(user) + 9;
-        char* quest = (char*)malloc(tail);
+        char* quest = (char*)malloc(strlen(tag) + strlen(mes) + 9);
         strcpy(quest, user);
         strcat(quest, " --> ");
         strcat(quest, tag);
         strcat(quest, " : ");
         strcat(quest, mes);
-        quest[tail] = '\0';
+        quest[strlen(quest)] = '\0';*/
 
-        listChat.insere(quest);
+        listChat.insere(message);
 
-        free(tag);
+        /*free(tag);
         tag = NULL;
         free(user);
         user = NULL;
         free(mes);
-        mes = NULL;
+        mes = NULL;*/
     }
     else if(strcmp(comp, "protocol.PFMCOP.DonneePostEvent") == 0)
     {
-        place = 0;
-        int tail;
-
         free(comp);
         comp = NULL;
-
-        comp = ParcourChaine::myTokenizer(message, '}', &place);
+        /*comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        tail = strlen(comp) + 1;
-        char * tag = (char*)malloc(tail);
+        char * tag = (char*)malloc(strlen(comp));
         strcpy(tag, comp);
-        tag[tail] = '\0';
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        tail = strlen(comp) + 1;
         char * user = (char*)malloc(strlen(comp));
         strcpy(user, comp);
-        user[tail] = '\0';
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '}', &place);
         free(comp);
         comp = NULL;
-
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        tail = strlen(comp) + 1;
         char * mes = (char*)malloc(strlen(comp));
         strcpy(mes, comp);
-        mes[tail] = '\0';
         free(comp);
         comp = NULL;
 
-        tail = strlen(tag) + strlen(user) + strlen(mes) + 16;
-        char* event = (char*)malloc(tail);
+        char* event = (char*)malloc(strlen(tag) + strlen(mes) + 16);
         strcpy(event, "/!\\EVENT [");
         strcat(event, tag);
         strcat(event, "] ");
         strcat(event, user);
         strcat(event, " : ");
         strcat(event, mes);
-        event[tail] = '\0';
+        event[strlen(event)] = '\0';*/
 
-        listChat.insere(event);
+        listChat.insere(message);
 
-        free(tag);
+        /*free(tag);
         tag = NULL;
         free(user);
         user = NULL;
         free(mes);
-        mes = NULL;
+        mes = NULL;*/
     }
 
 
@@ -982,5 +887,4 @@ void decodeEtIsereMessage(char* message)
 void HandlerMsg(int Sig)
 {
 	//cout << "Réception du signal SIGUSR2" << endl;
-    //goto avantBoucle;
 }
