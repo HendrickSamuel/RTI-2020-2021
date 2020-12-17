@@ -274,7 +274,7 @@ avantBoucle:
         effEcran();
         afficheEntete();
         afficheEnteteChat();
-        afficheTest();
+        afficheChat();
 
         if(!afficheMenu(&choix))
         {
@@ -390,8 +390,8 @@ void afficheChat()
     Iterateur<char*> itC(listChat);
     itQ.reset();
     itC.reset();
-    int i = 0;
-    while(!itQ.end() && !itQ.end())
+
+    for(int i = 0 ; i < listQuestions.getNombreElements() || i < listChat.getNombreElements() ; i++)
     {
         if(!itQ.end())
         {
@@ -405,9 +405,9 @@ void afficheChat()
             affChaine("**", i+6, 1);
         }
 
-        if(!itQ.end())
+        if(!itC.end())
         {
-            affChaine("**", i+6, 1);
+            affChaine("**", i+6, 61);
             cout << (itC);
 
             itC++;
@@ -417,7 +417,6 @@ void afficheChat()
             affChaine("**", i+6, 61);
         }    
         affChaine("**", i+6, 147);
-        i++;
     }
     cout << endl << "*                                                           *                                                                                     *" << endl;
     cout << "***************************************************************************************************************************************************" << endl;
