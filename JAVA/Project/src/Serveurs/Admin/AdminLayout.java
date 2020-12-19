@@ -6,6 +6,7 @@
 package Serveurs.Admin;
 
 
+import protocol.CSA.DonneeLCients;
 import protocol.CSA.ReponseCSA;
 import protocol.PFMCOP.ReponsePFMCOP;
 
@@ -111,6 +112,13 @@ public class AdminLayout extends JFrame
         if(clientsRadio.isSelected())
         {
             rc = get_admin().sendClients();
+            if(rc.getCode() == ReponsePFMCOP.OK)
+            {
+                ListCli list = new ListCli(((DonneeLCients)rc.getChargeUtile()).get_listClient());
+                list.setSize(150,150);
+                list.setTitle("Adresse IP des clients");
+                list.setVisible(true);
+            }
         }
         else if(stopRadio.isSelected())
         {

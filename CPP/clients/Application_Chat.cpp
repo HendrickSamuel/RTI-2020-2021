@@ -229,6 +229,9 @@ int main(int argc, char *argv[])
     unsigned char multicastTTL = 10;
     setsockopt(hSocket, IPPROTO_IP, IP_MULTICAST_TTL, (void *) &multicastTTL, sizeof(multicastTTL));
 
+    int reuse = 1;
+    setsockopt(hSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse));
+
     
     struct sockaddr_in groupSock;
     memset((char*)&groupSock, 0, sizeof(groupSock));

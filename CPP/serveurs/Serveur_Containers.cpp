@@ -190,6 +190,9 @@ int main(int argc, char *argv[])
             printf("Connexion sur la socket %d\n", j);
             pthread_mutex_lock(&mutexIndiceCourant);
             sockets[j] = socketService;
+            clients[j] = (char*)malloc(strlen(inet_ntoa(socketEcoute.getAdresse().sin_addr))+1);
+            strcpy(clients[j], inet_ntoa(socketEcoute.getAdresse().sin_addr));
+            clients[j][strlen(inet_ntoa(socketEcoute.getAdresse().sin_addr))] = '\0';
             indiceCourant = j;
             pthread_mutex_unlock(&mutexIndiceCourant);
             pthread_cond_signal(&condIndiceCourant);
@@ -401,10 +404,10 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                     }
                     else
                     {   
-                            freePTMess();
-                            PT->message = new char[strlen("3#false#Container non conforme#%")+1];
-                            strcpy(PT->message, "3#false#Container non conforme#%");
-                            PT->dernOpp = Init;
+                        freePTMess();
+                        PT->message = new char[strlen("3#false#Container non conforme#%")+1];
+                        strcpy(PT->message, "3#false#Container non conforme#%");
+                        PT->dernOpp = Init;
                     }
                 }
                 break;
@@ -756,6 +759,8 @@ void * fctThread(void * param)
 
         pthread_mutex_lock(&mutexIndiceCourant);
         sockets[indiceClientTraite].setLibre(true);
+        free(clients[indiceClientTraite]);
+        clients[indiceClientTraite] = NULL;
         pthread_mutex_unlock(&mutexIndiceCourant);
     }
     hSocketService.closeSocket();
@@ -904,15 +909,30 @@ char* decodeEtIsereMessage(char* message, bool* finDial, int* time)
     {
         place = 0;
         int tail;
-
-        free(comp);
-        comp = NULL;
-
-        comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
-        comp = NULL;
-
         char* retour = NULL;
+
+        free(comp);
+        comp = NULL;
+
+        tail = strlen("protocol.CSA.ReponseCSA##codeRetour==200##chargeUtile==protocol.CSA.DonneeLCients#listClient{=}") + 1;
+        retour = (char*)malloc(tail);
+        strcpy(retour, "protocol.CSA.ReponseCSA##codeRetour==200##chargeUtile==protocol.CSA.DonneeLCients#listClient{=}");
+
+        for(int i = 0 ; i < 20 ; i++)
+        {
+            if(clients[i] != NULL)
+            {
+                tail = strlen(retour);
+                char* tmp = retour;
+                retour = (char*)malloc(tail + strlen(clients[i]) + 1);
+                strcpy(retour, tmp);
+                strcat(retour, clients[i]);
+                strcat(retour, "/");
+                free(tmp);
+            }
+        }
+        tail = strlen(retour);
+        retour[tail-1] = '\n';
 
         return retour;
     }
