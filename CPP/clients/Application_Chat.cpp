@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
     memset((char*)&groupSock, 0, sizeof(groupSock));
     groupSock.sin_family = AF_INET;
     groupSock.sin_addr.s_addr = inet_addr("234.5.5.9");
-    groupSock.sin_port = htons(5011);
+    groupSock.sin_port = htons(5021);
 
     struct ip_mreq mreq;
     mreq.imr_multiaddr.s_addr = inet_addr("234.5.5.9");
@@ -707,7 +707,7 @@ void* threadReception(void *param)
     bzero((char *)&addr, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = inet_addr("234.5.5.9");
-    addr.sin_port = htons(5011);
+    addr.sin_port = htons(5021);
     addrlen = sizeof(addr);
 
     if(bind(sock, (struct sockaddr *) &addr, sizeof(addr)) < 0)

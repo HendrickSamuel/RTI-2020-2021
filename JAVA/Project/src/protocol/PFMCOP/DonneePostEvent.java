@@ -80,7 +80,7 @@ public class DonneePostEvent implements DonneeRequete, Serializable
     @Override
     public String toString()
     {
-        return "tag{=}" + get_tag() + "#user{=}" + get_user()+ "#message{=}" + get_message();
+        return "tag{=}" + get_tag() + "#user{=}" + get_user() + "#message{=}" + get_message();
     }
 
     @Override

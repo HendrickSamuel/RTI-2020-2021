@@ -9,7 +9,6 @@ package Serveurs.Chat.Client;
 import Serveurs.Mouvement.Serveur.ConsoleSwing;
 import protocol.PFMCOP.DonneeLoginGroup;
 import protocol.PFMCOP.ReponsePFMCOP;
-
 import javax.swing.*;
 
 

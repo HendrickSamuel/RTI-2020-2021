@@ -5,8 +5,28 @@
 
 package protocol.CSA;
 
-public class TraitementCSA
+import MyGenericServer.Client;
+import MyGenericServer.ConsoleServeur;
+import genericRequest.DonneeRequete;
+import genericRequest.Reponse;
+import genericRequest.Traitement;
+
+public class TraitementCSA implements Traitement
 {
+    @Override
+    public Reponse traiteRequete(DonneeRequete Requete, Client client) throws ClassCastException {
+        return null;
+    }
+
+    @Override
+    public void AfficheTraitement(String message) {
+
+    }
+
+    @Override
+    public void setConsole(ConsoleServeur cs) {
+
+    }
 
     /********************************/
     /*           Variables          */

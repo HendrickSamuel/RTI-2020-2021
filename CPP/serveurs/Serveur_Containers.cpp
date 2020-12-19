@@ -63,11 +63,14 @@ pthread_mutex_t mutexIndiceCourant;
 pthread_cond_t condIndiceCourant;
 
 pthread_t* threads;
+pthread_t threadAdm;
 SocketsServeur* sockets;
 
 // Déclaration de la clé et du controleur
 pthread_key_t cle;
 pthread_once_t controleur = PTHREAD_ONCE_INIT;
+
+char* clients[20] = {NULL};
 
 /********************************/
 /*          Prototypes          */
@@ -75,12 +78,14 @@ pthread_once_t controleur = PTHREAD_ONCE_INIT;
 
 //Threads
 void* fctThread(void *param);
+void* threadAdmin(void *param);
 
 //Fonctions
 void InitCle();
 void freePTMess();
 void destructeur(void *p);
 void switchThread(protocole &proto, SocketsClient &socketMouv);
+char* decodeEtIsereMessage(char* message, bool* finDial, int* time);
 
 
 /********************************/
@@ -158,6 +163,9 @@ int main(int argc, char *argv[])
         Affiche("TEST","Démarrage du thread secondaire %d\n",i);
         pthread_detach(threads[i]);
     }
+
+    //creation du threadAdmin
+    pthread_create(&threadAdm, NULL, threadAdmin, NULL);
 
     do
     {
@@ -752,4 +760,186 @@ void * fctThread(void * param)
     }
     hSocketService.closeSocket();
     return identite;
+}
+
+
+void* threadAdmin(void *param)
+{
+    cout << "Demarrage du thread admin" << endl;
+    SocketsServeur sockEcoute;
+    SocketsServeur sockService;
+
+    char *portTmp;
+    int port;
+    char *adresse;
+
+    try
+    {
+        portTmp = Configurator::getProperty("test.conf","PORT-ADMIN");
+        adresse = Configurator::getProperty("test.conf","HOSTNAME");
+        if(portTmp == NULL || adresse == NULL)
+        {
+            exit(0);
+        }
+        
+        port = atoi(portTmp);
+
+        sockEcoute.initSocket(adresse, port);
+    }
+    catch(BaseException& e)
+    {
+        Error("Error","%s\n",e.getMessage());
+        exit(0);
+    }
+
+    do
+    {
+        bool finDial = false;
+        int time;
+        sockEcoute.listenSocket(SOMAXCONN);
+
+        sockService = sockEcoute.acceptSocket();
+
+        do
+        {
+            try
+            {
+                char* message = sockService.receiveString(MTU, '#', '%');
+
+                char* retour = decodeEtIsereMessage(message, &finDial, &time);
+
+                free(message);
+                message = NULL;
+
+                cout << retour << endl;
+
+                sockService.sendString(retour, strlen(retour));
+                if(finDial)
+                {
+                    cout << "extinction dans : " << time << " seconde(s)" << endl;
+                    sleep(time);
+                    exit(1);
+                }
+            }
+            catch(BaseException e)
+            {
+                finDial = true;
+                std::cerr << e.getMessage() << endl;
+            }
+            
+        } while (!finDial);
+        
+    }while(true);
+
+    sockEcoute.closeSocket();
+
+    cout << "Arret du thread admin" << endl;
+   
+}
+
+
+char* decodeEtIsereMessage(char* message, bool* finDial, int* time)
+{
+    int place = 0;
+    char * comp = NULL;
+
+    comp = ParcourChaine::myTokenizer(message, '#', &place);
+    if(strcmp(comp, "protocol.CSA.DonneeLoginA") == 0)
+    {
+        place = 0;
+        int tail;
+
+        free(comp);
+        comp = NULL;
+
+        comp = ParcourChaine::myTokenizer(message, '}', &place);
+        free(comp);
+        comp = NULL;
+
+        comp = ParcourChaine::myTokenizer(message, '#', &place);
+        tail = strlen(comp) + 1;
+        char * username = (char*)malloc(tail);
+        strcpy(username, comp);
+        username[tail] = '\0';
+        free(comp);
+        comp = NULL;
+
+        comp = ParcourChaine::myTokenizer(message, '}', &place);
+        free(comp);
+        comp = NULL;
+
+        comp = ParcourChaine::myTokenizer(message, '#', &place);
+        tail = strlen(comp) + 1;
+        char * password = (char*)malloc(tail);
+        strcpy(password, comp);
+        password[tail] = '\0';
+        free(comp);
+        comp = NULL;
+
+        char* retour = NULL;
+
+        if(Configurator::getLog("login.csv", username, password))
+        {
+            tail = strlen("protocol.CSA.ReponseCSA##codeRetour==200") + 1;
+            retour = (char*)malloc(tail);
+            strcpy(retour, "protocol.CSA.ReponseCSA##codeRetour==200");
+            retour[tail-1] = '\n';
+        }
+        else
+        {
+            tail = strlen("protocol.CSA.ReponseCSA##codeRetour==400") + 1;
+            retour = (char*)malloc(tail);
+            strcpy(retour, "protocol.CSA.ReponseCSA##codeRetour==400");
+            retour[tail-1] = '\n';
+        }
+
+        free(username);
+        username = NULL;
+        free(password);
+        password = NULL;
+
+        return retour;
+    }
+    else if(strcmp(comp, "protocol.CSA.DonneeLCients") == 0)
+    {
+        place = 0;
+        int tail;
+
+        free(comp);
+        comp = NULL;
+
+        comp = ParcourChaine::myTokenizer(message, '}', &place);
+        free(comp);
+        comp = NULL;
+
+        char* retour = NULL;
+
+        return retour;
+    }
+    else if(strcmp(comp, "protocol.CSA.DonneeStop") == 0)
+    {
+        place = 0;
+        int tail;
+
+        free(comp);
+        comp = NULL;
+
+        comp = ParcourChaine::myTokenizer(message, '}', &place);
+        free(comp);
+        comp = NULL;
+
+        comp = ParcourChaine::myTokenizer(message, '#', &place);
+        *time = atoi(comp);
+        free(comp);
+        comp = NULL;
+
+        *finDial = true;
+
+        tail = strlen("protocol.CSA.ReponseCSA##codeRetour==200") + 1;
+        char * retour = (char*)malloc(tail);
+        strcpy(retour, "protocol.CSA.ReponseCSA##codeRetour==200");
+        retour[tail-1] = '\n';
+
+        return retour;
+    }
 }

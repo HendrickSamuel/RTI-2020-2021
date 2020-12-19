@@ -233,8 +233,6 @@ public class Client
                 message.append((char)b);
         }
         return message.toString().trim();
-
-
     }
 
     public ReponsePFMCOP parseString(String message)
