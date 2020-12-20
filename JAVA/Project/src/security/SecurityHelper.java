@@ -178,5 +178,4 @@ public class SecurityHelper {
         return MessageDigest.isEqual(digested, msgDLocal);
     }
 
-
 }
