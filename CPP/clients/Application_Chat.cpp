@@ -229,9 +229,6 @@ int main(int argc, char *argv[])
     unsigned char multicastTTL = 10;
     setsockopt(hSocket, IPPROTO_IP, IP_MULTICAST_TTL, (void *) &multicastTTL, sizeof(multicastTTL));
 
-    int reuse = 1;
-    setsockopt(hSocket, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse));
-
     
     struct sockaddr_in groupSock;
     memset((char*)&groupSock, 0, sizeof(groupSock));
@@ -707,6 +704,10 @@ void* threadReception(void *param)
         perror("socket");
         exit(1);
     }
+
+    int reuse = 1;
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&reuse, sizeof(reuse));
+
     bzero((char *)&addr, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = inet_addr("234.5.5.9");

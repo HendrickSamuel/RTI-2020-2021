@@ -17,6 +17,7 @@
 #include "ParcourChaine.h"
 #include "SocketsClient.h"
 #include "BaseException.h"
+#include "SocketsServeur.h"
 
 #define MTU 1000
 
@@ -32,6 +33,8 @@ void    afficheEntete();
 void    switchReceive(char *retour);
 void    switchSend(int choix, struct protocole &proto);
 
+void*   threadUrgence(void *param);
+
 
 /********************************/
 /*      Variables globales      */
@@ -39,6 +42,8 @@ void    switchSend(int choix, struct protocole &proto);
 
 Liste<Output>	listeOut;
 char            idTransport[MAXSTRING];
+
+pthread_t threadUrg;
 
 /********************************/
 /*             Main             */
@@ -99,6 +104,9 @@ int main(int argc, char *argv[])
         cerr << e.getMessage() << '\n';
         exit(0);
     }
+
+    //creation du threadUrgence
+    pthread_create(&threadUrg, NULL, threadUrgence, NULL);
 
     while(run)
     {
@@ -421,4 +429,54 @@ void switchReceive(char *retour)
 
     if(message != NULL)
         free(message);
+}
+
+
+
+void* threadUrgence(void *param)
+{
+    SocketsServeur sockEcoute;
+    SocketsServeur sockService;
+
+    char *portTmp;
+    int port;
+    char *adresse;
+
+    try
+    {
+        portTmp = Configurator::getProperty("test.conf","PORT-URGENCE");
+        adresse = Configurator::getProperty("test.conf","HOSTNAME");
+        if(portTmp == NULL || adresse == NULL)
+        {
+            exit(0);
+        }
+        
+        port = atoi(portTmp);
+
+        sockEcoute.initSocket(adresse, port);
+    }
+    catch(BaseException& e)
+    {
+        Error("Error","%s\n",e.getMessage());
+        exit(0);
+    }
+
+    sockEcoute.listenSocket(SOMAXCONN);
+
+    sockService = sockEcoute.acceptSocket();
+
+    char* message = sockService.receiveString(MTU, '#', '%');
+
+    char * comp = NULL;
+    int place = 0;
+
+    comp = ParcourChaine::myTokenizer(message, '#', &place);
+
+    cout << endl << comp << endl;
+    cout << "merci de fermer l'application" << endl;
+
+    free(comp);
+    comp = NULL;
+    free(message);
+    message = NULL;
 }

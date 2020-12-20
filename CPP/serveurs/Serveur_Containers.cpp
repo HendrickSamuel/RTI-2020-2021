@@ -770,7 +770,6 @@ void * fctThread(void * param)
 
 void* threadAdmin(void *param)
 {
-    cout << "Demarrage du thread admin" << endl;
     SocketsServeur sockEcoute;
     SocketsServeur sockService;
 
@@ -821,6 +820,33 @@ void* threadAdmin(void *param)
                 sockService.sendString(retour, strlen(retour));
                 if(finDial)
                 {
+                    char *portTmp = Configurator::getProperty("test.conf","PORT-URGENCE");
+                    int port = atoi(portTmp);
+
+                    for(int i = 0 ; i < 20 ; i++)
+                    {
+                        if(clients[i] != NULL)
+                        {
+                            SocketsClient socket;
+                            socket.initSocket(clients[i], port);
+                            char dure[10];
+                            sprintf(dure, "%d", time);
+
+                            int tail = strlen("Le serveur va se couper dans  seconde(s)") + 3 + strlen(dure);
+                            char * message = (char*)malloc(tail);
+                            strcpy(message, "Le serveur va se couper dans ");
+                            strcat(message, dure);
+                            strcat(message, " seconde(s)#%");
+
+                            socket.sendString(message, strlen(message));
+                            free(message);
+                        }
+                    }
+
+
+                    
+
+
                     cout << "extinction dans : " << time << " seconde(s)" << endl;
                     sleep(time);
                     exit(1);
