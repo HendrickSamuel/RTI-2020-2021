@@ -197,9 +197,12 @@ int main(int argc, char *argv[])
 
         //retour = socket.receiveString(MTU, '#', '%');
 
-        free(digestBase64);
+        if(digestBase64 != NULL)
+            free(digestBase64);
         digestBase64 = NULL;
-        free(message);
+
+        if(message != NULL)
+            free(message);
         message = NULL;
 
     //} while ();
@@ -259,7 +262,8 @@ int main(int argc, char *argv[])
  	    perror("sendto");
 	    exit(1);
 	}
-    free(message);  
+    if(message != NULL)
+        free(message);  
     message = NULL; 
 
     //on réarme le signal SIGUSR2 pour le main
@@ -293,21 +297,24 @@ avantBoucle:
             case 1:
                 message = postQuestion(nom);
                 cnt = sendto(hSocket, message, strlen(message), 0, (struct sockaddr*) &groupSock, sizeof(groupSock));
-                free(message);
+                if(message != NULL)
+                    free(message);
                 message = NULL;
                 break;
 
             case 2:
                 message = answerQuestion(nom);
                 cnt = sendto(hSocket, message, strlen(message), 0, (struct sockaddr*) &groupSock, sizeof(groupSock));
-                free(message);
+                if(message != NULL)
+                    free(message);
                 message = NULL;
                 break;
 
             case 3:
                 message = postEvent(nom);
                 cnt = sendto(hSocket, message, strlen(message), 0, (struct sockaddr*) &groupSock, sizeof(groupSock));
-                free(message);
+                if(message != NULL)
+                    free(message);
                 message = NULL;
                 break;
 
@@ -338,7 +345,8 @@ avantBoucle:
  	    perror("sendto");
 	    exit(1);
 	}
-    free(message);
+    if(message != NULL)
+        free(message);
     message = NULL;
 
     close(hSocket);
@@ -493,7 +501,8 @@ char* postQuestion(char* nom)
     strcat(message, question);
     message[tail] = '\0';
 
-    free(alea);
+    if(alea != NULL)
+        free(alea);
     alea = NULL;
 
     return message;
@@ -547,7 +556,8 @@ char* postEvent(char* nom)
     strcat(message, event);
     message[tail] = '\0';
 
-    free(alea);
+    if(alea != NULL)
+        free(alea);
     alea = NULL;
 
     return message;
@@ -757,11 +767,13 @@ void decodeEtIsereMessage(char* message)
     {
         place = 0;
         int tail;
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
@@ -769,8 +781,8 @@ void decodeEtIsereMessage(char* message)
         char * mes = (char*)malloc(tail);
         strcpy(mes, comp);
         mes[tail] = '\0';
-
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         listChat.insere(mes);
@@ -779,12 +791,13 @@ void decodeEtIsereMessage(char* message)
     {
         place = 0;
         int tail;
-
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
@@ -792,19 +805,23 @@ void decodeEtIsereMessage(char* message)
         char * tag = (char*)malloc(tail);
         strcpy(tag, comp);
         tag[tail] = '\0';
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
@@ -812,11 +829,13 @@ void decodeEtIsereMessage(char* message)
         char * user = (char*)malloc(tail);
         strcpy(user, comp);
         user[tail] = '\0';
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
@@ -824,7 +843,8 @@ void decodeEtIsereMessage(char* message)
         char * mes = (char*)malloc(tail);
         strcpy(mes, comp);
         mes[tail] = '\0';
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         tail = strlen(tag) + strlen(mes) + 4;
@@ -845,11 +865,14 @@ void decodeEtIsereMessage(char* message)
         listQuestions.insere(quest);
         listChat.insere(chat);
 
-        free(tag);
+        if(tag != NULL)
+            free(tag);
         tag = NULL;
-        free(user);
+        if(user != NULL)
+            free(user);
         user = NULL;
-        free(mes);
+        if(mes != NULL)
+            free(mes);
         mes = NULL;
     }
     else if(strcmp(comp, "protocol.PFMCOP.DonneeAnswerQuestion") == 0)
@@ -857,11 +880,13 @@ void decodeEtIsereMessage(char* message)
         place = 0;
         int tail;
 
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
@@ -869,11 +894,13 @@ void decodeEtIsereMessage(char* message)
         char * tag = (char*)malloc(tail);
         strcpy(tag, comp);
         tag[tail] = '\0';
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
@@ -881,11 +908,13 @@ void decodeEtIsereMessage(char* message)
         char * user = (char*)malloc(tail);
         strcpy(user, comp);
         user[tail] = '\0';
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
@@ -893,7 +922,8 @@ void decodeEtIsereMessage(char* message)
         char * mes = (char*)malloc(tail);
         strcpy(mes, comp);
         mes[tail] = '\0';
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         tail = strlen(tag) + strlen(mes) + strlen(user) + 9;
@@ -907,11 +937,14 @@ void decodeEtIsereMessage(char* message)
 
         listChat.insere(quest);
 
-        free(tag);
+        if(tag != NULL)
+            free(tag);
         tag = NULL;
-        free(user);
+        if(user != NULL)
+            free(user);
         user = NULL;
-        free(mes);
+        if(mes != NULL)
+            free(mes);
         mes = NULL;
     }
     else if(strcmp(comp, "protocol.PFMCOP.DonneePostEvent") == 0)
@@ -919,11 +952,13 @@ void decodeEtIsereMessage(char* message)
         place = 0;
         int tail;
 
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
@@ -931,11 +966,13 @@ void decodeEtIsereMessage(char* message)
         char * tag = (char*)malloc(tail);
         strcpy(tag, comp);
         tag[tail] = '\0';
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
@@ -943,11 +980,13 @@ void decodeEtIsereMessage(char* message)
         char * user = (char*)malloc(strlen(comp));
         strcpy(user, comp);
         user[tail] = '\0';
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '}', &place);
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         comp = ParcourChaine::myTokenizer(message, '#', &place);
@@ -955,7 +994,8 @@ void decodeEtIsereMessage(char* message)
         char * mes = (char*)malloc(strlen(comp));
         strcpy(mes, comp);
         mes[tail] = '\0';
-        free(comp);
+        if(comp != NULL)
+            free(comp);
         comp = NULL;
 
         tail = strlen(tag) + strlen(user) + strlen(mes) + 16;
@@ -970,10 +1010,13 @@ void decodeEtIsereMessage(char* message)
 
         listChat.insere(event);
 
-        free(tag);
+        if(tag != NULL)
+            free(tag);
         tag = NULL;
+        if(user != NULL)
         free(user);
         user = NULL;
+        if(mes != NULL)
         free(mes);
         mes = NULL;
     }
