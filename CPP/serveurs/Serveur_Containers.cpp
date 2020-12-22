@@ -190,9 +190,10 @@ int main(int argc, char *argv[])
             printf("Connexion sur la socket %d\n", j);
             pthread_mutex_lock(&mutexIndiceCourant);
             sockets[j] = socketService;
-            clients[j] = (char*)malloc(strlen(inet_ntoa(socketEcoute.getAdresse().sin_addr))+1);
-            strcpy(clients[j], inet_ntoa(socketEcoute.getAdresse().sin_addr));
-            clients[j][strlen(inet_ntoa(socketEcoute.getAdresse().sin_addr))] = '\0';
+            struct in_addr ipAddr = socketEcoute.getAdresse().sin_addr;
+            clients[j] = (char*)malloc(INET_ADDRSTRLEN+1);
+            inet_ntop(AF_INET, &ipAddr, clients[j], INET_ADDRSTRLEN);
+            clients[j][INET_ADDRSTRLEN] = '\0';
             indiceCourant = j;
             pthread_mutex_unlock(&mutexIndiceCourant);
             pthread_cond_signal(&condIndiceCourant);

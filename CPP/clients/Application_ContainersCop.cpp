@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     }
 
     //creation du threadUrgence
-    pthread_create(&threadUrg, NULL, threadUrgence, NULL);
+    //pthread_create(&threadUrg, NULL, threadUrgence, NULL);
 
     while(run)
     {

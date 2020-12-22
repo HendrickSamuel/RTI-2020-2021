@@ -1,6 +1,6 @@
 .SILENT:
 
-PROGRAM = Application_Containers Serveur_Containers Application_Chat
+PROGRAM = Application_Containers Serveur_Containers Application_Chat Application_ContainersCop
 
 LIBRAIRIE = ./librairies
 SERVEURS = ./serveurs
@@ -22,6 +22,10 @@ Serveur_Containers: $(SERVERCONTAINERS_OBJS) $(SERVEURS)/Serveur_Containers.cpp 
 Application_Containers: $(CLIENTCONTAINERS_OBJS) $(CLIENT)/Application_Containers.cpp
 	echo creation du Application_Containers
 	$(GPP) $(CLIENT)/Application_Containers.cpp -o ./Application_Containers $(CLIENTCONTAINERS_OBJS)
+
+Application_ContainersCop: $(CLIENTCONTAINERS_OBJS) $(CLIENT)/Application_ContainersCop.cpp
+	echo creation du Application_ContainersCop
+	$(GPP) $(CLIENT)/Application_ContainersCop.cpp -o ./Application_ContainersCop $(CLIENTCONTAINERS_OBJS)
 
 Application_Chat: $(CLIENTCONTAINERS_OBJS) $(CLIENT)/Application_Chat.cpp
 	echo creation du Application_Chat
