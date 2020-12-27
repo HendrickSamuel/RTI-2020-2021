@@ -136,7 +136,8 @@ public class TraitementTRAMAP implements Traitement
             return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Le client n'est pas connecte dans le serveur");
         }
 
-        try {
+        try
+        {
             PreparedStatement ps = _bd.getPreparedStatement("SELECT * FROM parc WHERE UPPER(idContainer) = UPPER(?) AND UPPER(numeroReservation) = UPPER(?);");
             ps.setString(1, chargeUtile.getIdContainer());
             ps.setString(2, chargeUtile.getNumeroReservation());
@@ -158,7 +159,9 @@ public class TraitementTRAMAP implements Traitement
             {
                 return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Aucune réservation ne correspond à ce container");
             }
-        } catch (SQLException throwables) {
+        }
+        catch (SQLException throwables)
+        {
             return new ReponseTRAMAP(ReponseTRAMAP.NOK, null, "Erreur lors de la connection à la base de données");
         }
     }

@@ -17,11 +17,11 @@ public class ThreadServer extends Thread
     /********************************/
     /*           Variables          */
     /********************************/
-    private int _port;
-    private SourceTaches _sourceTaches;
-    private ConsoleServeur _console;
+    protected int _port;
+    protected SourceTaches _sourceTaches;
+    protected ConsoleServeur _console;
     private ServerSocket SSocket = null;
-    private Reponse _errorResponse;
+    protected Reponse _errorResponse;
     protected boolean _javaObjectsCommunication = true;
 
     //todo: Ajouts d'evenements pour le plantage
@@ -99,7 +99,7 @@ public class ThreadServer extends Thread
         }
     }
 
-    private void AfficheServeur(String message)
+    protected void AfficheServeur(String message)
     {
         if(_console != null)
         {
@@ -111,7 +111,7 @@ public class ThreadServer extends Thread
         }
     }
 
-    private void ReponseResourceOccupee(Socket sock, Reponse reponse)
+    protected void ReponseResourceOccupee(Socket sock, Reponse reponse)
     {
         AfficheServeur("Un client tente de se connecter sans ressources disponibles");
         try
@@ -125,19 +125,19 @@ public class ThreadServer extends Thread
         }
     }
 
-    private void ReponseJavaObjects(Socket sock, Reponse reponse) throws IOException {
+    protected void ReponseJavaObjects(Socket sock, Reponse reponse) throws IOException {
         ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
         oos.writeObject(reponse);
         oos.flush();
     }
 
-    private void ReponseBytes(Socket sock, Reponse reponse) throws IOException {
+    protected void ReponseBytes(Socket sock, Reponse reponse) throws IOException {
         DataOutputStream dos = new DataOutputStream(sock.getOutputStream());
         dos.write(reponse.toString().getBytes());
         dos.flush();
     }
 
-    private String getPublicIp()
+    protected String getPublicIp()
     {
         String systemipaddress;
         try

@@ -317,6 +317,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
 
                     socketMouv.sendString(mes, tail);
 
+                    free(mes);
+
                     retour = socketMouv.receiveString(MTU, '#', '%');
 
                     cout << "message recu de serveur mouvement [" << retour << "]" << endl;
@@ -431,6 +433,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
 
                     socketMouv.sendString(mes, tail);
 
+                    free(mes);
+
                     retour = socketMouv.receiveString(MTU, '#', '%');
 
                     cout << "message recu de serveur mouvement [" << retour << "]" << endl;
@@ -475,7 +479,9 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                         PT->idCont.insere(id);
                         freePTMess();
                         PT->message = new char[strlen("5#true#Deplacement de container enregistre#%")+1];
-                        strcpy(PT->message, "5#true#Deplacement de container enregistre#%");       
+                        strcpy(PT->message, "5#true#Deplacement de container enregistre#%");  
+
+                         PT->idCont.Aff();    
                     }
                     
                 }
@@ -499,6 +505,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                             id = cel->valeur;
                             cel = cel->suivant;
 
+                            cout << "id = " << id << endl;
+
                             if(liste == NULL)
                             {
                                 listeTmp = (char*) malloc(strlen(id) + 1);
@@ -508,8 +516,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                             else
                             {
                                 listeTmp = (char*) malloc(strlen(id) + strlen(liste) + 1);
-                                strcpy(liste, id);
-                                strcpy(listeTmp, id);
+                                strcat(liste, id);
+                                strcpy(listeTmp, liste);
                                 strcat(listeTmp, "/");
                             }
 
@@ -518,18 +526,28 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                             liste = listeTmp;
 
                         }while(cel != NULL);
+
+                        cout << "liste = " << liste << endl;
                
                         //Construction du message
                         int tail = strlen("protocol.PLAMAP.DonneeSignalDep#idTransporteur=#ListIdCont=") + 1 + strlen(proto.donnees.outputDone.id) + strlen(liste);
-                        char * mes = (char*)malloc(tail);
+                        cout << "tail = " << tail+1 <<endl;
+                        char * mes = new char[tail+1]();
+                        cout << "test1 " <<endl;
                         strcpy(mes, "protocol.PLAMAP.DonneeSignalDep#idTransporteur=");
+                        cout << "test2 " <<endl;
                         strcat(mes, proto.donnees.outputDone.id);
+                        cout << "test3 " <<endl;
                         strcat(mes, "#ListIdCont=");
+                        cout << "test4 " <<endl;
                         strcat(mes, liste);
+                        cout << "test5 " <<endl;
                         mes[tail-1] = '\n';
+                        cout << "test6 " <<endl;
 
                         socketMouv.sendString(mes, tail);
 
+                        free(mes);
                         retour = socketMouv.receiveString(MTU, '#', '%');
 
                         if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0) 

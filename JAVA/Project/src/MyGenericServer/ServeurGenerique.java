@@ -75,6 +75,17 @@ public abstract class ServeurGenerique
         _threadServer.start();
     }
 
+    public void StartSecureServeur()
+    {
+        _threadServer = new SecureThreadServer(this._port, this._sourceTaches, this._console, this.CreateBusyResponse());
+        _threadServer.set_javaObjectsCommunication(this.isJavaCommunication);
+
+        CreationPoolThreads(this._sourceTaches);
+
+        if(!_error)
+            _threadServer.start();
+    }
+
     public void StopServeur()
     {
         if(_console != null)
