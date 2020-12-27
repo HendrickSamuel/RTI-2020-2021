@@ -172,8 +172,18 @@ public class TraitementSAMOP implements Traitement
 
                     if(fonction.equals("chef-comptable"))
                     {
-                            //todo calculer les salaires
-                            return new ReponseSAMOP(ReponseSAMOP.OK, null, null);
+                        //on verifie si ca a deja ete fait
+                        ps = _bd.getPreparedStatement("SELECT * FROM salaires WHERE YEAR(mois_annee) = YEAR(SYSDATE()) AND MONTH(mois_annee) = MONTH(SYSDATE());");
+                        rs = _bd.ExecuteQuery(ps);
+
+                        if(rs!=null && rs.next())
+                        {
+                            return new ReponseSAMOP(ReponseSAMOP.NOK, "Cette action a deja ete effectuée ce mois-ci", null);
+                        }
+
+                        calculSalaires();
+
+                        return new ReponseSAMOP(ReponseSAMOP.OK, null, null);
                     }
                     return new ReponseSAMOP(ReponseSAMOP.NOK, "Vous n'etes pas habilite pour cette action", null);
                 }
@@ -254,5 +264,60 @@ public class TraitementSAMOP implements Traitement
     {
         System.out.println("traite404 Request not found");
         return new ReponseSAMOP(ReponseSAMOP.REQUEST_NOT_FOUND, "404 request not found", null);
+    }
+
+    private void calculSalaires() throws SQLException
+    {
+        int montant;
+
+        int onns;
+        int precompte;
+
+        PreparedStatement psPers = _bd.getPreparedStatement("SELECT matricule, nom, prenom, fonction FROM personnel;");
+        ResultSet rsPers = _bd.ExecuteQuery(psPers);
+
+        if(rsPers!=null)
+        {
+            while(rsPers.next())
+            {
+                montant = 0;
+                PreparedStatement psBar = _bd.getPreparedStatement("SELECT montant FROM baremes WHERE id = ?;");
+                psBar.setString(1, rsPers.getString("fonction"));
+                ResultSet rsBar = _bd.ExecuteQuery(psBar);
+
+                if(rsBar!=null && rsBar.next())
+                {
+                    montant = rsBar.getInt("montant");
+                }
+
+                PreparedStatement psPrim = _bd.getPreparedStatement("SELECT id, montant FROM primes WHERE octroie_a = ? AND payee = 0;");
+                psPrim.setString(1, rsPers.getString("matricule"));
+                ResultSet rsPrim = _bd.ExecuteQuery(psPrim);
+
+                if(rsPrim!=null)
+                {
+                    while(rsPrim.next())
+                    {
+                        montant = montant + rsPrim.getInt("montant");
+
+                        PreparedStatement prepstate = _bd.getPreparedStatement("UPDATE primes SET payee = 1 WHERE id = ?;");
+                        prepstate.setInt(1, rsPrim.getInt("id"));
+                        _bd.Execute(prepstate);
+                    }
+                }
+
+                onns = montant / 10;
+                precompte = montant / 100;
+
+                PreparedStatement prepstate = _bd.getPreparedStatement("INSERT into salaires (id, nom, prenom, mois_annee, montant_brut, ret_ONSS, ret_prec, fich_env, sal_vers) " +
+                        "VALUES (null, ?, ?, SYSDATE(), ?, ?, ?, 0, 0);");
+                prepstate.setString(1, rsPers.getString("nom"));
+                prepstate.setString(2, rsPers.getString("prenom"));
+                prepstate.setInt(3, montant);
+                prepstate.setInt(4, onns);
+                prepstate.setInt(5, precompte);
+                _bd.Execute(prepstate);
+            }
+        }
     }
 }
