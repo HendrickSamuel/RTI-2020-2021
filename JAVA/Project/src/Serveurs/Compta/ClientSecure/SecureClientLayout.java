@@ -5,7 +5,7 @@
 
 package Serveurs.Compta.ClientSecure;
 
-import protocol.SAMOP.ReponseSAMOP;
+import protocol.SAMOP.*;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -28,13 +28,10 @@ public class SecureClientLayout extends JFrame
     private JPanel appPanel;
     private JRadioButton computeSalRadio;
     private JRadioButton validateSalRadio;
-    private JRadioButton launchPaymentRadio;
     private JRadioButton askPaymentsRadioButton;
     private JRadioButton launchPayementsRadio;
     private JButton validerButton;
-    private JPanel launchPaymentPanel;
     private JPanel askPaymentPanel;
-    private JTextField empNameField;
     private JTextField monthField;
 
     /********************************/
@@ -54,6 +51,8 @@ public class SecureClientLayout extends JFrame
 
         initComponents();
     }
+
+
     /********************************/
     /*            Getters           */
     /********************************/
@@ -92,7 +91,6 @@ public class SecureClientLayout extends JFrame
     private void initComponents()
     {
         appPanel.setVisible(false);
-        launchPaymentPanel.setVisible(false);
         askPaymentPanel.setVisible(false);
 
         validLoginButton.addActionListener(new java.awt.event.ActionListener()
@@ -127,14 +125,6 @@ public class SecureClientLayout extends JFrame
             }
         });
 
-        launchPaymentRadio.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                onLaunchPayment(evt);
-            }
-        });
-
         askPaymentsRadioButton.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -165,7 +155,12 @@ public class SecureClientLayout extends JFrame
             }
             if(rep.getCode() == 200)
             {
-                labelError.setText(rep.getMessage());
+                labelError.setText("");
+
+                messageDialog dial = new messageDialog("Le calcul des salaires à bien été effectué");
+                dial.setSize(300, 150);
+                dial.setLocationRelativeTo(this);
+                dial.setVisible(true);
             }
             else
             {
@@ -182,7 +177,7 @@ public class SecureClientLayout extends JFrame
     {
         try
         {
-            ReponseSAMOP rep = get_client().sendValidateSal();
+            ReponseSAMOP rep = get_client().getValidateSal();
 
             System.out.println(" *** Reponse reçue : " + rep.getCode());
             if(rep.getMessage() != null)
@@ -193,7 +188,35 @@ public class SecureClientLayout extends JFrame
             {
                 labelError.setText("");
 
-                //todo : Afficher la liste.
+                listeVirementsDialog dial = new listeVirementsDialog(((DonneeValideSal)rep.getChargeUtile()).getListe());
+                dial.setTitle("Virements en attente de validation");
+                dial.setSize(400, 500);
+                dial.setLocationRelativeTo(this);
+                dial.setVisible(true);
+
+                if(dial.getListRetour() != null && dial.getListRetour().size() > 0)
+                {
+                    rep = get_client().sendValidateSal(dial.getListRetour());
+
+                    System.out.println(" *** Reponse reçue : " + rep.getCode());
+                    if(rep.getMessage() != null)
+                    {
+                        System.out.println("Message reçu: " + rep.getMessage());
+                    }
+                    if(rep.getCode() == 200)
+                    {
+                        labelError.setText("");
+
+                        messageDialog mes = new messageDialog("La validation des salaires à bien été effectuée");
+                        mes.setSize(300, 150);
+                        mes.setLocationRelativeTo(this);
+                        mes.setVisible(true);
+                    }
+                    else
+                    {
+                        labelError.setText(rep.getMessage());
+                    }
+                }
             }
             else
             {
@@ -203,27 +226,6 @@ public class SecureClientLayout extends JFrame
         catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException | SignatureException | NoSuchProviderException | InvalidKeyException e)
         {
             labelError.setText(e.getMessage());
-        }
-    }
-
-    private void launchPayment()
-    {
-        ReponseSAMOP rep = get_client().sendLaunchPayment(empNameField.getText());
-
-        System.out.println(" *** Reponse reçue : " + rep.getCode());
-        if(rep.getMessage() != null)
-        {
-            System.out.println("Message reçu: " + rep.getMessage());
-        }
-        if(rep.getCode() == 200)
-        {
-            labelError.setText("");
-
-            //todo : Afficher nom et montant.
-        }
-        else
-        {
-            labelError.setText(rep.getMessage());
         }
     }
 
@@ -240,7 +242,13 @@ public class SecureClientLayout extends JFrame
         {
             labelError.setText("");
 
-            //todo : Afficher liste.
+            listeVirementsDialog dial = new listeVirementsDialog(((DonneeAskPayements)rep.getChargeUtile()).getListe());
+            dial.setTitle("Virements effectué pour le mois demandé");
+            dial.setSize(400, 500);
+            dial.setLocationRelativeTo(this);
+            dial.getValiderLaSelectionButton().setVisible(false);
+            dial.getValiderLaTotaliteButton().setVisible(false);
+            dial.setVisible(true);
         }
         else
         {
@@ -250,7 +258,7 @@ public class SecureClientLayout extends JFrame
 
     private void launchPayements()
     {
-        ReponseSAMOP rep = get_client().sendLaunchPayments();
+        ReponseSAMOP rep = get_client().getLaunchPayments();
 
         System.out.println(" *** Reponse reçue : " + rep.getCode());
         if(rep.getMessage() != null)
@@ -261,7 +269,38 @@ public class SecureClientLayout extends JFrame
         {
             labelError.setText("");
 
-            //todo : Afficher liste des noms et montants.
+            listeVirementsDialog dial = new listeVirementsDialog(((DonneeLaunchPayements)rep.getChargeUtile()).getListe());
+            dial.setTitle("Virements pouvant etre effectué");
+            dial.setSize(400, 500);
+            dial.setLocationRelativeTo(this);
+            dial.setVisible(true);
+
+            if(dial.getListRetour() != null && dial.getListRetour().size() > 0)
+            {
+                rep = get_client().sendLaunchPayments(dial.getListRetour());
+
+                System.out.println(" *** Reponse reçue : " + rep.getCode());
+                if(rep.getMessage() != null)
+                {
+                    System.out.println("Message reçu: " + rep.getMessage());
+                }
+                if(rep.getCode() == 200)
+                {
+                    labelError.setText("");
+
+                    listeVirementsDialog dia = new listeVirementsDialog(((DonneeSendLauchPayements)rep.getChargeUtile()).getListe());
+                    dia.setTitle("Virements venant d'etre effectué");
+                    dia.setSize(400, 500);
+                    dia.setLocationRelativeTo(this);
+                    dia.getValiderLaSelectionButton().setVisible(false);
+                    dia.getValiderLaTotaliteButton().setVisible(false);
+                    dia.setVisible(true);
+                }
+                else
+                {
+                    labelError.setText(rep.getMessage());
+                }
+            }
         }
         else
         {
@@ -308,10 +347,6 @@ public class SecureClientLayout extends JFrame
         {
             validateSal();
         }
-        else if(launchPaymentRadio.isSelected())
-        {
-            launchPayment();
-        }
         else if(askPaymentsRadioButton.isSelected())
         {
             askPayments();
@@ -324,31 +359,21 @@ public class SecureClientLayout extends JFrame
 
     private void onComputeSal(java.awt.event.ActionEvent evt)
     {
-        launchPaymentPanel.setVisible(false);
         askPaymentPanel.setVisible(false);
     }
 
     private void onValidateSal(java.awt.event.ActionEvent evt)
     {
-        launchPaymentPanel.setVisible(false);
-        askPaymentPanel.setVisible(false);
-    }
-
-    private void onLaunchPayment(java.awt.event.ActionEvent evt)
-    {
-        launchPaymentPanel.setVisible(true);
         askPaymentPanel.setVisible(false);
     }
 
     private void onAskPayments(java.awt.event.ActionEvent evt)
     {
-        launchPaymentPanel.setVisible(false);
         askPaymentPanel.setVisible(true);
     }
 
     private void onLaunchPayements(java.awt.event.ActionEvent evt)
     {
-        launchPaymentPanel.setVisible(false);
         askPaymentPanel.setVisible(false);
     }
 

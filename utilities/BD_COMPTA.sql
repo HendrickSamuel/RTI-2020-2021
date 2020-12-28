@@ -80,16 +80,17 @@ id INT AUTO_INCREMENT PRIMARY KEY,
 nom varchar(255),
 prenom varchar(255),
 mois_annee DATE,
-montant_brut INT,
-ret_ONSS INT,
-ret_prec INT,
+montant_brut float,
+ret_ONSS float,
+ret_prec float,
 fich_env boolean,
-sal_vers boolean
+sal_vers boolean,
+sal_val boolean
 );
 
 CREATE TABLE Primes(
 id INT AUTO_INCREMENT PRIMARY KEY,
-montant INT,
+montant float,
 octroi DATE,
 motif varchar(255),
 octroie_par varchar(255),

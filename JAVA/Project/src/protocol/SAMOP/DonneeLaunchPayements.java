@@ -7,6 +7,7 @@ package protocol.SAMOP;
 
 import genericRequest.DonneeRequete;
 import java.io.Serializable;
+import java.util.List;
 
 public class DonneeLaunchPayements implements DonneeRequete, Serializable
 {
@@ -15,18 +16,40 @@ public class DonneeLaunchPayements implements DonneeRequete, Serializable
     /********************************/
     /*           Variables          */
     /********************************/
+    private List<Virement> liste;
+
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
+    public DonneeLaunchPayements()
+    {
+
+    }
+
+    public DonneeLaunchPayements(List<Virement> liste)
+    {
+        this.liste = liste;
+    }
+
 
     /********************************/
     /*            Getters           */
     /********************************/
+    public List<Virement> getListe()
+    {
+        return liste;
+    }
+
 
     /********************************/
     /*            Setters           */
     /********************************/
+    public void setListe(List<Virement> liste)
+    {
+        this.liste = liste;
+    }
+
 
     /********************************/
     /*            Methodes          */

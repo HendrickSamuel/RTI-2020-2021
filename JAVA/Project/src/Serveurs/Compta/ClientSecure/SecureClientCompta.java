@@ -15,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.List;
 
 public class SecureClientCompta
 {
@@ -213,7 +214,7 @@ public class SecureClientCompta
         return rep;
     }
 
-    public ReponseSAMOP sendValidateSal() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, SignatureException, NoSuchProviderException, InvalidKeyException
+    public ReponseSAMOP getValidateSal() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, SignatureException, NoSuchProviderException, InvalidKeyException
     {
         DonneeValideSal dvl = new DonneeValideSal();
 
@@ -229,11 +230,24 @@ public class SecureClientCompta
         return rep;
     }
 
-    public ReponseSAMOP sendLaunchPayment(String empName)
+    public ReponseSAMOP sendValidateSal(List<Virement> list)
     {
-        DonneeLaunchPayement dlp = new DonneeLaunchPayement();
+        DonneeSendValideSal dsvl = new DonneeSendValideSal();
 
-        dlp.setEmpName(empName);
+        dsvl.setListe(list);
+
+        RequeteSAMOP req = new RequeteSAMOP(dsvl);
+
+        sendReq(req);
+
+        ReponseSAMOP rep = readRep();
+
+        return rep;
+    }
+
+    public ReponseSAMOP getLaunchPayments()
+    {
+        DonneeLaunchPayements dlp = new DonneeLaunchPayements();
 
         RequeteSAMOP req = new RequeteSAMOP(dlp);
 
@@ -244,11 +258,13 @@ public class SecureClientCompta
         return rep;
     }
 
-    public ReponseSAMOP sendLaunchPayments()
+    public ReponseSAMOP sendLaunchPayments(List<Virement> list)
     {
-        DonneeLaunchPayement dlp = new DonneeLaunchPayement();
+        DonneeSendLauchPayements dslp = new DonneeSendLauchPayements();
 
-        RequeteSAMOP req = new RequeteSAMOP(dlp);
+        dslp.setListe(list);
+
+        RequeteSAMOP req = new RequeteSAMOP(dslp);
 
         sendReq(req);
 

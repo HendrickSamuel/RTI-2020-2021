@@ -16,6 +16,8 @@ import java.security.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TraitementSAMOP implements Traitement
 {
@@ -93,10 +95,12 @@ public class TraitementSAMOP implements Traitement
             return traiteComputeSal((DonneeComputeSal) Requete, client);
         if(Requete instanceof DonneeValideSal)
             return traiteValideSal((DonneeValideSal) Requete, client);
-        if(Requete instanceof DonneeLaunchPayement)
-            return traiteLaunchPayement((DonneeLaunchPayement) Requete, client);
+        if(Requete instanceof DonneeSendValideSal)
+            return traiteSendValideSal((DonneeSendValideSal) Requete, client);
         if(Requete instanceof DonneeLaunchPayements)
             return traiteLaunchPayements((DonneeLaunchPayements) Requete, client);
+        if(Requete instanceof DonneeSendLauchPayements)
+            return traiteSendLauchPayements((DonneeSendLauchPayements) Requete, client);
         if(Requete instanceof DonneeAskPayements)
             return traiteAskPayements((DonneeAskPayements) Requete, client);
 
@@ -218,8 +222,16 @@ public class TraitementSAMOP implements Traitement
 
                     if(fonction.equals("chef-comptable"))
                     {
-                        //todo : retourner la liste
-                        return new ReponseSAMOP(ReponseSAMOP.OK, null, null);
+                        chargeUtile.setListe(getListVirementsAValider());
+
+                        if(chargeUtile.getListe().size() < 1)
+                        {
+                            return new ReponseSAMOP(ReponseSAMOP.NOK, "Pas de virements a valider", null);
+                        }
+                        else
+                        {
+                            return new ReponseSAMOP(ReponseSAMOP.OK, null, chargeUtile);
+                        }
                     }
                     return new ReponseSAMOP(ReponseSAMOP.NOK, "Vous n'etes pas habilite pour cette action", null);
                 }
@@ -233,20 +245,80 @@ public class TraitementSAMOP implements Traitement
         return new ReponseSAMOP(ReponseSAMOP.NOK, "ERREUR lors du traitement de la requete", null);
     }
 
-    private Reponse traiteLaunchPayement(DonneeLaunchPayement chargeUtile,  Client client)
+    private Reponse traiteSendValideSal(DonneeSendValideSal chargeUtile,  Client client)
     {
-        System.out.println("traiteLaunchPayement");
+        System.out.println("traiteSendValideSal");
 
-        String empName = chargeUtile.getEmpName();
+        ArrayList<Virement> virements = (ArrayList<Virement>)chargeUtile.getListe();
 
-
-
+        try
+        {
+            for(Virement virement : virements)
+            {
+                PreparedStatement prepstate = _bd.getPreparedStatement("UPDATE salaires SET sal_val = 1 WHERE id = ?;");
+                prepstate.setInt(1, virement.getId());
+                _bd.Execute(prepstate);
+            }
+            return new ReponseSAMOP(ReponseSAMOP.OK, null, null);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
         return new ReponseSAMOP(ReponseSAMOP.NOK, "ERREUR lors du traitement de la requete", null);
     }
 
     private Reponse traiteLaunchPayements(DonneeLaunchPayements chargeUtile,  Client client)
     {
         System.out.println("traiteLaunchPayements");
+
+        try
+        {
+            chargeUtile.setListe(getListVirementsPrevu());
+
+            if(chargeUtile.getListe().size() < 1)
+            {
+                return new ReponseSAMOP(ReponseSAMOP.NOK, "Pas de virements en attente", null);
+            }
+            else
+            {
+                return new ReponseSAMOP(ReponseSAMOP.OK, null, chargeUtile);
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return new ReponseSAMOP(ReponseSAMOP.NOK, "ERREUR lors du traitement de la requete", null);
+    }
+
+    private Reponse traiteSendLauchPayements(DonneeSendLauchPayements chargeUtile,  Client client)
+    {
+        System.out.println("traiteSendLauchPayements");
+
+        ArrayList<Virement> virements = (ArrayList<Virement>)chargeUtile.getListe();
+
+        try
+        {
+            for(Virement virement : virements)
+            {
+                PreparedStatement prepstate = _bd.getPreparedStatement("UPDATE salaires SET sal_vers = 1 WHERE id = ?;");
+                prepstate.setInt(1, virement.getId());
+                _bd.Execute(prepstate);
+
+                //todo : lancé le mail
+
+                prepstate = _bd.getPreparedStatement("UPDATE salaires SET fich_env = 1 WHERE id = ?;");
+                prepstate.setInt(1, virement.getId());
+                _bd.Execute(prepstate);
+            }
+            return new ReponseSAMOP(ReponseSAMOP.OK, null, chargeUtile);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
 
         return new ReponseSAMOP(ReponseSAMOP.NOK, "ERREUR lors du traitement de la requete", null);
     }
@@ -257,6 +329,33 @@ public class TraitementSAMOP implements Traitement
 
         int mois = chargeUtile.getMonth();
 
+        try
+        {
+            PreparedStatement ps = _bd.getPreparedStatement("SELECT id, nom, prenom, montant_brut FROM salaires WHERE MONTH(mois_annee) = ? AND sal_vers = 1;");
+            ps.setInt(1, mois);
+            ResultSet rs = _bd.ExecuteQuery(ps);
+
+            if(rs!=null)
+            {
+                ArrayList<Virement> liste = new ArrayList<Virement>();
+                while(rs.next())
+                {
+                    liste.add(new Virement(rs.getInt("id"), rs.getString("nom"),rs.getString("prenom"),rs.getDouble("montant_brut")));
+                }
+                chargeUtile.setListe(liste);
+
+                if(chargeUtile.getListe().size() < 1)
+                {
+                    return new ReponseSAMOP(ReponseSAMOP.NOK, "Pas de payement effectué pour ce mois", null);
+                }
+                return new ReponseSAMOP(ReponseSAMOP.OK, null, chargeUtile);
+            }
+            return new ReponseSAMOP(ReponseSAMOP.NOK, "Pas de payement effectué pour ce mois", null);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
         return new ReponseSAMOP(ReponseSAMOP.NOK, "ERREUR lors du traitement de la requete", null);
     }
 
@@ -268,10 +367,9 @@ public class TraitementSAMOP implements Traitement
 
     private void calculSalaires() throws SQLException
     {
-        int montant;
-
-        int onns;
-        int precompte;
+        double montant;
+        double onns;
+        double precompte;
 
         PreparedStatement psPers = _bd.getPreparedStatement("SELECT matricule, nom, prenom, fonction FROM personnel;");
         ResultSet rsPers = _bd.ExecuteQuery(psPers);
@@ -287,7 +385,7 @@ public class TraitementSAMOP implements Traitement
 
                 if(rsBar!=null && rsBar.next())
                 {
-                    montant = rsBar.getInt("montant");
+                    montant = rsBar.getDouble("montant");
                 }
 
                 PreparedStatement psPrim = _bd.getPreparedStatement("SELECT id, montant FROM primes WHERE octroie_a = ? AND payee = 0;");
@@ -298,7 +396,7 @@ public class TraitementSAMOP implements Traitement
                 {
                     while(rsPrim.next())
                     {
-                        montant = montant + rsPrim.getInt("montant");
+                        montant = montant + rsPrim.getDouble("montant");
 
                         PreparedStatement prepstate = _bd.getPreparedStatement("UPDATE primes SET payee = 1 WHERE id = ?;");
                         prepstate.setInt(1, rsPrim.getInt("id"));
@@ -309,15 +407,49 @@ public class TraitementSAMOP implements Traitement
                 onns = montant / 10;
                 precompte = montant / 100;
 
-                PreparedStatement prepstate = _bd.getPreparedStatement("INSERT into salaires (id, nom, prenom, mois_annee, montant_brut, ret_ONSS, ret_prec, fich_env, sal_vers) " +
-                        "VALUES (null, ?, ?, SYSDATE(), ?, ?, ?, 0, 0);");
+                PreparedStatement prepstate = _bd.getPreparedStatement("INSERT into salaires (id, nom, prenom, mois_annee, montant_brut, ret_ONSS, ret_prec, fich_env, sal_vers, sal_val) " +
+                        "VALUES (null, ?, ?, SYSDATE(), ?, ?, ?, 0, 0, 0);");
                 prepstate.setString(1, rsPers.getString("nom"));
                 prepstate.setString(2, rsPers.getString("prenom"));
-                prepstate.setInt(3, montant);
-                prepstate.setInt(4, onns);
-                prepstate.setInt(5, precompte);
+                prepstate.setDouble(3, montant);
+                prepstate.setDouble(4, onns);
+                prepstate.setDouble(5, precompte);
                 _bd.Execute(prepstate);
             }
         }
+    }
+
+    private List<Virement> getListVirementsAValider() throws SQLException
+    {
+        ArrayList<Virement> liste = new ArrayList<Virement>();
+
+        PreparedStatement ps = _bd.getPreparedStatement("SELECT id, nom, prenom, montant_brut FROM salaires WHERE sal_val = 0;");
+        ResultSet rs = _bd.ExecuteQuery(ps);
+
+        if(rs!=null)
+        {
+            while(rs.next())
+            {
+                liste.add(new Virement(rs.getInt("id"), rs.getString("nom"),rs.getString("prenom"),rs.getDouble("montant_brut")));
+            }
+        }
+        return liste;
+    }
+
+    private List<Virement> getListVirementsPrevu() throws SQLException
+    {
+        ArrayList<Virement> liste = new ArrayList<Virement>();
+
+        PreparedStatement ps = _bd.getPreparedStatement("SELECT id, nom, prenom, montant_brut FROM salaires WHERE sal_val = 1 AND sal_vers = 0;");
+        ResultSet rs = _bd.ExecuteQuery(ps);
+
+        if(rs!=null)
+        {
+            while(rs.next())
+            {
+                liste.add(new Virement(rs.getInt("id"), rs.getString("nom"),rs.getString("prenom"),rs.getDouble("montant_brut")));
+            }
+        }
+        return liste;
     }
 }

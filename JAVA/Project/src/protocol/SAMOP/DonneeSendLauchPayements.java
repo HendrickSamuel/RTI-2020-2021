@@ -1,52 +1,54 @@
 //Auteurs : HENDRICK Samuel et DELAVAL Kevin                                                
 //Groupe : 2302                                                
 //Projet : R.T.I.                                 
-//Date de la création : 27/12/2020
+//Date de la création : 28/12/2020
 
 package protocol.SAMOP;
 
 import genericRequest.DonneeRequete;
-import java.io.Serializable;
 
-public class DonneeLaunchPayement implements DonneeRequete, Serializable
+import java.io.Serializable;
+import java.util.List;
+
+public class DonneeSendLauchPayements implements DonneeRequete, Serializable
 {
-    private static final long serialVersionUID = 8570434704124069770L;
+    private static final long serialVersionUID = 337003619695669600L;
 
     /********************************/
     /*           Variables          */
     /********************************/
-    private String empName;
+    private List<Virement> liste;
 
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
-    public DonneeLaunchPayement()
+    public DonneeSendLauchPayements()
     {
 
     }
 
-    public DonneeLaunchPayement(String empName)
+    public DonneeSendLauchPayements(List<Virement> liste)
     {
-        this.empName = empName;
+        this.liste = liste;
     }
 
 
     /********************************/
     /*            Getters           */
     /********************************/
-    public String getEmpName()
+    public List<Virement> getListe()
     {
-        return empName;
+        return liste;
     }
 
 
     /********************************/
     /*            Setters           */
     /********************************/
-    public void setEmpName(String empName)
+    public void setListe(List<Virement> liste)
     {
-        this.empName = empName;
+        this.liste = liste;
     }
 
 
