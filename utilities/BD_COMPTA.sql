@@ -53,7 +53,13 @@ moyen_payement varchar(255),
 facture_payee boolean
 );
 
-INSERT INTO Facture VALUES (1, "test", STR_TO_DATE("15,11,2020", "%d,%m,%Y"), 21, 0, null, 0, null, 0);
+INSERT INTO Facture VALUES (1, "Inpres", STR_TO_DATE("15,11,2020", "%d,%m,%Y"), 21, 0, null, 0, null, 0);
+INSERT INTO Facture VALUES (2, "Microsoft", STR_TO_DATE("16,11,2020", "%d,%m,%Y"), 21, 0, null, 0, null, 0);
+INSERT INTO Facture VALUES (3, "ISA", STR_TO_DATE("15,11,2020", "%d,%m,%Y"), 21, 0, null, 0, null, 0);
+
+INSERT INTO Facture VALUES (4, "Inpres", STR_TO_DATE("15,12,2020", "%d,%m,%Y"), 21, 0, null, 0, null, 0);
+INSERT INTO Facture VALUES (5, "Microsoft", STR_TO_DATE("16,12,2020", "%d,%m,%Y"), 21, 0, null, 0, null, 0);
+INSERT INTO Facture VALUES (6, "ISA", STR_TO_DATE("15,12,2020", "%d,%m,%Y"), 21, 0, null, 0, null, 0);
 
 CREATE TABLE Items_Facture(
 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -65,7 +71,13 @@ prix_htva float,
 FOREIGN KEY (facture) REFERENCES Facture(id)
 );
 
-INSERT INTO Items_Facture VALUES (1, 1, 1, "cont", "dest", 22);
+INSERT INTO Items_Facture VALUES (1, 1, 1, "cont", "Paris", 22);
+INSERT INTO Items_Facture VALUES (2, 2, 1, "cont", "Brest", 38);
+INSERT INTO Items_Facture VALUES (3, 3, 1, "cont", "Liege", 46);
+INSERT INTO Items_Facture VALUES (4, 4, 1, "cont", "Gent", 27);
+INSERT INTO Items_Facture VALUES (5, 5, 1, "cont", "Liege", 19);
+INSERT INTO Items_Facture VALUES (6, 6, 1, "cont", "Brest", 20);
+INSERT INTO Items_Facture VALUES (7, 6, 1, "cont", "Paris", 21);
 
 CREATE TABLE Tarifs(
 id VARCHAR(255) PRIMARY KEY,

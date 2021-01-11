@@ -3,6 +3,7 @@ package Serveurs.Compta.Client;
 import protocol.BISAMAP.ReponseBISAMAP;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 public class RecPayDialog extends JDialog {
@@ -15,6 +16,9 @@ public class RecPayDialog extends JDialog {
     private ClientCompta _client;
 
     public RecPayDialog(ClientCompta client) {
+        this.setMinimumSize(new Dimension(200,200));
+        this.setSize(700,350);
+
         _client = client;
         setContentPane(contentPane);
         setModal(true);

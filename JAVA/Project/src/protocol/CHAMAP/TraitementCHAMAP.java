@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Random;
 
 public class TraitementCHAMAP implements Traitement
 {
@@ -147,16 +148,17 @@ public class TraitementCHAMAP implements Traitement
                     ps.setString(1, societe);
                     ps.setInt(2, month);
                     ResultSet rs = bd_compta.ExecuteQuery(ps);
-                    if(rs.next())
+                    if(rs.next())//verifier que la societe n'aie pas deja une facture ce mois
                     {
                         idFacture = rs.getInt("id");
                         MakeBill(idFacture, chargeUtile.get_mouvements().get(i), chargeUtile.get_containers().get(i), chargeUtile.get_destination());
                     }
-                    else
-                    { //todo : faire tarif
+                    else// en faire une
+                    {
                         PreparedStatement insertStatement = bd_compta.getPreparedStatement("INSERT INTO facture " +
-                                "(societe, date_facture, tva) VALUES (?,SYSDATE(),21)");
+                                "(societe, date_facture, tva) VALUES (?,SYSDATE(),?)");
                         insertStatement.setString(1, societe);
+                        insertStatement.setFloat(2, 21f); //on taxe tout à 21%
 
                         bd_compta.Execute(insertStatement);
 
@@ -178,7 +180,10 @@ public class TraitementCHAMAP implements Traitement
 
     private void MakeBill(int facture, int mouvement, String container, String destination) throws SQLException {
 
-        //todo: aller chercher le prix du tarif
+        Random r = new Random();
+        int low = 10;
+        int high = 1000;
+        int random = r.nextInt(high-low) + low;
 
         PreparedStatement ps = bd_compta
                 .getPreparedStatement("INSERT INTO items_facture (facture, mouvement, container, destination, prix_htva) " +
@@ -187,7 +192,7 @@ public class TraitementCHAMAP implements Traitement
         ps.setInt(2, mouvement);
         ps.setString(3, container);
         ps.setString(4, destination);
-        ps.setFloat(5, 3f);
+        ps.setFloat(5, random);
 
         bd_compta.Execute(ps);
     }

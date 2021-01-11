@@ -181,7 +181,6 @@ public class TraitementBISAMAP implements Traitement {
                 {
                     return new ReponseBISAMAP(ReponseBISAMAP.NOK, "La facture ne correspond pas", null);
                 }
-
             }
             else
             {
@@ -306,21 +305,21 @@ public class TraitementBISAMAP implements Traitement {
     private Reponse traiteListWaiting(DonneeListWaiting chargeUtile, Client client)
     {
         try{
-            if(_securityHelper.verifySignature(chargeUtile.get_content().getBytes(), chargeUtile.get_signature(), "ClientKeyVault"))
+            if(_securityHelper.verifySignature(chargeUtile.get_content().getBytes(), chargeUtile.get_signature(), "ClientKeyEntry"))
             {
                 PreparedStatement ps;
                 if(chargeUtile.get_nature() == DonneeListWaiting.Duree)
                 {
                     int month = Calendar.getInstance().get(Calendar.MONTH) + 1;
                     int year = Calendar.getInstance().get(Calendar.YEAR);
-                    String query = "SELECT * FROM facture WHERE facture_envoi = true AND facture_payee = false AND mois < ? AND annee <= ?;";
+                    String query = "SELECT * FROM facture WHERE facture_envoyee = true AND facture_payee = false AND MONTH(date_facture) <= ? AND YEAR(date_facture) <= ?;";
                     ps = bd_compta.getPreparedStatement(query);
                     ps.setInt(1, month);
                     ps.setInt(2, year);
                 }
                 else
                 {
-                    String query = "SELECT * FROM facture WHERE facture_envoi = true AND facture_payee = false AND upper(societe) = upper(?);";
+                    String query = "SELECT * FROM facture WHERE facture_envoyee = true AND facture_payee = false AND upper(societe) = upper(?);";
                     ps = bd_compta.getPreparedStatement(query);
                     ps.setString(1, chargeUtile.get_societe());
                 }
@@ -342,7 +341,7 @@ public class TraitementBISAMAP implements Traitement {
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException | KeyStoreException | SQLException | NoSuchPaddingException | IOException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }
-        return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Erreur lors de la requet", null);
+        return new ReponseBISAMAP(ReponseBISAMAP.NOK, "Erreur lors de la requete", null);
     }
 
     private Reponse traite404()
@@ -355,7 +354,7 @@ public class TraitementBISAMAP implements Traitement {
         Facture facture = new Facture();
         facture.set_societe(rs.getString("societe"));
         facture.set_id(rs.getInt("id"));
-        facture.set_annee(rs.getDate("date_facture").getYear());
+        facture.set_annee(rs.getDate("date_facture").getYear()+1900);
         facture.set_mois(rs.getDate("date_facture").getMonth()+1);
         facture.set_tva(rs.getFloat("tva"));
 

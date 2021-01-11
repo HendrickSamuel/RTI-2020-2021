@@ -294,7 +294,7 @@ public class ClientCompta {
     }
 
     public ReponseBISAMAP ListWaiting(String comptable) throws Exception {
-        return ListWaiting(comptable, DonneeListWaiting.Societe, null);
+        return ListWaiting(comptable, DonneeListWaiting.Duree, null);
     }
 
     private ReponseBISAMAP ListWaiting(String comptable, int nature, String societe) throws Exception {

@@ -171,7 +171,6 @@ public class ThreadClientConnecte extends ThreadClient
         }
         return message.toString().trim();
 
-
     }
 
     public DonneeRequete parseString(String message)

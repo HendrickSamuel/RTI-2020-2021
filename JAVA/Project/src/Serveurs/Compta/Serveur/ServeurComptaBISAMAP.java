@@ -15,6 +15,11 @@ import protocol.BISAMAP.TraitementBISAMAP;
 import protocol.CHAMAP.TraitementCHAMAP;
 import security.SecurityHelper;
 
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+
 public class ServeurComptaBISAMAP extends ServeurGenerique {
 
     /********************************/
@@ -43,6 +48,11 @@ public class ServeurComptaBISAMAP extends ServeurGenerique {
 
     public void setSecurityHelper(SecurityHelper securityHelper) {
         this.securityHelper = securityHelper;
+        try {
+            this.securityHelper.initKeyStore("./Confs/ComptaKeyVault", "password");
+        } catch (KeyStoreException | IOException | CertificateException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
     /********************************/

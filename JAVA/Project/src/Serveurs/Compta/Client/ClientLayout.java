@@ -61,6 +61,12 @@ public class ClientLayout extends JFrame
                 RecPay(evt);
             }
         });
+
+        WAITINGBILLSButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                WaitBills(evt);
+            }
+        });
     }
 
     /********************************/
@@ -101,5 +107,11 @@ public class ClientLayout extends JFrame
     {
         RecPayDialog rp = new RecPayDialog(_clientCompta);
         rp.setVisible(true);
+    }
+
+    public void WaitBills(java.awt.event.ActionEvent evt)
+    {
+        ListWaitingDialog lwp = new ListWaitingDialog(_clientCompta);
+        lwp.setVisible(true);
     }
 }

@@ -21,8 +21,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 
 public class MailClient extends JFrame{
-
-
+    
     private JTabbedPane tabbedPane1;
     private JPanel Title;
     private JComboBox ContactList;

@@ -47,7 +47,6 @@ public class AdminLayout extends JFrame
         set_admin(new Admin());
 
         initComponents();
-
     }
 
 

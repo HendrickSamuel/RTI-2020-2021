@@ -5,22 +5,34 @@ import protocol.BISAMAP.Facture;
 import protocol.BISAMAP.ReponseBISAMAP;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class ListWaitingDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField textField1;
+    private JTable table1;
     private ClientCompta _client;
 
     public ListWaitingDialog(ClientCompta client) {
         _client = client;
+        this.setMinimumSize(new Dimension(200,200));
+        this.setSize(700,350);
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
+
+        table1.setModel(new DefaultTableModel(
+                null,
+                new String [] {"Id", "Societe", "Mois", "Annee", "TVA"}
+        ));
+        table1.setFillsViewportHeight(true);
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -51,6 +63,11 @@ public class ListWaitingDialog extends JDialog {
     }
 
     private void onOK() {
+        table1.setModel(new DefaultTableModel(
+                null,
+                new String [] {"Id", "Societe", "Mois", "Annee", "TVA"}
+        ));
+
         ReponseBISAMAP bisamap;
         try{
             if(textField1.getText().equals(""))
@@ -61,11 +78,24 @@ public class ListWaitingDialog extends JDialog {
             if(bisamap.getCode() == 200)
             {
                 List<Facture> factures = ((DonneeListWaiting)bisamap.getChargeUtile()).get_facturesDecryptees();
-                //todo: afficher
+                Vector ligne;
+                DefaultTableModel dtm = (DefaultTableModel) table1.getModel();
+
+                for(Facture facture: factures)
+                {
+                    ligne = new Vector();
+                    ligne.add(facture.get_id());
+                    ligne.add(facture.get_societe());
+                    ligne.add(facture.get_annee());
+                    ligne.add(facture.get_mois());
+                    ligne.add(facture.get_tva());
+
+                    dtm.addRow(ligne);
+                }
             }
             else
             {
-                //todo: afficher message
+                JOptionPane.showMessageDialog(this, bisamap.getMessage());
             }
         } catch (Exception e) {
             e.printStackTrace();
