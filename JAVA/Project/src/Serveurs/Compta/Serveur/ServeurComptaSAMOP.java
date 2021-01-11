@@ -5,8 +5,10 @@
 
 package Serveurs.Compta.Serveur;
 
+import Mails.MailHelper;
 import MyGenericServer.ConsoleServeur;
 import MyGenericServer.ServeurGenerique;
+import genericRequest.MyProperties;
 import genericRequest.Reponse;
 import genericRequest.Traitement;
 import lib.BeanDBAcces.BDCompta;
@@ -22,7 +24,7 @@ public class ServeurComptaSAMOP extends ServeurGenerique
     /********************************/
     BDCompta _bdCompta;
     private SecurityHelper securityHelper;
-
+    private MailHelper mailHelper;
 
 
     /********************************/
@@ -32,6 +34,11 @@ public class ServeurComptaSAMOP extends ServeurGenerique
     {
         super(port, connecte, NbThreads, cs, true);
         set_bdCompta(db);
+
+        MyProperties mp = new MyProperties("./Confs/MailClient.conf");
+        MailHelper mailHelper = new MailHelper();
+        mailHelper.set_userAdresse(mp.getContent("USERNAME"));
+        mailHelper.set_password(mp.getContent("PASSWORD"));
     }
 
 
@@ -73,6 +80,7 @@ public class ServeurComptaSAMOP extends ServeurGenerique
         ts.setConsole(this._console);
         ts.setBd_compta(this._bdCompta);
         ts.set_sc(this.securityHelper);
+        ts.set_mails(this.mailHelper);
         return ts;
     }
 

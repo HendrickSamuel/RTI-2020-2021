@@ -4,6 +4,7 @@
 //Date de la création : 27/12/2020
 
 package protocol.SAMOP;
+import Mails.MailHelper;
 import MyGenericServer.Client;
 import MyGenericServer.ConsoleServeur;
 import genericRequest.DonneeRequete;
@@ -28,7 +29,7 @@ public class TraitementSAMOP implements Traitement
     private SecurityHelper _securityHelper;
     private MysqlConnector _bd;
     private ConsoleServeur _cs;
-
+    private MailHelper _mails;
 
     /********************************/
     /*         Constructeurs        */
@@ -38,13 +39,13 @@ public class TraitementSAMOP implements Traitement
 
     }
 
-    public TraitementSAMOP(SecurityHelper _sc, MysqlConnector bd_compta, ConsoleServeur _cs)
+    public TraitementSAMOP(SecurityHelper _sc, MysqlConnector bd_compta, ConsoleServeur _cs, MailHelper mh)
     {
         this._securityHelper = _sc;
         this._bd = bd_compta;
         this._cs = _cs;
+        this._mails = mh;
     }
-
 
     /********************************/
     /*            Getters           */
@@ -69,6 +70,9 @@ public class TraitementSAMOP implements Traitement
         this._cs = cs;
     }
 
+    public void set_mails(MailHelper _mails) {
+        this._mails = _mails;
+    }
 
     /********************************/
     /*            Methodes          */
@@ -298,7 +302,6 @@ public class TraitementSAMOP implements Traitement
         System.out.println("traiteSendLauchPayements");
 
         ArrayList<Virement> virements = (ArrayList<Virement>)chargeUtile.getListe();
-
         try
         {
             for(Virement virement : virements)
@@ -307,11 +310,30 @@ public class TraitementSAMOP implements Traitement
                 prepstate.setInt(1, virement.getId());
                 _bd.Execute(prepstate);
 
-                //todo : lancé le mail
+                PreparedStatement userInfoStatement =
+                        _bd.getPreparedStatement("SELECT * FROM personnel where upper(nom) = upper(?) and upper(prenom) = upper(?) ");
+                userInfoStatement.setString(1, virement.getNom());
+                userInfoStatement.setString(1, virement.getPrenom());
 
-                prepstate = _bd.getPreparedStatement("UPDATE salaires SET fich_env = 1 WHERE id = ?;");
-                prepstate.setInt(1, virement.getId());
-                _bd.Execute(prepstate);
+                ResultSet res = _bd.ExecuteQuery(userInfoStatement);
+                if(res.next())
+                {
+                    _mails.SendMail(
+                            res.getString("email"),
+                            "Fiche de paie !",
+                            "Tu as reçu : " + virement.getMontant() + "pour ton super mois de travail !",
+                            null
+                    );
+
+                    prepstate = _bd.getPreparedStatement("UPDATE salaires SET fich_env = 1 WHERE id = ?;");
+                    prepstate.setInt(1, virement.getId());
+                    _bd.Execute(prepstate);
+                }
+
+
+
+
+
             }
             return new ReponseSAMOP(ReponseSAMOP.OK, null, chargeUtile);
         }

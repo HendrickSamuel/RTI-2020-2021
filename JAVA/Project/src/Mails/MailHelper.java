@@ -18,7 +18,8 @@ public class MailHelper {
 
     private String _userAdresse;
     private String _password;
-    private Session session;
+    private Session _sendingSession;
+    private Session _receivingSession;
     private Folder folder;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -42,15 +43,18 @@ public class MailHelper {
         props.put("mail.smtp.port", "587");
         props.put("mail.smtp.starttls.enable", "true");
 
-        session = Session.getInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(_userAdresse, _password);
-            }
-        });
+        if(_sendingSession == null)
+        {
+            _sendingSession = Session.getInstance(props, new Authenticator() {
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(_userAdresse, _password);
+                }
+            });
+        }
 
         try {
-            MimeMessage msg = new MimeMessage(session);
+            MimeMessage msg = new MimeMessage(_sendingSession);
             msg.setFrom(new InternetAddress(_userAdresse));
             msg.setRecipients(Message.RecipientType.TO, contact);
             msg.setSubject(subject);
@@ -95,12 +99,15 @@ public class MailHelper {
             props.put("mail.pop3s.port", "995");
             props.put("file.encoding", "iso-8859-1");
 
-            session = Session.getInstance(props, new Authenticator() {
-                @Override
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(_userAdresse, _password);
-                }
-            });
+            if(_receivingSession == null)
+            {
+                _receivingSession = Session.getInstance(props, new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(_userAdresse, _password);
+                    }
+                });
+            }
 
             CloseFolder();
             OpenFolder();
@@ -114,7 +121,7 @@ public class MailHelper {
     }
 
     public synchronized void InitFolder() throws MessagingException {
-        Store store = session.getStore("pop3s");
+        Store store = _receivingSession.getStore("pop3s");
         store.connect();
         folder = store.getFolder("INBOX");
     }
