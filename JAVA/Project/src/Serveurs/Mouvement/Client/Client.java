@@ -82,7 +82,7 @@ public class Client
     /********************************/
     private void connectServ()
     {
-        MyProperties mp = new MyProperties("./Serveur_Mouvement.conf");
+        MyProperties mp = new MyProperties("./Confs/Serveur_Mouvement.conf");
         String HOST = mp.getContent("IPSERV");
         int PORT = Integer.parseInt(mp.getContent("PORT1"));
 

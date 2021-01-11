@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
     }
 
     //creation du threadUrgence
-    pthread_create(&threadUrg, NULL, threadUrgence, NULL);
+    //pthread_create(&threadUrg, NULL, threadUrgence, NULL);
 
     while(run)
     {
@@ -126,11 +126,9 @@ int main(int argc, char *argv[])
             {
                 try
                 {
-                    cout << "avant envoie" << endl;
                     socket.sendStruct((void*)&proto, sizeof(struct protocole));
-cout << "apres envoie" << endl;
+
                     retour = socket.receiveString(MTU, '#', '%');
-                    cout << "apres recieve" << endl;
                 }
                 catch(BaseException& e)
                 {

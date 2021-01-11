@@ -23,13 +23,14 @@ public class ThreadClientConnecte extends ThreadClient
     /********************************/
     private Socket tacheEnCours;
 
-    private Client _client;
+    protected Client _client;
 
     /********************************/
     /*         Constructeurs        */
     /********************************/
     public ThreadClientConnecte()
     {
+
     }
 
     /********************************/

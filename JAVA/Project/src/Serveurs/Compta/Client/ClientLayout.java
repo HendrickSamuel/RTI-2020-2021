@@ -19,7 +19,6 @@ public class ClientLayout extends JFrame
     /********************************/
     /*           Variables          */
     /********************************/
-
     private JPanel mainPanel;
     private JButton GETNEXTBILLButton;
     private JButton LISTBILLSButton;

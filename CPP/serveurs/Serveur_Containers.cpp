@@ -190,9 +190,10 @@ int main(int argc, char *argv[])
             printf("Connexion sur la socket %d\n", j);
             pthread_mutex_lock(&mutexIndiceCourant);
             sockets[j] = socketService;
-            clients[j] = (char*)malloc(strlen(inet_ntoa(socketEcoute.getAdresse().sin_addr))+1);
-            strcpy(clients[j], inet_ntoa(socketEcoute.getAdresse().sin_addr));
-            clients[j][strlen(inet_ntoa(socketEcoute.getAdresse().sin_addr))] = '\0';
+            struct in_addr ipAddr = socketEcoute.getAdresse().sin_addr;
+            clients[j] = (char*)malloc(INET_ADDRSTRLEN+1);
+            inet_ntop(AF_INET, &ipAddr, clients[j], INET_ADDRSTRLEN);
+            clients[j][INET_ADDRSTRLEN] = '\0';
             indiceCourant = j;
             pthread_mutex_unlock(&mutexIndiceCourant);
             pthread_cond_signal(&condIndiceCourant);
@@ -316,6 +317,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
 
                     socketMouv.sendString(mes, tail);
 
+                    free(mes);
+
                     retour = socketMouv.receiveString(MTU, '#', '%');
 
                     cout << "message recu de serveur mouvement [" << retour << "]" << endl;
@@ -430,6 +433,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
 
                     socketMouv.sendString(mes, tail);
 
+                    free(mes);
+
                     retour = socketMouv.receiveString(MTU, '#', '%');
 
                     cout << "message recu de serveur mouvement [" << retour << "]" << endl;
@@ -474,7 +479,9 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                         PT->idCont.insere(id);
                         freePTMess();
                         PT->message = new char[strlen("5#true#Deplacement de container enregistre#%")+1];
-                        strcpy(PT->message, "5#true#Deplacement de container enregistre#%");       
+                        strcpy(PT->message, "5#true#Deplacement de container enregistre#%");  
+
+                         PT->idCont.Aff();    
                     }
                     
                 }
@@ -498,6 +505,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                             id = cel->valeur;
                             cel = cel->suivant;
 
+                            cout << "id = " << id << endl;
+
                             if(liste == NULL)
                             {
                                 listeTmp = (char*) malloc(strlen(id) + 1);
@@ -507,8 +516,8 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                             else
                             {
                                 listeTmp = (char*) malloc(strlen(id) + strlen(liste) + 1);
-                                strcpy(liste, id);
-                                strcpy(listeTmp, id);
+                                strcat(liste, id);
+                                strcpy(listeTmp, liste);
                                 strcat(listeTmp, "/");
                             }
 
@@ -517,18 +526,28 @@ void switchThread(protocole &proto, SocketsClient &socketMouv)
                             liste = listeTmp;
 
                         }while(cel != NULL);
+
+                        cout << "liste = " << liste << endl;
                
                         //Construction du message
                         int tail = strlen("protocol.PLAMAP.DonneeSignalDep#idTransporteur=#ListIdCont=") + 1 + strlen(proto.donnees.outputDone.id) + strlen(liste);
-                        char * mes = (char*)malloc(tail);
+                        cout << "tail = " << tail+1 <<endl;
+                        char * mes = new char[tail+1]();
+                        cout << "test1 " <<endl;
                         strcpy(mes, "protocol.PLAMAP.DonneeSignalDep#idTransporteur=");
+                        cout << "test2 " <<endl;
                         strcat(mes, proto.donnees.outputDone.id);
+                        cout << "test3 " <<endl;
                         strcat(mes, "#ListIdCont=");
+                        cout << "test4 " <<endl;
                         strcat(mes, liste);
+                        cout << "test5 " <<endl;
                         mes[tail-1] = '\n';
+                        cout << "test6 " <<endl;
 
                         socketMouv.sendString(mes, tail);
 
+                        free(mes);
                         retour = socketMouv.receiveString(MTU, '#', '%');
 
                         if(strcmp(ParcourChaine::getSuccesServeur(retour), "true") == 0) 
@@ -770,7 +789,6 @@ void * fctThread(void * param)
 
 void* threadAdmin(void *param)
 {
-    cout << "Demarrage du thread admin" << endl;
     SocketsServeur sockEcoute;
     SocketsServeur sockService;
 
@@ -821,6 +839,33 @@ void* threadAdmin(void *param)
                 sockService.sendString(retour, strlen(retour));
                 if(finDial)
                 {
+                    char *portTmp = Configurator::getProperty("test.conf","PORT-URGENCE");
+                    int port = atoi(portTmp);
+
+                    for(int i = 0 ; i < 20 ; i++)
+                    {
+                        if(clients[i] != NULL)
+                        {
+                            SocketsClient socket;
+                            socket.initSocket(clients[i], port);
+                            char dure[10];
+                            sprintf(dure, "%d", time);
+
+                            int tail = strlen("Le serveur va se couper dans  seconde(s)") + 3 + strlen(dure);
+                            char * message = (char*)malloc(tail);
+                            strcpy(message, "Le serveur va se couper dans ");
+                            strcat(message, dure);
+                            strcat(message, " seconde(s)#%");
+
+                            socket.sendString(message, strlen(message));
+                            free(message);
+                        }
+                    }
+
+
+                    
+
+
                     cout << "extinction dans : " << time << " seconde(s)" << endl;
                     sleep(time);
                     exit(1);
