@@ -36,7 +36,7 @@ public class ServeurComptaSAMOP extends ServeurGenerique
         set_bdCompta(db);
 
         MyProperties mp = new MyProperties("./Confs/MailClient.conf");
-        MailHelper mailHelper = new MailHelper();
+        mailHelper = new MailHelper();
         mailHelper.set_userAdresse(mp.getContent("USERNAME"));
         mailHelper.set_password(mp.getContent("PASSWORD"));
     }

@@ -313,7 +313,7 @@ public class TraitementSAMOP implements Traitement
                 PreparedStatement userInfoStatement =
                         _bd.getPreparedStatement("SELECT * FROM personnel where upper(nom) = upper(?) and upper(prenom) = upper(?) ");
                 userInfoStatement.setString(1, virement.getNom());
-                userInfoStatement.setString(1, virement.getPrenom());
+                userInfoStatement.setString(2, virement.getPrenom());
 
                 ResultSet res = _bd.ExecuteQuery(userInfoStatement);
                 if(res.next())
