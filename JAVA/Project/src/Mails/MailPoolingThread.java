@@ -34,7 +34,7 @@ public class MailPoolingThread extends Thread {
             DefaultTableModel dtm = (DefaultTableModel)table.getModel();
             DefaultTableModel dtm2 = (DefaultTableModel)table2.getModel();
             int compteur = 0;
-            for (int i = messages.length -1; i >= 0 && compteur < 2; i--)
+            for (int i = messages.length -1; i >= 0 && compteur < 5; i--)
             {
                 try{
                     Message message = messages[i];
@@ -51,6 +51,7 @@ public class MailPoolingThread extends Thread {
                             receivedMessages.put(message.getMessageNumber(), message);
                             dtm.addRow(vector);
                             dtm2.addRow(vector);
+                            compteur++;
                         }
                     }
                 } catch (MessagingException e) {

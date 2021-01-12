@@ -29,10 +29,24 @@ public class MailHelper {
         mh.set_userAdresse(mp.getContent("USERNAME"));
         mh.set_password(mp.getContent("PASSWORD"));
 
-        mh.SendMail("thomas.beck@student.hepl.be","Subject", "Hello World", null);
+        int cpt = 0;
+        while(true)
+        {
+            cpt++;
+            mh.SendMail("loic.collette@student.hepl.be",
+                    "NOUVEAU COURRIER",
+                    "Bonjour Bien aimé,\n" +
+                            "Excusez-moi de cette manière de vous contacter suis car nous ne nous connaissions pas, je viens d'apercevoir votre profile et je me suis dit que vous êtes la personne qu'il me faut. En bref,Je me nomme Mme ANNE MARIE GRENIER agée de 65 ans de nationalité Française.\n" +
+                            "Je vous envoie ce présent message pour solliciter votre accord pour la réalisation d'un projet de donation que je souhaite accomplir depuis un bon moment.\n" +
+                            "Je possède la somme de 3.790.000 EUROS comme un don. Je vous prie d'accepter cette somme car elle pourra bien vous êtes très utile. Il faut me répondre si vous accepter mon offre directement par mon mail.\n" +
+                            "E-mail:  anne-marie-.grenier@hotmail.com\n", null);
+            System.out.println(cpt + " emails envoyés");
+            if(cpt == 10)
+                break;
+        }
 
-        Message[] messages = mh.ReceiveMail();
-        System.out.println(messages.length);
+        //Message[] messages = mh.ReceiveMail();
+        //System.out.println(messages.length);
     }
 
     public synchronized void SendMail(String contact, String subject, String content, List<File> files){
