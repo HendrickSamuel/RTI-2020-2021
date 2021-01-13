@@ -5,7 +5,6 @@
 package Mails;
 
 import genericRequest.MyProperties;
-
 import javax.mail.*;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -20,8 +19,11 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 
-public class MailClient extends JFrame{
-    
+public class MailClient extends JFrame
+{
+    /********************************/
+    /*           Variables          */
+    /********************************/
     private JTabbedPane tabbedPane1;
     private JPanel Title;
     private JComboBox ContactList;
@@ -52,14 +54,12 @@ public class MailClient extends JFrame{
 
     private HashMap<Integer, Message> receivedMessages;
 
-    public static void main (String[] args)
-    {
-        JFrame frame = null;
-        frame = new MailClient();
-        frame.setVisible(true);
-    }
 
-    public MailClient(){
+    /********************************/
+    /*         Constructeurs        */
+    /********************************/
+    public MailClient()
+    {
         super("Mails !");
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -140,6 +140,10 @@ public class MailClient extends JFrame{
 
     }
 
+
+    /********************************/
+    /*           Methodes           */
+    /********************************/
     private void OnDetails(ListSelectionEvent lm)
     {
         if(!lm.getValueIsAdjusting())
@@ -195,7 +199,9 @@ public class MailClient extends JFrame{
                 }
 
                 tree1.setModel(new DefaultTreeModel(top));
-            } catch (MessagingException e) {
+            }
+            catch (MessagingException e)
+            {
                 e.printStackTrace();
             }
         }
@@ -205,7 +211,8 @@ public class MailClient extends JFrame{
     {
         if(!lm.getValueIsAdjusting())
         {
-            try {
+            try
+            {
                 TextMailArea.setText("");
                 AttachedPiecesList.clearSelection();
                 Message message = (Message)MailTable.getValueAt(MailTable.getSelectedRow(), 4);
@@ -217,15 +224,18 @@ public class MailClient extends JFrame{
                 {
                     TextMailArea.setText(message.getContent().toString());
                 }
-                else
-                if (message.isMimeType("multipart/*")) {
+                else if (message.isMimeType("multipart/*"))
+                {
                     DefaultListModel dlm = new DefaultListModel();
                     Multipart msgMP = (Multipart) message.getContent();
-                    for (int i = 0; i < msgMP.getCount(); i++) {
+                    for (int i = 0; i < msgMP.getCount(); i++)
+                    {
                         Part part = msgMP.getBodyPart(i);
                         String d = part.getDisposition();
                         if (part.isMimeType("text/plain"))
+                        {
                             TextMailArea.setText((String) part.getContent());
+                        }
                         if (d!=null && d.equalsIgnoreCase(Part.ATTACHMENT))
                         {
                             System.out.println("Pièce jointe reçue");
@@ -236,12 +246,13 @@ public class MailClient extends JFrame{
                     AttachedPiecesList.setModel(dlm);
                 }
 
-            } catch (MessagingException | IOException e) {
+            }
+            catch (MessagingException | IOException e)
+            {
                 e.printStackTrace();
             }
         }
     }
-
 
     public void LoadContacts(ArrayList<String> contacts)
     {
@@ -255,16 +266,22 @@ public class MailClient extends JFrame{
         contactList.setModel(dm);
     }
 
-    public void DownloadFiles(java.awt.event.ActionEvent evt){
+    public void DownloadFiles(java.awt.event.ActionEvent evt)
+    {
         Message message = (Message)MailTable.getValueAt(MailTable.getSelectedRow(), 4);
-        try {
-            if (message.isMimeType("multipart/*")) {
+        try
+        {
+            if (message.isMimeType("multipart/*"))
+            {
                 Multipart msgMP = (Multipart) message.getContent();
-                for (int i = 0; i < msgMP.getCount(); i++) {
+                for (int i = 0; i < msgMP.getCount(); i++)
+                {
                     Part part = msgMP.getBodyPart(i);
                     String d = part.getDisposition();
                     if (part.isMimeType("text/plain"))
+                    {
                         TextMailArea.setText((String) part.getContent());
+                    }
                     if (d!=null && d.equalsIgnoreCase(Part.ATTACHMENT))
                     {
                         InputStream is = part.getInputStream();
@@ -280,9 +297,9 @@ public class MailClient extends JFrame{
                     }
                 }
             }
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        }
+        catch (MessagingException | IOException e)
+        {
             e.printStackTrace();
         }
     }
@@ -294,7 +311,9 @@ public class MailClient extends JFrame{
         if (r == JFileChooser.APPROVE_OPTION)
         {
             if(attachedFiles == null)
+            {
                 attachedFiles = new ArrayList<>();
+            }
 
             attachedFiles.add(jf.getSelectedFile());
             DefaultListModel model = (DefaultListModel)AttachedPiecesSendList.getModel();
@@ -302,14 +321,15 @@ public class MailClient extends JFrame{
         }
         // if the user cancelled the operation
         else
+        {
             System.out.println("the user cancelled the operation");
+        }
     }
-
 
     public void sendMail(java.awt.event.ActionEvent evt)
     {
         String contact = ContactList.getSelectedItem().toString();
-        String subject =  MailObject.getText();
+        String subject = MailObject.getText();
         String content = MailMessage.getText();
 
         mailHelper.SendMail(contact,subject, content, attachedFiles);
@@ -346,5 +366,16 @@ public class MailClient extends JFrame{
             DefaultListModel dm = (DefaultListModel)contactList.getModel();
             dm.removeElement((String)contactList.getSelectedValue());
         }
+    }
+
+
+    /********************************/
+    /*             Main             */
+    /********************************/
+    public static void main (String[] args)
+    {
+        JFrame frame = null;
+        frame = new MailClient();
+        frame.setVisible(true);
     }
 }

@@ -6,48 +6,70 @@ package Mails;
 
 import java.io.Serializable;
 
-public class User implements Serializable {
-
+public class User implements Serializable
+{
+    /********************************/
+    /*           Variables          */
+    /********************************/
     private String name;
     private String email;
     private User secretSanta;
     private boolean hasBeenSent;
 
-    public User(String name, String email) {
+    /********************************/
+    /*         Constructeurs        */
+    /********************************/
+    public User(String name, String email)
+    {
         this.name = name;
         this.email = email;
         hasBeenSent = false;
     }
 
-    public String getName() {
+    /********************************/
+    /*            Getters           */
+    /********************************/
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
+    public String getEmail()
+    {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public User getSecretSanta() {
+    public User getSecretSanta()
+    {
         return secretSanta;
     }
 
-    public void setSecretSanta(User secretSanta) {
-        this.secretSanta = secretSanta;
-    }
-
-    public boolean isHasBeenSent() {
+    public boolean isHasBeenSent()
+    {
         return hasBeenSent;
     }
 
-    public void setHasBeenSent(boolean hasBeenSent) {
+
+    /********************************/
+    /*            Setters           */
+    /********************************/
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public void setEmail(String email)
+    {
+        this.email = email;
+    }
+
+    public void setSecretSanta(User secretSanta)
+    {
+        this.secretSanta = secretSanta;
+    }
+
+    public void setHasBeenSent(boolean hasBeenSent)
+    {
         this.hasBeenSent = hasBeenSent;
     }
 }

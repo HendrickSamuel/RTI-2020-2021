@@ -5,7 +5,6 @@
 package Mails;
 
 import genericRequest.MyProperties;
-
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -14,29 +13,37 @@ import javax.mail.internet.*;
 import java.io.*;
 import java.util.*;
 
-public class MailHelper {
-
+public class MailHelper
+{
+    /********************************/
+    /*           Variables          */
+    /********************************/
     private String _userAdresse;
     private String _password;
     private Session _sendingSession;
     private Session _receivingSession;
     private Folder folder;
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        MailHelper mh = new MailHelper();
 
-        MyProperties mp = new MyProperties("./Confs/MailClient.conf");
-        mh.set_userAdresse(mp.getContent("USERNAME"));
-        mh.set_password(mp.getContent("PASSWORD"));
-
-        mh.SendMail("thomas.beck@student.hepl.be","Subject", "Hello World", null);
-
-        Message[] messages = mh.ReceiveMail();
-        System.out.println(messages.length);
+    /********************************/
+    /*           Setters            */
+    /********************************/
+    public void set_userAdresse(String _userAdresse)
+    {
+        this._userAdresse = _userAdresse;
     }
 
-    public synchronized void SendMail(String contact, String subject, String content, List<File> files){
+    public void set_password(String _password)
+    {
+        this._password = _password;
+    }
 
+
+    /********************************/
+    /*           Methodes           */
+    /********************************/
+    public synchronized void SendMail(String contact, String subject, String content, List<File> files)
+    {
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.office365.com");
         props.put("mail.smtp.auth", "true");
@@ -53,7 +60,8 @@ public class MailHelper {
             });
         }
 
-        try {
+        try
+        {
             MimeMessage msg = new MimeMessage(_sendingSession);
             msg.setFrom(new InternetAddress(_userAdresse));
             msg.setRecipients(Message.RecipientType.TO, contact);
@@ -80,10 +88,10 @@ public class MailHelper {
             }
             msg.setContent(multipart);
 
-
             Transport.send(msg);
-
-        } catch (MessagingException e) {
+        }
+        catch (MessagingException e)
+        {
             System.out.println("send failed, exception: " + e);
         }
         System.out.println("Sent Ok") ;
@@ -91,7 +99,8 @@ public class MailHelper {
 
     public synchronized Message[] ReceiveMail()
     {
-        try{
+        try
+        {
             Properties props = new Properties();
             props.put("mail.host", "outlook.office365.com");
             props.put("mail.store.protocol", "pop3s");
@@ -114,34 +123,49 @@ public class MailHelper {
 
             return folder.getMessages();
 
-        } catch (MessagingException e) {
+        }
+        catch (MessagingException e)
+        {
             e.printStackTrace();
             return null;
         }
     }
 
-    public synchronized void InitFolder() throws MessagingException {
+    public synchronized void InitFolder() throws MessagingException
+    {
         Store store = _receivingSession.getStore("pop3s");
         store.connect();
         folder = store.getFolder("INBOX");
     }
 
-    public synchronized void OpenFolder() throws MessagingException {
+    public synchronized void OpenFolder() throws MessagingException
+    {
         if(folder == null)
             InitFolder();
         folder.open(Folder.READ_ONLY);
     }
 
-    public synchronized void CloseFolder() throws MessagingException {
+    public synchronized void CloseFolder() throws MessagingException
+    {
         if(folder != null)
         folder.close(false);
     }
 
-    public void set_userAdresse(String _userAdresse) {
-        this._userAdresse = _userAdresse;
-    }
 
-    public void set_password(String _password) {
-        this._password = _password;
+    /********************************/
+    /*             Main             */
+    /********************************/
+    public static void main(String[] args) throws IOException, ClassNotFoundException
+    {
+        MailHelper mh = new MailHelper();
+
+        MyProperties mp = new MyProperties("./Confs/MailClient.conf");
+        mh.set_userAdresse(mp.getContent("USERNAME"));
+        mh.set_password(mp.getContent("PASSWORD"));
+
+        mh.SendMail("thomas.beck@student.hepl.be","Subject", "Hello World", null);
+
+        Message[] messages = mh.ReceiveMail();
+        System.out.println(messages.length);
     }
 }
