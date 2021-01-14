@@ -143,5 +143,4 @@ public class DonneeLoginGroup  implements DonneeRequete, Serializable
             }
         }
     }
-
 }

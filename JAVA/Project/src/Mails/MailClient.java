@@ -154,8 +154,8 @@ public class MailClient extends JFrame
                 DefaultMutableTreeNode top =
                         new DefaultMutableTreeNode("mail -- " + message.getFrom()[0] + " " + message.getSubject() + " " + message.getSentDate());
 
-                DefaultMutableTreeNode fmta = null;
-                DefaultMutableTreeNode rmta = null;
+                DefaultMutableTreeNode fmta = null; //reception mail transfert agent
+                DefaultMutableTreeNode rmta = null; //forwarding mail transfert agent
 
                 top.add(new DefaultMutableTreeNode("message-id: " + message.getMessageNumber()));
                 top.add(new DefaultMutableTreeNode("message-type: " + message.getContentType().split(";")[0]));

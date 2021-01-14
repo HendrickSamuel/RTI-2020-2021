@@ -321,7 +321,7 @@ public class TraitementSAMOP implements Traitement
                     _mails.SendMail(
                             res.getString("email"),
                             "Fiche de paie !",
-                            "Tu as reçu : " + virement.getMontant() + "pour ton super mois de travail !",
+                            "Tu as reçu : " + virement.getMontant() + " euros pour ton super mois de travail !",
                             null
                     );
 
